@@ -25,3 +25,4 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/user.php';
 require __DIR__ . '/cache.php';
 require __DIR__ . '/cape.php';
+require __DIR__ . '/telemetry.php';
