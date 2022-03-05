@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', static function () {
+    return ['Laravel' => app()->version()];
 });
+
+Route::fallback(static function () {
+    return redirect('https://wynntils.com');
+});
+
+require __DIR__ . '/auth.php';
+require __DIR__ . '/user.php';
+require __DIR__ . '/cache.php';
+require __DIR__ . '/cape.php';

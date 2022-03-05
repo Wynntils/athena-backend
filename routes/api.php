@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::controller(ApiController::class)->group(static function () {
+    Route::post('getUser/{apiKey}', 'getUser');
+    Route::post('setAccountType/{apiKey}', 'setAccountType');
+    Route::post('updateCosmetics/{apiKey}', 'updateCosmetics');
+    Route::post('setGuildColor/{apiKey}', 'setGuildColor');
+    Route::post('setUserPassword/{apiKey}', 'setUserPassword');
+    Route::post('getUserByPassword/{apiKey}', 'getUserByPassword');
+    Route::post('createApiKey/{apiKey}', 'createApiKey');
+    Route::post('changeApiKey/{apiKey}', 'changeApiKey');
+    Route::post('getUserConfig/{apiKey}', 'getUserConfig');
+    Route::get('timings', 'timings');
 });
