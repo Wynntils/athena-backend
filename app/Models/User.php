@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Jenssegers\Mongodb\Eloquent\Model;
 
-class User extends Authenticatable
+/**
+ * @property DiscordInfo $discordInfo
+ * @property CosmeticInfo $cosmeticInfo
+ */
+class User extends Model implements
+    AuthenticatableContract,
+    AuthorizableContract
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use Authenticatable, Authorizable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,8 +24,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'username',
         'password',
     ];
 
@@ -30,15 +35,17 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'authToken',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function discordInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    {
+        return $this->embedsOne(DiscordInfo::class);
+    }
+
+    public function cosmeticInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    {
+        return $this->embedsOne(CosmeticInfo::class);
+    }
 }
