@@ -20,9 +20,3 @@ Route::get('/', static function () {
 Route::fallback(static function () {
     return redirect('https://wynntils.com');
 });
-
-require __DIR__ . '/auth.php';
-require __DIR__ . '/user.php';
-require __DIR__ . '/cache.php';
-require __DIR__ . '/cape.php';
-require __DIR__ . '/telemetry.php';
