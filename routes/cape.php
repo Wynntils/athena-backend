@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\CapeController;
 
-Route::controller(CapeController::class)->prefix('capes')->group(static function () {
+Route::controller(CapeController::class)->group(static function () {
     Route::get('get/{id}', 'get');
     Route::get('user/{uuid}', 'user');
     Route::get('list', 'list');

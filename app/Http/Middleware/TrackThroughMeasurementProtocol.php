@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use GAMP;
 use Illuminate\Http\Request;
-use Str;
+use Illuminate\Support\Facades\Auth;
 
 
 class TrackThroughMeasurementProtocol
@@ -19,8 +19,12 @@ class TrackThroughMeasurementProtocol
      */
     public function handle(Request $request, Closure $next)
     {
+        if (!Auth::check()) {
+            return $next($request);
+        }
+
         // Create a new UUID which is used as the Client ID
-        $uuid = (string) Str::uuid();
+        $uuid = Auth::id();
 
         $gamp = GAMP::setClientId($uuid);
         $gamp->setDocumentPath('/' . $request->path());
