@@ -15,14 +15,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(ApiController::class)->group(static function () {
-    Route::post('getUser/{apiKey}', 'getUser');
-    Route::post('setAccountType/{apiKey}', 'setAccountType');
-    Route::post('updateCosmetics/{apiKey}', 'updateCosmetics');
-    Route::post('setGuildColor/{apiKey}', 'setGuildColor');
-    Route::post('setUserPassword/{apiKey}', 'setUserPassword');
-    Route::post('getUserByPassword/{apiKey}', 'getUserByPassword');
-    Route::post('createApiKey/{apiKey}', 'createApiKey');
-    Route::post('changeApiKey/{apiKey}', 'changeApiKey');
-    Route::post('getUserConfig/{apiKey}', 'getUserConfig');
+    Route::post('getUser/{apiKey}', 'getUser')->middleware('auth.key');
+    Route::post('setAccountType/{apiKey}', 'setAccountType')->middleware('auth.key');
+    Route::post('updateCosmetics/{apiKey}', 'updateCosmetics')->middleware('auth.key');
+    Route::post('setGuildColor/{apiKey}', 'setGuildColor')->middleware('auth.key');
+    Route::post('setUserPassword/{apiKey}', 'setUserPassword')->middleware('auth.key');
+    Route::post('getUserByPassword/{apiKey}', 'getUserByPassword')->middleware('auth.key');
+    Route::post('createApiKey/{apiKey}', 'createApiKey')->middleware('auth.key');
+    Route::post('changeApiKey/{apiKey}', 'changeApiKey')->middleware('auth.key');
+    Route::post('getUserConfig/{apiKey}', 'getUserConfig')->middleware('auth.key');
     Route::get('timings', 'timings');
 });
