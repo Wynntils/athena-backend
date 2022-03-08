@@ -6,7 +6,8 @@ class CapeController extends Controller
 {
     //
 
-    public function upload() {
+    public function upload()
+    {
         return ['success'];
     }
 }
