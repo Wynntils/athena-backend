@@ -7,6 +7,7 @@ use App\Models\User;
 use ArrayObject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 use Storage;
 
 class AuthController extends Controller
@@ -33,9 +34,8 @@ class AuthController extends Controller
         if ($profile === null) {
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
-        $uuid = preg_replace("/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i", "$1-$2-$3-$4-$5", $profile['id']);
 
-        $user = User::find($uuid);
+        $user = User::find(Uuid::fromString($profile['id'])->toString());
 
         $user->updateAccount($profile['name'], $body->get('version'));
 
