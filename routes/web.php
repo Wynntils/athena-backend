@@ -17,6 +17,12 @@ Route::get('/', static function () {
     return ['Laravel' => app()->version()];
 });
 
+if(config('app.debug') !== false) {
+    Route::get('/phpinfo', static function () {
+        return phpinfo();
+    });
+}
+
 Route::fallback(static function () {
     return redirect('https://wynntils.com');
 });

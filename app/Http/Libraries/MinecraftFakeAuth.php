@@ -24,7 +24,9 @@ class MinecraftFakeAuth
      */
     public function getPublicKey(): string
     {
-        return bin2hex(openssl_pkey_get_details($this->publicKey)['rsa']['n']);
+        $out = openssl_pkey_get_details($this->publicKey)['key'];
+        $out = str_replace(['-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "\n"], '', $out);
+        return base64_decode($out);
     }
 
     /**
@@ -33,45 +35,28 @@ class MinecraftFakeAuth
      * @param string $username the username
      * @param string $key the client shared key generated based on our public key
      *
-     * @return null the user GameProfile if authenticated, null otherwise
+     * @return array|null the user GameProfile if authenticated, null otherwise
      */
-    public function getGameProfile(string $username, string $key) {
-        $encrypted = hex2bin($key); // val encrypted = DatatypeConverter.parseHexBinary(key) // converts the string to a ByteArray
+    public function getGameProfile(string $username, string $key): ?array
+    {
+        $encrypted = hex2bin($key);
 
-        $sharedKey = CryptManager::decryptSharedKey($this->privateKey, $encrypted);
+        openssl_private_decrypt($encrypted, $sharedKey, $this->privateKey);
 
-        $verificationKey = $this->getServerHash($sharedKey);
+        $serverId = $this->sha1($sharedKey . $this->getPublicKey());
 
-        $url = sprintf('https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s', $username, $verificationKey);
+        $url = sprintf('https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s', $username, $serverId);
 
         return \Http::get($url)->json();
-        /*
-            val sharedKey = CryptManager.decryptSharedKey(
-                keyPair.private,
-                encrypted
-            ) // decrypts the client sent shared key using our private key
-
-            val verificationKey =
-                BigInteger(getServerHash(sharedKey)).toString(16) // converts the server hash to string
-            val url = apiConfig.mojangAuth.format(username, verificationKey)
-
-            val connection = URL(url).openConnection() as HttpsURLConnection // open connection to Mojang server api
-
-            val result = connection.inputStream.toPlainString()
-            connection.inputStream.close()
-            if (!result.contains("{")) return null // just a simple verification to check if it's a valid json
-         */
     }
 
-    private function getServerHash($key) {
-        $serverId = "";
-        $digest = openssl_digest(implode("", [$serverId, $key, $this->publicKey]), 'sha1');
-        dd($digest);
-
-        /*
-        val serverId = "".toByteArray(StandardCharsets.ISO_8859_1)
-
-        return Hash.SHA1.digest(arrayOf(serverId, key.encoded, keyPair.public.encoded))
-         */
+    public function sha1($str): string
+    {
+        $gmp = gmp_import(sha1($str, true));
+        if(gmp_cmp($gmp, gmp_init("0x8000000000000000000000000000000000000000")) >= 0)
+        {
+            $gmp = gmp_mul(gmp_add(gmp_xor($gmp, gmp_init("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")), gmp_init(1)), gmp_init(-1));
+        }
+        return gmp_strval($gmp, 16);
     }
 }
