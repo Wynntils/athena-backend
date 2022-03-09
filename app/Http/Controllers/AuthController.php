@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Libraries\Requests\MinecraftFakeAuth;
+use App\Http\Libraries\MinecraftFakeAuth;
 use App\Models\User;
 use ArrayObject;
 use Illuminate\Http\JsonResponse;
