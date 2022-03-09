@@ -57,7 +57,8 @@ class User extends Model implements
         return $this->embedsOne(CosmeticInfo::class);
     }
 
-    public function updateAccount($username, $version) {
+    public function updateAccount($username, $version): string
+    {
         $this->authToken = \Str::uuid()->toString();
         $this->lastActivity = Carbon::now()->getPreciseTimestamp(3);
         $this->username = $username;
