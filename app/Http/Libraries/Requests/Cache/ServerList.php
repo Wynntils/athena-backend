@@ -2,6 +2,9 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
+use App\Http\Libraries\Requests\WynnRequest;
+use Carbon\Carbon;
+
 class ServerList implements CacheContract
 {
 
@@ -12,8 +15,30 @@ class ServerList implements CacheContract
 
     public function generate(): array
     {
-        // Get data from wynn api
-        return [];
+        $wynnOnlinePlayers = WynnRequest::request()->get(config('athena.api.wynn.onlinePlayers'))->collect()->forget('request');
+        if ($wynnOnlinePlayers === null) {
+            return [];
+        }
+
+        $result = [];
+
+        $validServers = [];
+        foreach ($wynnOnlinePlayers as $key => $onlinePlayer) {
+            $server = [];
+
+            $validServers[] = $key;
+
+            $server['firstSeen'] = \Cache::rememberForever($key, static function () {
+                return Carbon::now()->getPreciseTimestamp(3);
+            });
+            $server['players'] = $onlinePlayer;
+
+            $result['servers'][$key] = $server;
+        }
+
+//        TODO: Run Through Valid Servers, and Remove "Old" Servers
+
+        return $result;
     }
 }
 

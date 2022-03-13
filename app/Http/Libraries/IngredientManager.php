@@ -21,82 +21,47 @@ class IngredientManager
 
         $result['professions'] = $input['skills'];
 
-        $result['statuses'] = [];
+        $statuses = &$result['statuses'];
 
         foreach ($input['identifications'] as $key => $identification) {
             $translatedName = self::translateStatusName($key);
-            $status = [];
-            $status['type'] = self::getStatusType($translatedName);
+            $status = &$statuses[$translatedName];
+            $status['type'] = getStatusType($translatedName);
             $status['minimum'] = $identification['minimum'];
             $status['maximum'] = $identification['maximum'];
 
-            $result['statuses'][$translatedName] = array_filter($status, static function ($a) {
-                return !is_null($a);
-            });
         }
 
-        $itemModifiers = [];
+        $itemModifiers = &$result['itemModifiers'];
 
         $itemIDs = collect($input['itemOnlyIDs']);
         $consumableIDs = collect($input->get('consumableOnlyIDs', []));
 
-        $itemModifiers['durability'] = self::ignoreZero($itemIDs->get('durabilityModifier'));
-        $itemModifiers['duration'] = self::ignoreZero($consumableIDs->get('duration'));
-        $itemModifiers['charges'] = self::ignoreZero($consumableIDs->get('charges'));
+        $itemModifiers['durability'] = ignoreZero($itemIDs->get('durabilityModifier'));
+        $itemModifiers['duration'] = ignoreZero($consumableIDs->get('duration'));
+        $itemModifiers['charges'] = ignoreZero($consumableIDs->get('charges'));
 
-        $itemModifiers['strength'] = self::ignoreZero($itemIDs->get('strengthRequirement'));
-        $itemModifiers['dexterity'] = self::ignoreZero($itemIDs->get('dexterityRequirement'));
-        $itemModifiers['intelligence'] = self::ignoreZero($itemIDs->get('intelligenceRequirement'));
-        $itemModifiers['defense'] = self::ignoreZero($itemIDs->get('defenceRequirement'));
-        $itemModifiers['agility'] = self::ignoreZero($itemIDs->get('agilityRequirement'));
+        $itemModifiers['strength'] = ignoreZero($itemIDs->get('strengthRequirement'));
+        $itemModifiers['dexterity'] = ignoreZero($itemIDs->get('dexterityRequirement'));
+        $itemModifiers['intelligence'] = ignoreZero($itemIDs->get('intelligenceRequirement'));
+        $itemModifiers['defense'] = ignoreZero($itemIDs->get('defenceRequirement'));
+        $itemModifiers['agility'] = ignoreZero($itemIDs->get('agilityRequirement'));
 
-        $result['itemModifiers'] = array_filter($itemModifiers, static function ($a) {
-            return !is_null($a);
-        });
-
-        $ingredientModifiers = [];
-
+        $ingredientModifiers = &$result['ingredientModifiers'];
         $modifiers = collect($input['ingredientPositionModifiers']);
 
-        $ingredientModifiers['left'] = self::ignoreZero($modifiers->get('left'));
-        $ingredientModifiers['right'] = self::ignoreZero($modifiers->get('right'));
-        $ingredientModifiers['above'] = self::ignoreZero($modifiers->get('above'));
-        $ingredientModifiers['under'] = self::ignoreZero($modifiers->get('under'));
-        $ingredientModifiers['touching'] = self::ignoreZero($modifiers->get('touching'));
-        $ingredientModifiers['notTouching'] = self::ignoreZero($modifiers->get('notTouching'));
+        $ingredientModifiers['left'] = ignoreZero($modifiers->get('left'));
+        $ingredientModifiers['right'] = ignoreZero($modifiers->get('right'));
+        $ingredientModifiers['above'] = ignoreZero($modifiers->get('above'));
+        $ingredientModifiers['under'] = ignoreZero($modifiers->get('under'));
+        $ingredientModifiers['touching'] = ignoreZero($modifiers->get('touching'));
+        $ingredientModifiers['notTouching'] = ignoreZero($modifiers->get('notTouching'));
 
-        $result['ingredientModifiers'] = array_filter($ingredientModifiers, static function ($a) {
-            return !is_null($a);
-        });
-
-        return array_filter($result, static function ($a) {
-            return !is_null($a);
-        });
-    }
-
-    public static function getStatusType(string $raw): string
-    {
-        return match (true) {
-            str_contains($raw, 'raw') => 'INTEGER',
-            in_array($raw, ['manaRegen', 'lifeSteal', 'manaSteal']) => 'FOUR_SECONDS',
-            $raw === 'poison' => 'THREE_SECONDS',
-            $raw === 'attackSpeed' => 'TIER',
-            default => 'PERCENTAGE',
-        };
-    }
-
-    public static function ignoreZero($input)
-    {
-        if ($input === null) {
-            return null;
-        }
-        if (is_numeric($input)) {
-            return $input === 0 ? null : $input;
-        }
-        if (is_string($input)) {
-            return empty($input) || $input === '0-0' ? null : $input;
-        }
-        return $input;
+        cleanNull($statuses);
+        cleanNull($itemModifiers);
+        cleanNull($ingredientModifiers);
+        cleanNull($result);
+        return $result;
     }
 
     private static function translateStatusName(string $raw): ?string
@@ -155,7 +120,7 @@ class IngredientManager
         };
     }
 
-    public static function getHeadTextures()
+    public static function getHeadTextures(): array
     {
         $result = [];
 
