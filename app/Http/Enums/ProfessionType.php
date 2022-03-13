@@ -2,22 +2,22 @@
 
 namespace App\Http\Enums;
 
-enum ProfessionType
+enum ProfessionType: string
 {
 
-    case WOODCUTTING;
-    case MINING;
-    case FISHING;
-    case FARMING;
-    case ALCHEMISM;
-    case ARMOURING;
-    case COOKING;
-    case JEWELING;
-    case SCRIBING;
-    case TAILORING;
-    case WEAPONSMITHING;
-    case WOODWORKING;
-    case OVERALL;
+    case WOODCUTTING = "WOODCUTTING";
+    case MINING = "MINING";
+    case FISHING = "FISHING";
+    case FARMING = "FARMING";
+    case ALCHEMISM = "ALCHEMISM";
+    case ARMOURING = "ARMOURING";
+    case COOKING = "COOKING";
+    case JEWELING = "JEWELING";
+    case SCRIBING = "SCRIBING";
+    case TAILORING = "TAILORING";
+    case WEAPONSMITHING = "WEAPONSMITHING";
+    case WOODWORKING = "WOODWORKING";
+    case OVERALL = "OVERALL";
 
     public function icon(): string
     {

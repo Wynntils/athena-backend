@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -60,13 +59,13 @@ class User extends Model implements
     public function updateAccount($username, $version): string
     {
         $this->authToken = \Str::uuid()->toString();
-        $this->lastActivity = Carbon::now()->getPreciseTimestamp(3);
+        $this->lastActivity = currentTimeMillis();
         $this->username = $username;
 
         $this->latestVersion = $version;
 
         $usedVersions = $this->usedVersions;
-        $usedVersions[$version] = Carbon::now()->getPreciseTimestamp(3);
+        $usedVersions[$version] = currentTimeMillis();
         $this->usedVersions = $usedVersions;
 
         $this->save();

@@ -41,3 +41,10 @@ if(!function_exists('ignoreZero')) {
         return $input;
     }
 }
+
+if (!function_exists('currentTimeMillis')) {
+    function currentTimeMillis(): int
+    {
+        return (int) \Carbon\Carbon::now()->getPreciseTimestamp(3);
+    }
+}

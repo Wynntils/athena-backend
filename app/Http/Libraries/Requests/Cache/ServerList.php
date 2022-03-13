@@ -3,7 +3,6 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Libraries\Requests\WynnRequest;
-use Carbon\Carbon;
 
 class ServerList implements CacheContract
 {
@@ -29,7 +28,7 @@ class ServerList implements CacheContract
             $validServers[] = $key;
 
             $server['firstSeen'] = \Cache::rememberForever($key, static function () {
-                return Carbon::now()->getPreciseTimestamp(3);
+                return currentTimeMillis();
             });
             $server['players'] = $onlinePlayer;
 
