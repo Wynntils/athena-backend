@@ -3,6 +3,7 @@
 namespace App\Http\Libraries;
 
 use App\Http\Libraries\Requests\Cache\CacheContract;
+use Illuminate\Support\Facades\Cache;
 
 class CacheManager
 {
@@ -23,5 +24,20 @@ class CacheManager
         }
 
         return null;
+    }
+
+    public static function getHashes(): array
+    {
+        $hashes = [];
+        foreach (self::$cacheTable as $name => $class) {
+            if (!Cache::has($name.'.hash')) {
+                $cache = new $class;
+                $data = $cache->generate();
+                Cache::forever($name.'.hash', md5(serialize($data)));
+            }
+            $hashes[$name] = Cache::get($name.'.hash');
+        }
+
+        return $hashes;
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Support\Facades\Storage;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
@@ -73,8 +74,14 @@ class User extends Model implements
         return $this->authToken;
     }
 
-    public function getConfigFiles() {
-        // TODO - list all current config files
-        return new \ArrayObject();
+    public function getConfigFiles(): array
+    {
+        $files = [];
+        $configs = Storage::disk('configs');
+        foreach ($configs->files($this->id) as $file) {
+            $files[basename($file)] = json_encode(json_decode(zlib_decode($configs->get($file))));
+        }
+
+        return array_filter($files);
     }
 }

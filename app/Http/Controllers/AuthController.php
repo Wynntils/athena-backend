@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Models\User;
-use ArrayObject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -43,14 +43,7 @@ class AuthController extends Controller
         $response['message'] = "Authentication code generated.";
         $response['authToken'] = $user->authToken;
         $response['configFiles'] = $user->getConfigFiles();
-        $response['hashes'] = new ArrayObject();
-
-        /* TODO configFiles and hashes
-        val hashes = response.getOrCreate<JSONObject>("hashes")
-        for (entry in CacheManager.getCaches()) {
-            hashes[entry.key] = entry.value.hash
-        }
-         */
+        $response['hashes'] = CacheManager::getHashes();
 
         return response()->json($response);
     }

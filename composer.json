@@ -14,7 +14,8 @@
         "laravel/tinker": "^2.7",
         "ramsey/uuid": "^4.2",
         "ext-openssl": "*",
-        "ext-gmp": "*"
+        "ext-gmp": "*",
+        "ext-zlib": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

@@ -35,6 +35,16 @@ return [
             'root' => storage_path('app'),
         ],
 
+        'configs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/configs'),
+        ],
+
+        'capes' => [
+            'driver' => 'local',
+            'root' => storage_path('app/capes'),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

@@ -1,3 +1,5 @@
 *
 !public/
+!configs/
+!capes/
 !.gitignore
