@@ -22,6 +22,7 @@ class ServerList implements CacheContract
 
         $result = [];
 
+        // generating server data
         $validServers = [];
         foreach ($wynnOnlinePlayers as $key => $onlinePlayer) {
             $server = [];
@@ -35,6 +36,7 @@ class ServerList implements CacheContract
             $result['servers'][$key] = $server;
         }
 
+        // clean old servers
         Server::whereNotIn('_id', $validServers)->delete();
 
         return $result;
