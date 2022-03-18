@@ -3,6 +3,7 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Libraries\Requests\WynnRequest;
+use App\Models\Server;
 
 class ServerList implements CacheContract
 {
@@ -27,15 +28,14 @@ class ServerList implements CacheContract
 
             $validServers[] = $key;
 
-            $server['firstSeen'] = \Cache::rememberForever($key, static function () {
-                return currentTimeMillis();
-            });
+            $server['firstSeen'] = Server::firstOrCreate(['_id' => $key], ['firstSeen' => currentTimeMillis()])->firstSeen;
+
             $server['players'] = $onlinePlayer;
 
             $result['servers'][$key] = $server;
         }
 
-//        TODO: Run Through Valid Servers, and Remove "Old" Servers
+        Server::whereNotIn('_id', $validServers)->delete();
 
         return $result;
     }
