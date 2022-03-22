@@ -8,11 +8,11 @@ Route::controller(CapeController::class)->group(static function () {
     Route::get('list', 'list');
     Route::post('delete/{token}', 'delete');
     Route::prefix('queue')->group(function () {
-        Route::get('get/{id}', 'getQueue');
-        Route::get('list', 'listQueue');
-        Route::get('approve/{token}/{sha}', 'approve');
-        Route::get('ban/{token}/{sha}', 'ban');
-        Route::post('upload/{token}', 'upload');
+        Route::get('get/{id}', 'queueGetCape');
+        Route::get('list', 'queueList');
+        Route::get('approve/{token}/{sha}', 'approveCape');
+        Route::get('ban/{token}/{sha}', 'banCape');
+        Route::post('upload/{token}', 'uploadCape');
     });
 });
 

@@ -37,4 +37,23 @@ class CapeManager
             return $item !== '.gitignore';
         })->values()->toArray();
     }
+
+    public function isApproved($capeId): bool
+    {
+        return (bool) $this->capes->get('approved/'.$capeId);
+    }
+
+    public function getQueuedCape($capeId): ?string
+    {
+        return $this->capes->get('queue/'.$capeId) ?? $this->capes->get('approved/defaultCape');
+    }
+
+    public function listQueuedCapes(): array
+    {
+        return collect($this->capes->files('queue'))->map(static function ($item) {
+            return str_replace("queue/", "", $item);
+        })->filter(static function ($item) {
+            return $item !== '.gitignore';
+        })->values()->toArray();
+    }
 }

@@ -15,7 +15,8 @@
         "ramsey/uuid": "^4.2",
         "ext-openssl": "*",
         "ext-gmp": "*",
-        "ext-zlib": "*"
+        "ext-zlib": "*",
+        "ext-gd": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

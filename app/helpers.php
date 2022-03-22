@@ -13,7 +13,7 @@ if (!function_exists('cleanNull')) {
     }
 }
 
-if(!function_exists('getStatusType')) {
+if (!function_exists('getStatusType')) {
     function getStatusType(?string $raw): string
     {
         return match (true) {
@@ -26,7 +26,7 @@ if(!function_exists('getStatusType')) {
     }
 }
 
-if(!function_exists('ignoreZero')) {
+if (!function_exists('ignoreZero')) {
     function ignoreZero($input)
     {
         if ($input === null) {
