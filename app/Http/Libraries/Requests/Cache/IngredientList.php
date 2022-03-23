@@ -2,6 +2,9 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
+use App\Http\Libraries\IngredientManager;
+use App\Http\Libraries\Requests\WynnRequest;
+
 class IngredientList implements CacheContract
 {
 
@@ -12,8 +15,17 @@ class IngredientList implements CacheContract
 
     public function generate(): array
     {
-        // Get data from wynn api
-        return [];
+        $wynnIngredients = WynnRequest::request()->get(config('athena.api.wynn.ingredients'))->collect('data');
+        if ($wynnIngredients === null) {
+            return [];
+        }
+
+        return [
+            'ingredients' => $wynnIngredients->map(static function ($ingredient) {
+                return IngredientManager::convertIngredient($ingredient);
+            }),
+            'headTextures' => IngredientManager::getHeadTextures()
+        ];
     }
 }
 

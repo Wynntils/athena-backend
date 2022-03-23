@@ -2,6 +2,8 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
+use App\Http\Libraries\Requests\WynnRequest;
+
 class MapLocations implements CacheContract
 {
 
@@ -12,8 +14,27 @@ class MapLocations implements CacheContract
 
     public function generate(): array
     {
-        // Get data from wynn api
-        return [];
+        $wynnMapLocations = WynnRequest::request()->get(config('athena.api.wynn.mapLocations'))->collect();
+        if ($wynnMapLocations === null) {
+            return [];
+        }
+        $wynnMapLocations->forget('request');
+
+        $wynnMapLabels = WynnRequest::request()->get(config('athena.api.wynn.mapLabels'))->collect();
+        if ($wynnMapLabels === null) {
+            return [];
+        }
+
+        $wynnMapLocations['labels'] = $wynnMapLabels['labels'];
+
+        $npcLocations = WynnRequest::request()->get(config('athena.api.wynn.npcLocations'))->collect();
+        if ($npcLocations === null) {
+            return [];
+        }
+
+        $wynnMapLocations['npc-locations'] = $npcLocations['npc-locations'];
+
+        return $wynnMapLocations->toArray();
     }
 }
 
