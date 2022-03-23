@@ -45,7 +45,7 @@ class MinecraftFakeAuth
 
         $serverId = $this->sha1($sharedKey . $this->getPublicKey());
 
-        $url = sprintf(config('athena.mojang.auth'), $username, $serverId);
+        $url = sprintf(config('athena.api.mojang.auth'), $username, $serverId);
 
         return \Http::get($url)->json();
     }
