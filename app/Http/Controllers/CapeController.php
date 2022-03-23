@@ -126,10 +126,12 @@ class CapeController extends Controller
         return response()->json(['message' => 'Successfully banned the cape.']);
     }
 
-    private function checkToken($token)
+    private function checkToken($token): void
     {
-        if ($token !== 'test') {
-            abort(401);
+        if ($token === $this->manager->getToken() || $token === config('athena.general.apiKey')) {
+            return;
         }
+
+        abort(401);
     }
 }

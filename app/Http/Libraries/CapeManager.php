@@ -3,6 +3,7 @@
 namespace App\Http\Libraries;
 
 use App\Http\Traits\Singleton;
+use DiscordWebhook\EmbedColor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,12 +16,15 @@ class CapeManager
     private \Illuminate\Contracts\Filesystem\Filesystem $queue;
     private \Illuminate\Contracts\Filesystem\Filesystem $banned;
     private \Illuminate\Contracts\Filesystem\Filesystem $approved;
+    private string $token;
 
     public function __construct()
     {
         $this->queue = Storage::disk('queue');
         $this->banned = Storage::disk('banned');
         $this->approved = Storage::disk('approved');
+
+        $this->token = config('athena.capes.token');
     }
 
     public function getCape($capeId): ?string
@@ -29,19 +33,23 @@ class CapeManager
         return $this->approved->get($capeId) ?? $this->approved->get('defaultCape');
     }
 
-    public function hasCape(string $sha1): bool
+    public function deleteCape(string $capeId): bool
     {
-        return $this->isApproved($sha1);
-    }
-
-    public function deleteCape(string $sha1): bool
-    {
-        if (!$this->hasCape($sha1))
-        {
+        if (!$this->hasCape($capeId)) {
             return false;
         }
 
-        return $this->approved->delete($sha1);
+        return $this->approved->delete($capeId);
+    }
+
+    public function hasCape(string $capeId): bool
+    {
+        return $this->isApproved($capeId);
+    }
+
+    public function isApproved($capeId): bool
+    {
+        return (bool) $this->approved->get($capeId);
     }
 
     public function getCapeAsBase64($capeId): ?string
@@ -69,14 +77,21 @@ class CapeManager
         })->values()->toArray();
     }
 
-
     public function queueCape(UploadedFile $data): void
     {
-        $sha1 = sha1_file($data->path());
+        $capeId = sha1_file($data->path());
 
-        $data->storeAs('', $sha1, 'queue');
+        $data->storeAs('', $capeId, 'queue');
 
-        // TODO: Notifaction - Webhook Confirmation
+        Notifications::cape(
+            title: "A new cape needs approval!",
+            description: sprintf("➡️ **Choose:** [Approve](%s) or [Ban](%s)\n**SHA-1:** %s",
+                url("capes/queue/approve/".$this->token."/".$capeId),
+                url("capes/queue/ban/".$this->token."/".$capeId),
+                $capeId),
+            color: EmbedColor::GOLD,
+            imageUrl: url("capes/queue/get/$capeId")
+        );
     }
 
     public function approveCape(string $capeId): void
@@ -88,7 +103,17 @@ class CapeManager
         $this->approved->put($capeId, $this->queue->get($capeId));
         $this->queue->delete($capeId);
 
-        // TODO: Notifaction - Queue Message
+        Notifications::cape(
+            title: "A cape was approved",
+            description: "➡️ **SHA-1**: $capeId",
+            color: EmbedColor::GREEN,
+            imageUrl: url("capes/get/$capeId")
+        );
+    }
+
+    public function isQueued(string $capeId)
+    {
+        return (bool) $this->queue->get($capeId);
     }
 
     public function banCape(string $capeId): void
@@ -100,12 +125,11 @@ class CapeManager
         $this->banned->put($capeId, $this->queue->get($capeId));
         $this->queue->delete($capeId);
 
-        // TODO: Notifaction - Queue Message
-    }
-
-    public function isApproved($capeId): bool
-    {
-        return (bool) $this->approved->get($capeId);
+        Notifications::cape(
+            title: "A cape was banned",
+            description: "➡️ **SHA-1**: $capeId",
+            color: EmbedColor::RED
+        );
     }
 
     public function isBanned(string $capeId)
@@ -113,13 +137,8 @@ class CapeManager
         return (bool) $this->banned->get($capeId);
     }
 
-    public function isQueued(string $capeId)
+    public function getToken(): string
     {
-        return (bool) $this->queue->get($capeId);
+        return $this->token;
     }
-
-
-
-
-    /* MaskCape is to be ignored - Scyu */
 }
