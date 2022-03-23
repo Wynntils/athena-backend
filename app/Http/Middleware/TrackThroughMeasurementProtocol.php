@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use GAMP;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 
 class TrackThroughMeasurementProtocol
@@ -19,14 +18,9 @@ class TrackThroughMeasurementProtocol
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check()) {
-            return $next($request);
-        }
+        $clientId = $request->route('apiKey') ?? config('athena.general.apiKey');
 
-        // Create a new UUID which is used as the Client ID
-        $uuid = Auth::id();
-
-        $gamp = GAMP::setClientId($uuid);
+        $gamp = GAMP::setClientId($clientId);
         $gamp->setDocumentPath('/' . $request->path());
         $gamp->setDocumentReferrer($request->server('HTTP_REFERER', ''));
         $gamp->setUserAgentOverride($request->server('HTTP_USER_AGENT'));

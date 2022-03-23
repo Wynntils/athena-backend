@@ -24,7 +24,7 @@ class UserController extends Controller
                     'hasCape' => $user->cosmeticInfo->hasCape(),
                     'hasElytra' => $user->cosmeticInfo->hasElytra(),
                     'hasEars' => $user->cosmeticInfo->hasPart("ears"),
-                    'texture' => CapeManager::getCapeAsBase64($user->cosmeticInfo->getFormattedTexture())
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo->getFormattedTexture())
                 ]
             ]
         ];

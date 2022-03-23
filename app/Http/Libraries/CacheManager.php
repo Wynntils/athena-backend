@@ -17,7 +17,19 @@ class CacheManager
         'territoryList' => \App\Http\Libraries\Requests\Cache\TerritoryList::class,
     ];
 
-    public static function getCache($cache): ?CacheContract
+    public static function getCache($cacheName) {
+        if (!$cache = self::getCacheObj($cacheName)) {
+            return null;
+        }
+
+        return Cache::remember($cacheName, $cache->refreshRate(), static function () use ($cacheName, $cache) {
+            $data = $cache->generate();
+            Cache::forever($cacheName.'.hash', sha1(serialize($data)));
+            return $data;
+        });
+    }
+
+    public static function getCacheObj($cache): ?CacheContract
     {
         if (array_key_exists($cache, self::$cacheTable)) {
             return new self::$cacheTable[$cache];
@@ -31,9 +43,7 @@ class CacheManager
         $hashes = [];
         foreach (self::$cacheTable as $name => $class) {
             if (!Cache::has($name.'.hash')) {
-                $cache = new $class;
-                $data = $cache->generate();
-                Cache::forever($name.'.hash', md5(serialize($data)));
+                self::getCache($name); // generate cache and hash
             }
             $hashes[$name] = Cache::get($name.'.hash');
         }

@@ -29,7 +29,7 @@ class IngredientManager
             $status['type'] = getStatusType($translatedName);
             $status['minimum'] = $identification['minimum'];
             $status['maximum'] = $identification['maximum'];
-
+            cleanNull($status);
         }
 
         $itemModifiers = &$result['itemModifiers'];
@@ -57,7 +57,6 @@ class IngredientManager
         $ingredientModifiers['touching'] = ignoreZero($modifiers->get('touching'));
         $ingredientModifiers['notTouching'] = ignoreZero($modifiers->get('notTouching'));
 
-        cleanNull($statuses);
         cleanNull($itemModifiers);
         cleanNull($ingredientModifiers);
         cleanNull($result);
