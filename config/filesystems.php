@@ -40,9 +40,19 @@ return [
             'root' => storage_path('app/configs'),
         ],
 
-        'capes' => [
+        'queue' => [
             'driver' => 'local',
-            'root' => storage_path('app/capes'),
+            'root' => storage_path('app/capes/queue'),
+        ],
+
+        'approved' => [
+            'driver' => 'local',
+            'root' => storage_path('app/capes/approved'),
+        ],
+
+        'banned' => [
+            'driver' => 'local',
+            'root' => storage_path('app/capes/banned'),
         ],
 
         'public' => [
