@@ -10,4 +10,9 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class DiscordInfo extends Model
 {
+
+    protected $fillable = [
+        'username',
+        'id'
+    ];
 }

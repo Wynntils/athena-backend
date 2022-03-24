@@ -13,6 +13,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 /**
  * @property string $username
  * @property string $authToken
+ * @property string $accountType
  * @property DiscordInfo $discordInfo
  * @property CosmeticInfo $cosmeticInfo
  *
@@ -72,6 +73,16 @@ class User extends Model implements
         $this->save();
 
         return $this->authToken;
+    }
+
+    public function updateDiscord($id, $username): void
+    {
+        $this->discordInfo = [
+            'username' => $username,
+            'id' => $id
+        ];
+
+        $this->save();
     }
 
     public function getConfigFiles(): array
