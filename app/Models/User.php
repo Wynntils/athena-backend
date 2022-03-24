@@ -25,6 +25,7 @@ class User extends Model implements
 {
     use Authenticatable, Authorizable;
 
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -34,9 +35,6 @@ class User extends Model implements
         'username',
         'password',
     ];
-
-    public $timestamps = false;
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -85,14 +83,25 @@ class User extends Model implements
         $this->save();
     }
 
-    public function getConfigFiles(): array
+    public function getConfigFiles(): \ArrayObject
     {
-        $files = [];
+        $files = new \ArrayObject();
         $configs = Storage::disk('configs');
         foreach ($configs->files($this->id) as $file) {
             $files[basename($file)] = json_encode(json_decode(zlib_decode($configs->get($file))));
         }
 
-        return array_filter($files);
+        return $files;
+    }
+
+    public function getConfigAmount(): int
+    {
+        return count(Storage::disk('configs')->files($this->id));
+    }
+
+    public function setConfig($configName, $content): void
+    {
+        $configs = Storage::disk('configs');
+        $configs->put($this->id.'/'.$configName, $content);
     }
 }

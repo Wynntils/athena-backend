@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Libraries\CapeManager;
 use App\Models\User;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,7 +28,28 @@ class UserController extends Controller
 
     public function uploadConfigs(Request $request)
     {
-        // TODO: uploadConfigs function
+        $validator = Validator::make($request->all(), [
+            'authToken' => 'required|uuid|exists:App\Models\User,authToken',
+            'config' => 'required|file'
+        ]);
+        if($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+        $body = $request->post();
+        $user = User::where(['authToken' => $body['authToken']])->firstOrFail();
+
+        $config = $request->file('config');
+        $content = zlib_encode($config->getContent(), ZLIB_ENCODING_DEFLATE);
+        if(mb_strlen($content, 'utf-8') > 200) { // ?
+            return response()->json(['message' => 'The provided configuration is bigger than 200kb.']);
+        }
+        if($user->getConfigAmount() >= 80) {
+            return response()->json(['message' => 'User exceeded the configuration amount limit.']);
+        }
+
+        $user->setConfig($config->getClientOriginalName(), $content);
+
+        return response()->json(['message' => 'Configuration stored successfully.']);
     }
 
     public function getInfo(Request $request): \Illuminate\Http\JsonResponse

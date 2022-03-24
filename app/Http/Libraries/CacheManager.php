@@ -42,9 +42,6 @@ class CacheManager
     {
         $hashes = [];
         foreach (self::$cacheTable as $name => $class) {
-            if (!Cache::has($name.'.hash')) {
-                self::getCache($name); // generate cache and hash
-            }
             $hashes[$name] = Cache::get($name.'.hash');
         }
 
