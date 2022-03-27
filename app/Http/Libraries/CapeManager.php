@@ -84,7 +84,7 @@ class CapeManager
             title: "A new cape needs approval!",
             description: sprintf("➡️ **Choose:** [Approve](%s) or [Ban](%s)\n**SHA-1:** %s",
                 url("capes/queue/approve/".$this->token."/".$capeId),
-                url("capes/queue/ban/".$this->token."/".$capeId),
+                url("capes/ban/".$this->token."/".$capeId),
                 $capeId),
             color: EmbedColor::GOLD,
             imageUrl: url("capes/queue/get/$capeId")
