@@ -29,31 +29,29 @@ class CapeManager
 
     public function getCape($capeId): ?string
     {
-        return $this->approved->exists($capeId) ? $this->approved->path($capeId) : $this->approved->path('defaultCape');
+        return $this->isApproved($capeId) ? $this->approved->path($capeId) : ($this->isBanned($capeId) ? $this->approved->path('bannedCape') : $this->approved->path('defaultCape'));
     }
 
     public function deleteCape(string $capeId): bool
     {
-        if (!$this->hasCape($capeId)) {
-            return false;
+        if ($this->isApproved($capeId)) {
+            return $this->approved->delete($capeId);
         }
 
-        return $this->approved->delete($capeId);
-    }
+        if($this->isQueued($capeId)) {
+            return $this->queue->delete($capeId);
+        }
 
-    public function hasCape(string $capeId): bool
-    {
-        return $this->isApproved($capeId);
+        return false;
     }
 
     public function isApproved($capeId): bool
     {
-        return (bool) $this->approved->get($capeId);
+        return $this->approved->exists($capeId);
     }
 
     public function getCapeAsBase64($capeId): ?string
     {
-
         return base64_encode($this->approved->get($capeId) ?? $this->approved->get('defaultCape'));
     }
 
@@ -66,7 +64,7 @@ class CapeManager
 
     public function getQueuedCape($capeId): ?string
     {
-        return $this->queue->exists($capeId) ? $this->queue->path($capeId) : $this->getCape($capeId);
+        return $this->isQueued($capeId) ? $this->queue->path($capeId) : $this->getCape($capeId);
     }
 
     public function listQueuedCapes(): array
@@ -112,17 +110,17 @@ class CapeManager
 
     public function isQueued(string $capeId)
     {
-        return (bool) $this->queue->get($capeId);
+        return $this->queue->exists($capeId);
     }
 
     public function banCape(string $capeId): void
     {
-        if (!$this->isQueued($capeId)) {
+        if ($this->isBanned($capeId)) {
             return;
         }
 
-        $this->banned->put($capeId, $this->queue->get($capeId));
-        $this->queue->delete($capeId);
+        $this->banned->put($capeId, $this->getCape($capeId));
+        $this->deleteCape($capeId);
 
         Notifications::cape(
             title: "A cape was banned",

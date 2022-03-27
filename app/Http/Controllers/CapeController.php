@@ -31,23 +31,8 @@ class CapeController extends Controller
         return response()->json(['result' => $this->manager->listCapes()]);
     }
 
-    public function delete(CapeRequest $request): \Illuminate\Http\JsonResponse
-    {
-        $sha1 = $request->validated('sha-1');
-
-        if(!$this->manager->deleteCape($sha1)) {
-            return response()->json(['message' => 'The provided cape SHA-1 doesn\'t exists']);
-        }
-
-        return response()->json(['message' => 'The provided cape was deleted successfully']);
-    }
-
     public function queueGetCape($capeId)
     {
-        if ($this->manager->isApproved($capeId)) {
-            return $this->getCape($capeId);
-        }
-
         return response()->file($this->manager->getQueuedCape($capeId));
     }
 
@@ -103,13 +88,10 @@ class CapeController extends Controller
 
     public function banCape(Request $request): \Illuminate\Http\JsonResponse
     {
-        $sha = $request->route('sha');
-        if (!$this->manager->isQueued($sha))
-        {
-            return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 400);
-        }
+        $sha1 = $request->route('sha');
 
-        $this->manager->banCape($sha);
-        return response()->json(['message' => 'Successfully banned the cape.']);
+        $this->manager->banCape($sha1);
+
+        return response()->json(['message' => 'The provided cape was banned successfully']);
     }
 }
