@@ -55,23 +55,12 @@ class CapeController extends Controller
 
         $hash = sha1_file($capePath);
 
-        if ($this->manager->isApproved($hash)) {
-            return response()->json(['message' => 'The provided cape is already approved.']);
-        }
-
-        if ($this->manager->isQueued($hash)) {
-            return response()->json(['message' => 'The provided cape is already queued.']);
-        }
-
-        if ($this->manager->isBanned($hash)) {
-            return response()->json(['message' => 'The provided cape is banned.']);
-        }
-
-        $this->manager->queueCape($request->file('cape'));
-
-        return response()->json([
-            'message' => 'Added to queue', 'sha-1' => $hash, 'name' => $request->file('cape')?->getFilename()
-        ]);
+        return match (true) {
+            $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.']),
+            $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.']),
+            $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.']),
+            default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($request->file('cape'))]),
+        };
     }
 
     public function approveCape(Request $request): \Illuminate\Http\JsonResponse

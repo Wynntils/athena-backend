@@ -74,7 +74,7 @@ class CapeManager
         })->values()->toArray();
     }
 
-    public function queueCape(UploadedFile $data): void
+    public function queueCape(UploadedFile $data): string|bool
     {
         $capeId = sha1_file($data->path());
 
@@ -89,6 +89,8 @@ class CapeManager
             color: EmbedColor::GOLD,
             imageUrl: url("capes/queue/get/$capeId")
         );
+
+        return $capeId;
     }
 
     public function approveCape(string $capeId): void
