@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\TelemeteryController;
+use App\Http\Controllers\TelemetryController;
 
-Route::controller(TelemeteryController::class)->middleware('auth:token')->group(static function () {
-    Route::post('sendGatheringSpot', 'sendGatheringSpot');
+Route::controller(TelemetryController::class)->middleware('auth:token')->group(static function () {
+    Route::post('sendGatheringSpot', 'saveGatheringSpot');
 });

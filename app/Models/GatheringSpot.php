@@ -19,6 +19,16 @@ class GatheringSpot extends Model
 {
     protected $collection = 'gatheringSpot';
 
+    public $timestamps = false;
+
+    protected $fillable = [
+        '_id',
+        'type',
+        'material',
+        'lastSeen',
+        'users',
+    ];
+
     protected $casts = [
         'type' => ProfessionType::class,
         'material' => GatheringMaterial::class,
