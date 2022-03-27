@@ -6,6 +6,7 @@ use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Image;
 
 class CapeController extends Controller
 {
@@ -45,21 +46,23 @@ class CapeController extends Controller
     {
         $capePath = $request->validated('cape')?->path();
 
-        [$width, $height] = getimagesize($capePath);
+        $image = Image::make($capePath);
 
-        if ($width % 64 !== 0 || $height % ($width / 2) !== 0) {
+        if ($image->width() % 64 !== 0 || $image->height() % ($image->width() / 2) !== 0) {
             return response()->json(['message' => 'The image needs to be multiple of 64x32.'], 400);
         }
 
-//        TODO: $this->manager->maskCape($capePath);
+        $this->manager->maskCapeImage($image);
 
-        $hash = sha1_file($capePath);
+        $image->encode('png');
+
+        $hash = sha1($image->getEncoded());
 
         return match (true) {
             $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.']),
             $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.']),
             $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.']),
-            default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($request->file('cape'))]),
+            default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($image)]),
         };
     }
 

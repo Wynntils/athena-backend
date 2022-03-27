@@ -4,8 +4,9 @@ namespace App\Http\Libraries;
 
 use App\Http\Traits\Singleton;
 use DiscordWebhook\EmbedColor;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image as ImageFactory;
+use Intervention\Image\Image;
 
 class CapeManager
 {
@@ -74,11 +75,11 @@ class CapeManager
         })->values()->toArray();
     }
 
-    public function queueCape(UploadedFile $data): string|bool
+    public function queueCape(Image $image): string|bool
     {
-        $capeId = sha1_file($data->path());
+        $capeId = sha1($image->getEncoded());
 
-        $data->storeAs('', $capeId, 'queue');
+        $image->save($this->queue->path($capeId));
 
         Notifications::cape(
             title: "A new cape needs approval!",
@@ -139,5 +140,15 @@ class CapeManager
     public function getToken(): string
     {
         return $this->token;
+    }
+
+    public function maskCapeImage(Image $image): void
+    {
+        if($image->width() !== $image->height() * 2) {
+            return;
+        }
+
+        $mask = ImageFactory::make(Storage::get('cape-mask.png'))->resize($image->width(), $image->height());
+        $image->mask($mask, true);
     }
 }
