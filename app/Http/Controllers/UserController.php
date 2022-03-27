@@ -15,7 +15,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Success'], 200);
     }
 
-    public function uploadConfigs(UserRequest $request)
+    public function uploadConfigs(UserRequest $request): \Illuminate\Http\JsonResponse
     {
         Auth::user()?->uploadConfig($request->validated('config'));
         return response()->json(['message' => 'Successfully uploaded config.'], 200);
