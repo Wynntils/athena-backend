@@ -8,12 +8,11 @@ class TelemeteryRequest extends BaseRequest
     {
         return [
             'spot' => 'required|array|min:1',
-            'spot.*' => 'required|array',
-            'spot.*.type' => 'required|string',
-            'spot.*.material' => 'required|string',
-            'spot.*.x' => 'required|integer',
-            'spot.*.y' => 'required|integer',
-            'spot.*.z' => 'required|integer',
+            'spot.type' => 'required|string',
+            'spot.material' => 'required|string',
+            'spot.x' => 'required|integer',
+            'spot.y' => 'required|integer',
+            'spot.z' => 'required|integer',
         ];
     }
 }
