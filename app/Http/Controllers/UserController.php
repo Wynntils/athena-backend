@@ -3,67 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Http\Libraries\CapeManager;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Auth;
 
 class UserController extends Controller
 {
-    public function updateDiscord(Request $request): \Illuminate\Http\JsonResponse
+    public function updateDiscord(UserRequest $request): \Illuminate\Http\JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'authToken' => 'required|uuid|exists:App\Models\User,authToken',
-            'id' => 'required|int',
-            'username' => 'required|string'
-        ]);
-        if($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
-
-        $body = $request->post();
-        $user = User::where(['authToken' => $body['authToken']])->firstOrFail();
-        $user->updateDiscord($body['id'], $body['username']);
-        return response()->json(['message' => 'Successfully updated '.$user->username.' Discord Information.'], 200);
+        \Auth::user()?->updateDiscord($request->validated('id'), $request->validated('username'));
+        return response()->json(['message' => 'Success'], 200);
     }
 
-    public function uploadConfigs(Request $request)
+    public function uploadConfigs(UserRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'authToken' => 'required|uuid|exists:App\Models\User,authToken',
-            'config' => 'required|file'
-        ]);
-        if($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
-        $body = $request->post();
-        $user = User::where(['authToken' => $body['authToken']])->firstOrFail();
-
-        $config = $request->file('config');
-        $content = zlib_encode($config->getContent(), ZLIB_ENCODING_DEFLATE);
-        if(mb_strlen($content, 'utf-8') > 200) { // ?
-            return response()->json(['message' => 'The provided configuration is bigger than 200kb.']);
-        }
-        if($user->getConfigAmount() >= 80) {
-            return response()->json(['message' => 'User exceeded the configuration amount limit.']);
-        }
-
-        $user->setConfig($config->getClientOriginalName(), $content);
-
-        return response()->json(['message' => 'Configuration stored successfully.']);
+        Auth::user()?->uploadConfig($request->validated('config'));
+        return response()->json(['message' => 'Successfully uploaded config.'], 200);
     }
 
-    public function getInfo(Request $request): \Illuminate\Http\JsonResponse
+    public function getConfigs(): \Illuminate\Http\JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'uuid' => 'required|exists:App\Models\User,id',
-        ]);
-        if($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
-        $user = User::find($request->json('uuid'));
+        return response()->json(['configs' => Auth::user()?->getConfigs()], 200);
+    }
+
+    public function getInfo(User $user): \Illuminate\Http\JsonResponse
+    {
         return response()->json([
             'user' => [
-                'accountType' => $user->accountType,
+                'accountType' => $user->authToken,
                 'cosmetics' => [
                     'hasCape' => $user->cosmeticInfo->hasCape(),
                     'hasElytra' => $user->cosmeticInfo->hasElytra(),

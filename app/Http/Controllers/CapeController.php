@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Libraries\CapeManager;
+use App\Http\Requests\CapeRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Validator;
 
 class CapeController extends Controller
 {
@@ -18,13 +18,12 @@ class CapeController extends Controller
 
     public function getCape($capeId)
     {
-        return response($this->manager->getCape($capeId))->header('Content-Type', 'image/png');
+        return response()->file($this->manager->getCape($capeId));
     }
 
     public function getUserCape($uuid)
     {
-        return response($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo->getFormattedTexture()),
-            200)->header('Content-Type', 'image/png');
+        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo->getFormattedTexture()));
     }
 
     public function list(): \Illuminate\Http\JsonResponse
@@ -32,11 +31,9 @@ class CapeController extends Controller
         return response()->json(['result' => $this->manager->listCapes()]);
     }
 
-    public function delete(Request $request, $token)
+    public function delete(CapeRequest $request): \Illuminate\Http\JsonResponse
     {
-        $this->checkToken($token);
-
-        $sha1 = $request->json('sha-1');
+        $sha1 = $request->validated('sha-1');
 
         if(!$this->manager->deleteCape($sha1)) {
             return response()->json(['message' => 'The provided cape SHA-1 doesn\'t exists']);
@@ -51,35 +48,27 @@ class CapeController extends Controller
             return $this->getCape($capeId);
         }
 
-        return $this->manager->getQueuedCape($capeId);
+        return response()->file($this->manager->getQueuedCape($capeId));
     }
 
-    public function queueList()
+    public function queueList(): \Illuminate\Http\JsonResponse
     {
         return response()->json(['result' => $this->manager->listQueuedCapes()]);
     }
 
-    public function uploadCape(Request $request, $token)
+    public function uploadCape(CapeRequest $request): \Illuminate\Http\JsonResponse
     {
-        $this->checkToken($token);
+        $capePath = $request->validated('cape')?->path();
 
-        $validator = Validator::make($request->all(), [
-            'cape' => 'required|file|mimes:png|max:500',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()], 403);
-        }
-
-        [$width, $height] = getimagesize($request->file('cape')?->path());
+        [$width, $height] = getimagesize($capePath);
 
         if ($width % 64 !== 0 || $height % ($width / 2) !== 0) {
             return response()->json(['message' => 'The image needs to be multiple of 64x32.'], 400);
         }
 
-//        TODO: $this->manager->maskCape();
+//        TODO: $this->manager->maskCape($capePath);
 
-        $hash = sha1_file($request->file('cape')?->path());
+        $hash = sha1_file($capePath);
 
         if ($this->manager->isApproved($hash)) {
             return response()->json(['message' => 'The provided cape is already approved.']);
@@ -100,10 +89,9 @@ class CapeController extends Controller
         ]);
     }
 
-    public function approveCape($token, $sha)
+    public function approveCape(Request $request): \Illuminate\Http\JsonResponse
     {
-        $this->checkToken($token);
-
+        $sha = $request->route('sha');
         if (!$this->manager->isQueued($sha))
         {
             return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 400);
@@ -113,10 +101,9 @@ class CapeController extends Controller
         return response()->json(['message' => 'Successfully approved the cape.']);
     }
 
-    public function banCape($token, $sha)
+    public function banCape(Request $request): \Illuminate\Http\JsonResponse
     {
-        $this->checkToken($token);
-
+        $sha = $request->route('sha');
         if (!$this->manager->isQueued($sha))
         {
             return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 400);
@@ -124,14 +111,5 @@ class CapeController extends Controller
 
         $this->manager->banCape($sha);
         return response()->json(['message' => 'Successfully banned the cape.']);
-    }
-
-    private function checkToken($token): void
-    {
-        if ($token === $this->manager->getToken() || $token === config('athena.general.apiKey')) {
-            return;
-        }
-
-        abort(401);
     }
 }

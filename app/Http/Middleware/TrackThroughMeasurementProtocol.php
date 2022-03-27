@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use GAMP;
 use Illuminate\Http\Request;
+use TheIconic\Tracking\GoogleAnalytics\Analytics;
 
 
 class TrackThroughMeasurementProtocol
@@ -18,8 +19,8 @@ class TrackThroughMeasurementProtocol
      */
     public function handle(Request $request, Closure $next)
     {
-        $clientId = $request->route('apiKey') ?? config('athena.general.apiKey');
-
+        $clientId = $this->getClientId($request);
+        /** @var Analytics $gamp */
         $gamp = GAMP::setClientId($clientId);
         $gamp->setDocumentPath('/' . $request->path());
         $gamp->setDocumentReferrer($request->server('HTTP_REFERER', ''));
@@ -32,5 +33,17 @@ class TrackThroughMeasurementProtocol
         $gamp->sendPageview();
 
         return $next($request);
+    }
+
+    private function getClientId(Request $request)
+    {
+        $clientId = null;
+        if($request->hasHeader('authToken')) {
+            $authToken = $request->header('authToken');
+            $user = \App\Models\User::where('authToken', $authToken)->first();
+            $clientId = $user?->id;
+        }
+
+        return $clientId ?? $request->route('apiKey') ?? config('athena.general.apiKey');
     }
 }

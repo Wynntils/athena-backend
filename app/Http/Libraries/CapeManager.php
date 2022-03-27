@@ -29,8 +29,7 @@ class CapeManager
 
     public function getCape($capeId): ?string
     {
-
-        return $this->approved->get($capeId) ?? $this->approved->get('defaultCape');
+        return $this->approved->exists($capeId) ? $this->approved->path($capeId) : $this->approved->path('defaultCape');
     }
 
     public function deleteCape(string $capeId): bool
@@ -67,7 +66,7 @@ class CapeManager
 
     public function getQueuedCape($capeId): ?string
     {
-        return $this->queue->get($capeId) ?? $this->approved->get('defaultCape');
+        return $this->queue->exists($capeId) ? $this->queue->path($capeId) : $this->getCape($capeId);
     }
 
     public function listQueuedCapes(): array

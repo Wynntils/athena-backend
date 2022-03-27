@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Jenssegers\Mongodb\Eloquent\Model;
 
@@ -83,7 +84,7 @@ class User extends Model implements
         $this->save();
     }
 
-    public function getConfigFiles(): \ArrayObject
+    public function getConfigs(): \ArrayObject
     {
         $files = new \ArrayObject();
         $configs = Storage::disk('configs');
@@ -94,14 +95,44 @@ class User extends Model implements
         return $files;
     }
 
+    public function uploadConfig(UploadedFile $file): bool
+    {
+        return Storage::disk('configs')->put($this->id.'/'.$file->getClientOriginalName(), zlib_encode(file_get_contents($file), ZLIB_ENCODING_DEFLATE));
+    }
+
     public function getConfigAmount(): int
     {
         return count(Storage::disk('configs')->files($this->id));
     }
 
-    public function setConfig($configName, $content): void
+    public function deleteConfig(string $file): bool
     {
         $configs = Storage::disk('configs');
-        $configs->put($this->id.'/'.$configName, $content);
+
+        if (!$configs->exists($this->id.'/'.$file)) {
+            return false;
+        }
+
+        $configs->delete($this->id.'/'.$file);
+
+        return true;
+    }
+
+    public function getConfig(string $file): ?string
+    {
+        $configs = Storage::disk('configs');
+
+        if (!$configs->exists($this->id.'/'.$file)) {
+            return null;
+        }
+
+        return json_encode(json_decode(zlib_decode($configs->get($this->id.'/'.$file))));
+    }
+
+    public function getConfigFiles(): array
+    {
+        $configs = Storage::disk('configs');
+
+        return $configs->files($this->id);
     }
 }

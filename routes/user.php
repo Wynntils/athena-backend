@@ -3,8 +3,11 @@
 use App\Http\Controllers\UserController;
 
 Route::controller(UserController::class)->group(static function () {
-    Route::post('updateDiscord', 'updateDiscord');
-    Route::post('uploadConfigs', 'uploadConfigs');
+    Route::middleware(['auth:token'])->group(static function () {
+        Route::get('getConfigs', 'getConfigs');
+        Route::post('uploadConfigs', 'uploadConfigs');
+        Route::post('updateDiscord', 'updateDiscord');
+    });
 //    Route::post('setUserPassword', 'setUserPassword');
-    Route::post('getInfo', 'getInfo');
+    Route::get('getInfo/{user}', 'getInfo');
 });
