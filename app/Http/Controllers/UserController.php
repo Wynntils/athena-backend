@@ -40,4 +40,23 @@ class UserController extends Controller
             ]
         ]);
     }
+
+    /**
+     * @deprecated
+     */
+    public function getInfoLegacy(UserRequest $request): \Illuminate\Http\JsonResponse
+    {
+        $user = User::findOrFail($request->validated('uuid'));
+        return response()->json([
+            'user' => [
+                'accountType' => $user->authToken,
+                'cosmetics' => [
+                    'hasCape' => $user->cosmeticInfo->hasCape(),
+                    'hasElytra' => $user->cosmeticInfo->hasElytra(),
+                    'hasEars' => $user->cosmeticInfo->hasPart("ears"),
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo->getFormattedTexture())
+                ]
+            ]
+        ]);
+    }
 }

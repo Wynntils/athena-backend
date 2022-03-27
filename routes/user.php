@@ -10,4 +10,6 @@ Route::controller(UserController::class)->group(static function () {
     });
 //    Route::post('setUserPassword', 'setUserPassword');
     Route::get('getInfo/{user}', 'getInfo');
+
+    Route::post('getInfo', 'getInfoLegacy');
 });

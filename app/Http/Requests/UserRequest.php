@@ -18,4 +18,11 @@ class UserRequest extends BaseRequest
             'username' => 'required|string'
         ];
     }
+
+    public function getInfoLegacy(): array
+    {
+        return [
+            'uuid' => 'required|uuid|exists:App\Models\User,_id',
+        ];
+    }
 }
