@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         return response()->json([
             'user' => [
-                'accountType' => $user->authToken,
+                'accountType' => $user->accountType,
                 'cosmetics' => [
                     'hasCape' => $user->cosmeticInfo->hasCape(),
                     'hasElytra' => $user->cosmeticInfo->hasElytra(),
@@ -49,7 +49,7 @@ class UserController extends Controller
         $user = User::findOrFail($request->validated('uuid'));
         return response()->json([
             'user' => [
-                'accountType' => $user->authToken,
+                'accountType' => $user->accountType,
                 'cosmetics' => [
                     'hasCape' => $user->cosmeticInfo->hasCape(),
                     'hasElytra' => $user->cosmeticInfo->hasElytra(),

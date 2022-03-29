@@ -37,7 +37,7 @@ class ItemManager
 
         $requirements = &$result['requirements'];
         $requirements['quest'] = $input->get('quest');
-        $requirements['classType'] = strtoupper($input->get('classRequirement'));
+        $requirements['classType'] = !empty($input->get('classRequirement')) ? strtoupper($input->get('classRequirement')) : null;
         $requirements['level'] = $input->get('level');
         $requirements['strength'] = $input->get('strength');
         $requirements['dexterity'] = $input->get('dexterity');
@@ -79,11 +79,14 @@ class ItemManager
                 continue;
             }
 
-            if (!is_numeric($value) || $value === 0.0) {
+            if (!is_numeric($value) || $value === 0) {
                 continue;
             }
 
             $translatedName = self::translateStatusName($key);
+            if ($translatedName === null) {
+                continue;
+            }
             $status = &$statuses[$translatedName];
             $status['type'] = getStatusType($translatedName);
             $status['isFixed'] = $isFixed($translatedName);

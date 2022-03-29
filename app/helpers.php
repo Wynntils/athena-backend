@@ -5,8 +5,11 @@
 
 
 if (!function_exists('cleanNull')) {
-    function cleanNull(array &$array)
+    function cleanNull(?array &$array)
     {
+        if($array === null) {
+            return;
+        }
         $array = array_filter($array, static function ($a) {
             return !is_null($a);
         });

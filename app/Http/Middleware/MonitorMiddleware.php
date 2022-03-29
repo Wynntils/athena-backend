@@ -22,7 +22,13 @@ class MonitorMiddleware
             if ($time > 2000) {
                 Notifications::log(description: "`Routes -> $method -> /$path` took {$time}ms", color: EmbedColor::RED);
             }
-            if ($path !== 'user/getInfo' && config('app.debug')) {
+            if (
+                !in_array($path, [
+                    'user/getInfo',
+                    'api/docs',
+                    'docs/api-docs.json',
+                ]) && config('app.debug')
+            ) {
                 $param = json_encode($request->all(), JSON_PRETTY_PRINT);
                 $prettyResponse = json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT);
                 try {
