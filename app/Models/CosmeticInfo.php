@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Castable;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Facades\Storage;
-use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
  * @property string $capeTexture
@@ -12,13 +13,8 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string|null $allowAnimated
  * @property PartInfo|null $parts
  */
-class CosmeticInfo extends Model
+class CosmeticInfo implements Castable
 {
-    public function parts(): \Jenssegers\Mongodb\Relations\EmbedsOne
-    {
-        return $this->embedsOne(PartInfo::class);
-    }
-
     public function hasCape(): bool
     {
         return !$this->elytraEnabled && $this->isTextureValid();
@@ -42,5 +38,33 @@ class CosmeticInfo extends Model
     public function getFormattedTexture(): string
     {
         return $this->isTextureValid() ? $this->capeTexture : 'defaultCape';
+    }
+
+    public static function castUsing(array $arguments)
+    {
+        return new class implements CastsAttributes
+        {
+            public function get($model, $key, $value, $attributes)
+            {
+                $info = new CosmeticInfo();
+                $info->capeTexture = $value['capeTexture'] ?? null;
+                $info->elytraEnabled = $value['elytraEnabled'] ?? null;
+                $info->maxResolution = $value['maxResolution'] ?? null;
+                $info->allowAnimated = $value['allowAnimated'] ?? null;
+                $info->parts = $value['parts'] ?? null;
+                return $info;
+            }
+
+            public function set($model, $key, $value, $attributes)
+            {
+                return [
+                    'capeTexture' => $value->capeTexture,
+                    'elytraEnabled' => $value->elytraEnabled,
+                    'maxResolution' => $value->maxResolution,
+                    'allowAnimated' => $value->allowAnimated,
+                    'parts' => $value->parts,
+                ];
+            }
+        };
     }
 }

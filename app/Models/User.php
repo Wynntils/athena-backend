@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Enums\AccountType;
+use ArrayObject;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -14,7 +16,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 /**
  * @property string $username
  * @property string $authToken
- * @property string $accountType
+ * @property AccountType $accountType
  * @property DiscordInfo $discordInfo
  * @property CosmeticInfo $cosmeticInfo
  *
@@ -47,15 +49,11 @@ class User extends Model implements
         'remember_token',
     ];
 
-    public function discordInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
-    {
-        return $this->embedsOne(DiscordInfo::class);
-    }
-
-    public function cosmeticInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
-    {
-        return $this->embedsOne(CosmeticInfo::class);
-    }
+    protected $casts = [
+        'accountType' => AccountType::class,
+        'cosmeticInfo' => CosmeticInfo::class,
+        'discordInfo' => DiscordInfo::class,
+    ];
 
     public function updateAccount($username, $version): string
     {
@@ -84,9 +82,9 @@ class User extends Model implements
         $this->save();
     }
 
-    public function getConfigs(): \ArrayObject
+    public function getConfigs(): ArrayObject
     {
-        $files = new \ArrayObject();
+        $files = new ArrayObject();
         $configs = Storage::disk('configs');
         foreach ($configs->files($this->id) as $file) {
             $files[basename($file)] = json_encode(json_decode(zlib_decode($configs->get($file))));
@@ -133,6 +131,8 @@ class User extends Model implements
     {
         $configs = Storage::disk('configs');
 
-        return $configs->files($this->id);
+        return collect($configs->files($this->id))->map(function ($file) {
+            return explode('/', $file)[1];
+        })->toArray();
     }
 }
