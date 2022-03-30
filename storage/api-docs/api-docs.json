@@ -1,0 +1,1303 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Athena-Backend",
+        "description": "Athena Backend API",
+        "license": {
+            "name": "GNU Affero General Public License v3.0",
+            "url": "https://github.com/Wynntils/Athena/blob/master/LICENSE"
+        },
+        "version": "Dev-Master"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Localhost"
+        },
+        {
+            "url": "https://athena.wynntils.com",
+            "description": "Production"
+        }
+    ],
+    "paths": {
+        "/auth/getPublicKey": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get public key",
+                "operationId": "getPublicKey",
+                "responses": {
+                    "200": {
+                        "description": "Returns Public Key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "publicKeyIn": {
+                                            "description": "Public Key",
+                                            "type": "string",
+                                            "example": "308201a2300d06092a864886f70d01010105000382018f003082018a0282018100b0d1a2afb3a11e5b805229e610b627d0a29eeb685e96cadc97046978d753be5ba5211530b364499c89f8a22b27c1dbe9e25ce95a3509d2134fd4f08395d8db7b7c94ca37367176f3bfe60c844ccb784aaf32c87020c1e22445ea9feb8554dddf4a32d7328dccf2197ad78dfbdee583b51004c4f69773b2da05193e901276424855fb90bc89bb938f69137c481a11b1fba6120c008bdd66d4189470dbf8108599756ff1af1e3b3398851ccc9fb8bcde97c72728f8b4b1fbed7ef390cca578cb4e2e9bd0d508ea576456f604122bb9d5bcfddbcc0bfd3ea14f611b8c6d0b75a77b36accab5124ea6f2129cec6e16174ca4c6c64f14458ed8b415f107e39838887a1d15e5b3ff51c80e56154575c0670e7613244cf3d944c09bf626a621cac808d6ad27b3e24ea6b79fd0f9a118f5da50d9dc4de585a8561cc22971c8e1e2326536d359476dee5d37f76ee7cbee4c6316edef5b53a61e17e79f8cf930d1267e780332a5f740b0d6c44a326493a3f6be47d1ba93012b5944088f9d1bd55840e78fd30203010001"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/auth/responseEncryption": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Response Encryption",
+                "operationId": "responseEncryption",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "username",
+                                    "version"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "Scyu_"
+                                    },
+                                    "key": {
+                                        "type": "string",
+                                        "example": "9f26c7e886f07bf05416131b77c5a85d4c63858aafb3540325017b179fc3aebce977a93eedf9161ced492bba497ed07e3440a16741ce9bd36020d408eae9252b438566ae1448560f5d9d91034d663512e4fcb61ae1412635aefc1a4e42284bd2ad33a7bec56e8f881e9858009161f8c3e2643b05ee3b0b6afcc3feac7c79a620014b210d91c0742fe6af24802b6890b4f051d2b1d176f77d16df5df6d7ce4c5fd59fe7f81cde4188b25ee55fe836be3fa3d8203ca2887daafba5df746ad390c492e0d0e7e4511804fa95340a04b3d7915e5466cc126282c6b8e552050d558d668e4ec27611edd20f129182ae01bb517395d8a9d740ae4f177a979f6b2f2050dc2ae1926f9e996bc2d63b7e46b8295671ac04b72dcaf5f0d4199df5797d3816fe6655377f61e4c26842e79c650552f7d839190a9de8fc001f6cda12d882d9df871ab42397b8e9b7b9f16514890b7826742934eb488fdc715c7469f27446d76f02a1345308408e08d9d4944225ee4edee098ab8a0f579847d0868e066f0b70cad1"
+                                    },
+                                    "version": {
+                                        "type": "string",
+                                        "example": "1.10.5_-1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns PublicKey",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Authentication code generated."
+                                        },
+                                        "authToken": {
+                                            "type": "string",
+                                            "example": "a8a8f8a8-f8a8-4f8a-a8a8-f8a8a8a8f8a8a"
+                                        },
+                                        "configFiles": {
+                                            "type": "object"
+                                        },
+                                        "hashes": {
+                                            "$ref": "#/components/schemas/Hashes"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Expecting parameters 'username', 'key' and 'version'."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Key or username is invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The provided username or key is invalid"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/gatheringSpots": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Gathering Spots",
+                "operationId": "gatheringSpots",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Gathering Spots",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "woodCutting": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/GatheringSpot"
+                                            }
+                                        },
+                                        "mining": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/GatheringSpot"
+                                            }
+                                        },
+                                        "farming": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/GatheringSpot"
+                                            }
+                                        },
+                                        "fishing": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/GatheringSpot"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/ingredientList": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get ingredient list",
+                "operationId": "ingredientList",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Ingredient List",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "ingredients": {
+                                            "description": "Ingredients List",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Ingredients"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/itemList": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Item List",
+                "operationId": "itemList",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Item List",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "items": {
+                                            "description": "Items",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Item"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/leaderboard": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Leaderboard",
+                "operationId": "leaderboard",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Leaderboard",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/components/schemas/Leaderboard"
+                                    }
+                                },
+                                "example": {
+                                    "879be29a-bcca-43d6-978a-321a4241c392": {
+                                        "name": "Scyu_",
+                                        "timePlayed": 21510,
+                                        "ranks": {
+                                            "WOODCUTTING": 1,
+                                            "FISHING": 1,
+                                            "FARMING": 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/mapLocations": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Map Locations",
+                "operationId": "mapLocations",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Map Locations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "locations": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/MapLocation"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/serverList": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Server List",
+                "operationId": "serverList",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Server List",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/components/schemas/Server"
+                                    }
+                                },
+                                "example": {
+                                    "WC1": {
+                                        "firstSeen": 1647620343300,
+                                        "players": [
+                                            "Maarcus",
+                                            "LonelyJJ",
+                                            "Aiza",
+                                            "_Eao_",
+                                            "LazyShock",
+                                            "myrinni",
+                                            "Whagard",
+                                            "adridid03",
+                                            "Berded",
+                                            "Hatezola",
+                                            "Freddie_Hg_39",
+                                            "snowxq",
+                                            "SnogleHD",
+                                            "famulusmortris",
+                                            "R1M8TKlNEU70f5",
+                                            "WoodCreature",
+                                            "Kawarama_senju",
+                                            "Depresssive",
+                                            "VIIP_ER",
+                                            "samylo",
+                                            "XavyLo",
+                                            "DogeTennant",
+                                            "TheSurvivor0",
+                                            "legoman123",
+                                            "HopFeet",
+                                            "Jwnk",
+                                            "xTofuuu",
+                                            "BubsE",
+                                            "Vexzyyy",
+                                            "Lord_Clucky",
+                                            "Irony",
+                                            "Henry03MC",
+                                            "RoSeNur"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/get/territoryList": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Territory List",
+                "operationId": "territoryList",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Territory List",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "territories": {
+                                            "description": "Territory Data",
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "$ref": "#/components/schemas/Territory"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/cache/getHashes": {
+            "get": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Get Hashes",
+                "operationId": "getHashes",
+                "responses": {
+                    "200": {
+                        "description": "Successfully Returned Hashes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Hashes"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "GatheringSpot": {
+                "title": "GatheringSpot",
+                "description": "A gathering spot is a place where you can gather resources.",
+                "properties": {
+                    "lastSeen": {
+                        "description": "The id of the gathering spot.",
+                        "type": "number",
+                        "example": 1648397703
+                    },
+                    "type": {
+                        "description": "The type of the gathering spot."
+                    },
+                    "relibility": {
+                        "description": "The relibility of the gathering spot.",
+                        "type": "integer"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/Location"
+                    }
+                },
+                "type": "object"
+            },
+            "Location": {
+                "title": "Location",
+                "properties": {
+                    "x": {
+                        "type": "integer"
+                    },
+                    "y": {
+                        "type": "integer"
+                    },
+                    "z": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Hashes": {
+                "title": "Hashes",
+                "properties": {
+                    "gatheringSpots": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    },
+                    "ingredientList": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    },
+                    "itemList": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    },
+                    "leaderboard": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    },
+                    "mapLocations": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    },
+                    "serverList": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    },
+                    "territoryList": {
+                        "type": "string",
+                        "example": "f7a4086c9955b632ddda0c89734d5af0fb3e2e70",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Ingredients": {
+                "title": "Ingredients",
+                "description": "A list of ingredients",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "7-Yottabyte Storage Component"
+                    },
+                    "tier": {
+                        "type": "number",
+                        "example": 2
+                    },
+                    "level": {
+                        "type": "number",
+                        "example": 90
+                    },
+                    "untradeable": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "material": {
+                        "type": "string",
+                        "example": "356:0"
+                    },
+                    "professions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Profession"
+                        },
+                        "example": [
+                            "FISHING",
+                            "FARMING",
+                            "ALCHEMISM"
+                        ]
+                    },
+                    "itemModifiers": {
+                        "$ref": "#/components/schemas/ItemModifier"
+                    },
+                    "ingredientModifiers": {
+                        "$ref": "#/components/schemas/IngredientModifier"
+                    }
+                },
+                "type": "object"
+            },
+            "IngredientModifier": {
+                "title": "IngredientModifier",
+                "properties": {
+                    "left": {
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "right": {
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "above": {
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "under": {
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "touching": {
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "notTouching": {
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ItemModifier": {
+                "title": "ItemModifier",
+                "properties": {
+                    "durability": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "duration": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "charges": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "strength": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "dexterity": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "intelligence": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "defense": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    },
+                    "agility": {
+                        "type": "integer",
+                        "example": -98,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Profession": {
+                "title": "Profession",
+                "type": "string",
+                "enum": [
+                    "WOODCUTTING",
+                    "MINING",
+                    "FISHING",
+                    "FARMING",
+                    "ALCHEMISM",
+                    "ARMOURING",
+                    "COOKING",
+                    "JEWELING",
+                    "SCRIBING",
+                    "TAILORING",
+                    "WEAPONSMITHING",
+                    "WOODWORKING"
+                ]
+            },
+            "Item": {
+                "title": "Item",
+                "properties": {
+                    "displayName": {
+                        "type": "string"
+                    },
+                    "tier": {
+                        "$ref": "#/components/schemas/Tier"
+                    },
+                    "identified": {
+                        "type": "boolean"
+                    },
+                    "powderAmount": {
+                        "type": "integer"
+                    },
+                    "attackSpeed": {
+                        "$ref": "#/components/schemas/AttackSpeed"
+                    },
+                    "itemInfo": {
+                        "$ref": "#/components/schemas/ItemInfo"
+                    },
+                    "requirements": {
+                        "$ref": "#/components/schemas/Requirements"
+                    },
+                    "damageTypes": {
+                        "$ref": "#/components/schemas/DamageTypes"
+                    },
+                    "defenseTypes": {
+                        "$ref": "#/components/schemas/DefenseTypes"
+                    },
+                    "statuses": {
+                        "$ref": "#/components/schemas/Statuses"
+                    },
+                    "lore": {
+                        "type": "string"
+                    },
+                    "wynnBuilderID": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "AttackSpeed": {
+                "title": "AttackSpeed",
+                "type": "string",
+                "enum": [
+                    "SUPER_SLOW",
+                    "VERY_SLOW",
+                    "SLOW",
+                    "NORMAL",
+                    "FAST",
+                    "VERY_FAST",
+                    "SUPER_FAST"
+                ]
+            },
+            "DamageTypes": {
+                "title": "ItemModifier",
+                "properties": {
+                    "neutral": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "earth": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "thunder": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "water": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "fire": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "air": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "DefenseTypes": {
+                "title": "Defense Types",
+                "properties": {
+                    "health": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "earth": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "thunder": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "water": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "fire": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "air": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ItemInfo": {
+                "title": "ItemInfo",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "set": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "dropType": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "armorColor": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "material": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ItemStatus": {
+                "title": "ItemStatus",
+                "properties": {
+                    "type": {
+                        "$ref": "#/components/schemas/ItemStatusType"
+                    },
+                    "isFixed": {
+                        "type": "boolean"
+                    },
+                    "baseValue": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ItemStatusType": {
+                "title": "ItemStatusType",
+                "type": "string",
+                "enum": [
+                    "PERCENTAGE",
+                    "FOUR_SECONDS",
+                    "TIER",
+                    "INTEGER"
+                ]
+            },
+            "Requirements": {
+                "title": "Requirements",
+                "properties": {
+                    "quest": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "classType": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "level": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "strength": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "dexterity": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "intelligence": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "defense": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "agility": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Statuses": {
+                "title": "Statuses",
+                "properties": {
+                    "1stSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "2ndSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "3rdSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "4thSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw1stSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw2ndSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw3rdSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw4thSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawNeutralSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawMainAttackNeutralDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "mainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawHealthRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawHealth": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "walkSpeed": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "soulPointRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "stealing": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawStrength": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawDexterity": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawIntelligence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawDefence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawAgility": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "earthDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "thunderDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "waterDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "fireDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "airDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "earthDefence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "thunderDefence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "waterDefence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "fireDefence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "airDefence": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawJumpHeight": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "gatherXPBonus": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "attackSpeed": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "spellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "healthRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "poison": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "lifeSteal": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "manaRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "exploding": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "sprint": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "sprintRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "lootBonus": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "lootQuality": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "gatherSpeed": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "xpBonus": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "manaSteal": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "thorns": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "reflection": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    }
+                },
+                "type": "object"
+            },
+            "Tier": {
+                "title": "Tier",
+                "type": "string",
+                "enum": [
+                    "NORMAL",
+                    "UNIQUE",
+                    "RARE",
+                    "SET",
+                    "LEGENDARY",
+                    "MYTHIC",
+                    "UNIQUE"
+                ]
+            },
+            "Leaderboard": {
+                "title": "Leaderboard",
+                "properties": {
+                    "name": {
+                        "description": "The name of the player",
+                        "type": "string"
+                    },
+                    "timePlayed": {
+                        "description": "The time played of the player",
+                        "type": "integer"
+                    },
+                    "ranks": {
+                        "$ref": "#/components/schemas/LeaderboardRanks"
+                    }
+                },
+                "type": "object"
+            },
+            "LeaderboardRanks": {
+                "properties": {
+                    "WOODCUTTING": {
+                        "description": "The rank of the player in the Woodcutting skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "MINING": {
+                        "description": "The rank of the player in the Mining skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "FISHING": {
+                        "description": "The rank of the player in the Fishing skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "FARMING": {
+                        "description": "The rank of the player in the Farming skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "ALCHEMISM": {
+                        "description": "The rank of the player in the Alchemy skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "ARMOURING": {
+                        "description": "The rank of the player in the Armouring skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "COOKING": {
+                        "description": "The rank of the player in the Cooking skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "JEWELING": {
+                        "description": "The rank of the player in the Jewelry skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "SCRIBING": {
+                        "description": "The rank of the player in the Scribing skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "TAILORING": {
+                        "description": "The rank of the player in the Tailoring skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "WEAPONSMITHING": {
+                        "description": "The rank of the player in the Weapon Smithing skill",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "WOODWORKING": {
+                        "description": "The rank of the player in the Woodworking skill",
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "MapLocation": {
+                "title": "MapLocation",
+                "properties": {
+                    "name": {
+                        "description": "The name of the location.",
+                        "type": "string"
+                    },
+                    "icon": {
+                        "description": "The icon of the location.",
+                        "type": "string"
+                    },
+                    "x": {
+                        "description": "The x coordinate of the location.",
+                        "type": "integer"
+                    },
+                    "y": {
+                        "description": "The y coordinate of the location.",
+                        "type": "integer"
+                    },
+                    "z": {
+                        "description": "The z coordinate of the location.",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Server": {
+                "title": "ServerList",
+                "properties": {
+                    "firstSeen": {
+                        "description": "The time the server was first seen.",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "players": {
+                        "description": "The players on the server.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "Player 1",
+                            "Player 2",
+                            "Player 3",
+                            "Player 4"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "Territory": {
+                "title": "Territory",
+                "properties": {
+                    "territory": {
+                        "type": "string",
+                        "example": "Ragni"
+                    },
+                    "guild": {
+                        "type": "string",
+                        "example": "Blacklisted"
+                    },
+                    "guildPrefix": {
+                        "type": "string",
+                        "example": "BLA"
+                    },
+                    "guildColor": {
+                        "type": "string",
+                        "example": "#1e1e1e"
+                    },
+                    "acquired": {
+                        "type": "string",
+                        "example": "2020-01-01 00:00:00"
+                    },
+                    "attacker": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "level": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/TerritoryLocation"
+                    }
+                },
+                "type": "object"
+            },
+            "TerritoryLocation": {
+                "title": "TerritoryLocation",
+                "description": "A territory location",
+                "properties": {
+                    "startX": {
+                        "type": "number"
+                    },
+                    "startZ": {
+                        "type": "number"
+                    },
+                    "endX": {
+                        "type": "number"
+                    },
+                    "endZ": {
+                        "type": "number"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "ServerError": {
+                "description": "Internal Server Error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Error message",
+                                    "type": "string",
+                                    "example": "Server Error"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "ApiKey": {
+                "type": "apiKey",
+                "name": "apiKey",
+                "in": "header"
+            },
+            "AuthToken": {
+                "type": "apiKey",
+                "name": "authToken",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth"
+        },
+        {
+            "name": "Cache"
+        },
+        {
+            "name": "Cape"
+        },
+        {
+            "name": "Telemetery"
+        },
+        {
+            "name": "User"
+        }
+    ],
+    "security": [
+        []
+    ]
+}
