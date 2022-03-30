@@ -24,10 +24,9 @@ class ItemList implements CacheContract
 
 
         $result = [];
-        $items = &$result['items'];
-        $materialTypes = &$result['materialTypes'];
-        $translatedReferences = &$result['translatedReferences'];
-        $itemsMap = [];
+        $items = [];
+        $materialTypes = [];
+        $translatedReferences = [];
 
         foreach ($wynnItems as $item) {
             $converted = ItemManager::convertItem($item);
@@ -46,8 +45,8 @@ class ItemList implements CacheContract
             if (array_key_exists('displayName', $item)) {
                 $translatedReferences[$item['name']] = $item['displayName'];
             }
-            $itemsMap[$item['name']] = $converted;
-            $items[] = $converted;
+
+            $items[$item['name']] = $converted;
         }
 
         $wynnBuilderIDs = WynnRequest::request()->get(config('athena.api.wynn.builderIds'))->collect('items');
@@ -57,9 +56,13 @@ class ItemList implements CacheContract
 
         foreach ($wynnBuilderIDs as $wynnBuilderItem)
         {
-            $item = &$itemsMap[$wynnBuilderItem['name']];
+            $item = &$items[$wynnBuilderItem['name']];
             $item['wynnBuilderID'] = $wynnBuilderItem['id'];
         }
+
+        $result['items'] = $items;
+        $result['materialTypes'] = $materialTypes;
+        $result['translatedReferences'] = $translatedReferences;
 
         $result['identificationOrder'] = ItemManager::getIdentificationorder();
         $result['internalIdentifications'] = ItemManager::getInternalIdentifications();

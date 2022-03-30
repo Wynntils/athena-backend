@@ -2,7 +2,12 @@
 
 return [
     'general' => [
-        'userAgent' => 'WynntilsAthena/2.0.0'
+        'userAgent' => 'WynntilsAthena/2.0.0',
+        'apiKey' => env('MASTER_TOKEN')
+    ],
+
+    'capes' => [
+        'token' => env('CAPE_TOKEN')
     ],
 
     'webhook' => [
@@ -13,11 +18,6 @@ return [
             ],
             'username' => env('DISCORD_USERNAME', 'Athena'),
             'avatar' => env('DISCORD_AVATAR', 'https://cdn.wynntils.com/athena_logo_1600x1600.png')
-        ],
-        'telegram' => [
-            'url' => env('TELEGRAM_URL', 'https://api.telegram.org/bot%s/sendMessage'),
-            'key' => env('TELEGRAM_KEY'),
-            'channel' => env('TELEGRAM_CHANNEL'),
         ]
     ],
 

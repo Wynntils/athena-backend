@@ -1,0 +1,5 @@
+*
+!approved/
+!queue/
+!banned/
+!.gitignore

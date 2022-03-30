@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
+use App\Http\Requests\AuthRequest;
 use App\Models\User;
-use ArrayObject;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 use Storage;
 
@@ -17,19 +17,14 @@ class AuthController extends Controller
         return response()->json(['publicKeyIn' => bin2hex(MinecraftFakeAuth::instance()->getPublicKey())]);
     }
 
-    public function responseEncryption(Request $request): JsonResponse
+    public function responseEncryption(AuthRequest $request): JsonResponse
     {
         if (config('app.debug') !== false) {
             // Useful for debugging requests
             Storage::put('request.json', $request->getContent());
         }
-        $body = $request->json();
 
-        if (!$body->has('username') || !$body->has('key') || !$body->has('version')) {
-            return response()->json(['message' => "Expecting parameters 'username', 'key' and 'version'."], 400);
-        }
-
-        $profile = MinecraftFakeAuth::instance()->getGameProfile($body->get('username'), $body->get('key'));
+        $profile = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
 
         if ($profile === null) {
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
@@ -37,20 +32,13 @@ class AuthController extends Controller
 
         $user = User::find(Uuid::fromString($profile['id'])->toString());
 
-        $user->updateAccount($profile['name'], $body->get('version'));
+        $user->updateAccount($profile['name'], $request->validated('version'));
 
         $response = [];
         $response['message'] = "Authentication code generated.";
         $response['authToken'] = $user->authToken;
-        $response['configFiles'] = $user->getConfigFiles();
-        $response['hashes'] = new ArrayObject();
-
-        /* TODO configFiles and hashes
-        val hashes = response.getOrCreate<JSONObject>("hashes")
-        for (entry in CacheManager.getCaches()) {
-            hashes[entry.key] = entry.value.hash
-        }
-         */
+        $response['configFiles'] = $user->getConfigs();
+        $response['hashes'] = CacheManager::getHashes();
 
         return response()->json($response);
     }

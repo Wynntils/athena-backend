@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use App\Http\Libraries\Notifications;
+use DiscordWebhook\EmbedColor;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -35,7 +37,11 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            $request = \Request::instance();
+            $path = $request->route()?->uri() ?? '';
+            $method = $request->method();
+
+            Notifications::log(title: "An exception occured", description: "`Routes -> $method -> /$path`\n**{$e->getMessage()}** ```" . substr($e->getTraceAsString(), 0, 3000) . "```", color: EmbedColor::RED);
         });
     }
 }

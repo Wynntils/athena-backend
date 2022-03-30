@@ -5,15 +5,18 @@
 
 
 if (!function_exists('cleanNull')) {
-    function cleanNull(array &$array)
+    function cleanNull(?array &$array)
     {
+        if($array === null) {
+            return;
+        }
         $array = array_filter($array, static function ($a) {
             return !is_null($a);
         });
     }
 }
 
-if(!function_exists('getStatusType')) {
+if (!function_exists('getStatusType')) {
     function getStatusType(?string $raw): string
     {
         return match (true) {
@@ -26,7 +29,7 @@ if(!function_exists('getStatusType')) {
     }
 }
 
-if(!function_exists('ignoreZero')) {
+if (!function_exists('ignoreZero')) {
     function ignoreZero($input)
     {
         if ($input === null) {

@@ -7,11 +7,14 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
  * @property string $username
  * @property string $authToken
+ * @property string $accountType
  * @property DiscordInfo $discordInfo
  * @property CosmeticInfo $cosmeticInfo
  *
@@ -23,6 +26,7 @@ class User extends Model implements
 {
     use Authenticatable, Authorizable;
 
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -32,9 +36,6 @@ class User extends Model implements
         'username',
         'password',
     ];
-
-    public $timestamps = false;
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -73,8 +74,65 @@ class User extends Model implements
         return $this->authToken;
     }
 
-    public function getConfigFiles() {
-        // TODO - list all current config files
-        return new \ArrayObject();
+    public function updateDiscord($id, $username): void
+    {
+        $this->discordInfo = [
+            'username' => $username,
+            'id' => $id
+        ];
+
+        $this->save();
+    }
+
+    public function getConfigs(): \ArrayObject
+    {
+        $files = new \ArrayObject();
+        $configs = Storage::disk('configs');
+        foreach ($configs->files($this->id) as $file) {
+            $files[basename($file)] = json_encode(json_decode(zlib_decode($configs->get($file))));
+        }
+
+        return $files;
+    }
+
+    public function uploadConfig(UploadedFile $file): bool
+    {
+        return Storage::disk('configs')->put($this->id.'/'.$file->getClientOriginalName(), zlib_encode(file_get_contents($file), ZLIB_ENCODING_DEFLATE));
+    }
+
+    public function getConfigAmount(): int
+    {
+        return count(Storage::disk('configs')->files($this->id));
+    }
+
+    public function deleteConfig(string $file): bool
+    {
+        $configs = Storage::disk('configs');
+
+        if (!$configs->exists($this->id.'/'.$file)) {
+            return false;
+        }
+
+        $configs->delete($this->id.'/'.$file);
+
+        return true;
+    }
+
+    public function getConfig(string $file): ?string
+    {
+        $configs = Storage::disk('configs');
+
+        if (!$configs->exists($this->id.'/'.$file)) {
+            return null;
+        }
+
+        return json_encode(json_decode(zlib_decode($configs->get($this->id.'/'.$file))));
+    }
+
+    public function getConfigFiles(): array
+    {
+        $configs = Storage::disk('configs');
+
+        return $configs->files($this->id);
     }
 }
