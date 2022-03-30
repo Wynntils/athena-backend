@@ -19,6 +19,9 @@ class MapLocations implements CacheContract
             return [];
         }
         $wynnMapLocations->forget('request');
+        $wynnMapLocations['locations'] = collect($wynnMapLocations['locations'])->filter(function ($location) {
+            return $location['icon'] !== "Content_Raid.png";
+        })->values()->toArray();
 
         $wynnMapLabels = WynnRequest::request()->get(config('athena.api.wynn.mapLabels'))->collect();
         if ($wynnMapLabels === null) {
