@@ -22,7 +22,7 @@ class CosmeticInfo implements Castable
 
     private function isTextureValid(): bool
     {
-        return !empty($this->capeTexture) && Storage::disk('capes')->exists('approved/'.$this->capeTexture);
+        return !empty($this->capeTexture) && Storage::disk('approved')->exists($this->capeTexture);
     }
 
     public function hasPart($part): bool
