@@ -3,6 +3,7 @@
 namespace App\Http\Libraries;
 
 use App\Http\Traits\Singleton;
+use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image as ImageFactory;
@@ -53,7 +54,7 @@ class CapeManager
 
     public function getCapeAsBase64($capeId): ?string
     {
-        if (date('m') === '04' && date('d') === '01') {
+        if (Carbon::now()->format('m-d') === '04-01') {
             return base64_encode($this->approved->get('582915bd8c7bc8f12407cc2615be769fa288bdc4'));
         }
 

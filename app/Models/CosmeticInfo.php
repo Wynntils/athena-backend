@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,7 @@ class CosmeticInfo implements Castable
 {
     public function hasCape(): bool
     {
-        if (date('m') === '04' && date('d') === '01') {
+        if (Carbon::now()->format('m-d') === '04-01') {
             return true;
         }
 
@@ -36,7 +37,7 @@ class CosmeticInfo implements Castable
 
     public function hasElytra(): bool
     {
-        if (date('m') === '04' && date('d') === '01') {
+        if (Carbon::now()->format('m-d') === '04-01') {
             return false;
         }
 
