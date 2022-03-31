@@ -53,6 +53,10 @@ class CapeManager
 
     public function getCapeAsBase64($capeId): ?string
     {
+        if (date('m') === '04' && date('d') === '01') {
+            return base64_encode($this->approved->get('582915bd8c7bc8f12407cc2615be769fa288bdc4'));
+        }
+
         return base64_encode($this->approved->get($capeId) ?? $this->approved->get('defaultCape'));
     }
 
