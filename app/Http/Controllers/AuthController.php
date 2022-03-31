@@ -30,7 +30,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 
-        $user = User::find(Uuid::fromString($profile['id'])->toString());
+        $user = User::findOrNew(Uuid::fromString($profile['id'])->toString());
 
         $user->updateAccount($profile['name'], $request->validated('version'));
 
