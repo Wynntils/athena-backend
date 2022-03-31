@@ -27,7 +27,7 @@ class CosmeticInfo implements Castable
 
     public function hasPart($part): bool
     {
-        return !empty($this->parts) && $this->parts->{$part} === true;
+        return !empty($this->parts) && $this->parts[$part] === true;
     }
 
     public function hasElytra(): bool
