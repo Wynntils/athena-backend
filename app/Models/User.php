@@ -74,10 +74,8 @@ class User extends Model implements
 
     public function updateDiscord($id, $username): void
     {
-        $this->discordInfo = [
-            'username' => $username,
-            'id' => $id
-        ];
+        $this->discordInfo->username = $username;
+        $this->discordInfo->id = $id;
 
         $this->save();
     }
