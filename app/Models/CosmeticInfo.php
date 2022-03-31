@@ -17,6 +17,10 @@ class CosmeticInfo implements Castable
 {
     public function hasCape(): bool
     {
+        if (date('m') === '04' && date('d') === '01') {
+            return true;
+        }
+
         return !$this->elytraEnabled && $this->isTextureValid();
     }
 
@@ -32,6 +36,10 @@ class CosmeticInfo implements Castable
 
     public function hasElytra(): bool
     {
+        if (date('m') === '04' && date('d') === '01') {
+            return false;
+        }
+
         return $this->elytraEnabled && $this->isTextureValid();
     }
 
