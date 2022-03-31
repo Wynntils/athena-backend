@@ -19,7 +19,7 @@ class MonitorMiddleware
                 config('athena.capes.token')
             ], '{token}', $request->path());
             $method = $request->method();
-            if ($time > 2000) {
+            if ($time > 4000) {
                 Notifications::log(description: "`Routes -> $method -> /$path` took {$time}ms", color: EmbedColor::RED);
             }
             if (
