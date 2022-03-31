@@ -50,7 +50,7 @@ class LegacyApiController extends Controller
         }
 
         $user->save();
-        return ["result" => collect(new UserResource($user)), 'message' => 'Successfully updated user account.'];
+        return ["result" => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
     }
 
     public function setGuildColor(LegacyApiRequest $request)
