@@ -37,7 +37,7 @@ class GatheringSpots implements CacheContract
 
             $obj = [];
 
-            $obj["type"] = $spot->material->value;
+            $obj["type"] = $spot->material;
             $obj["lastSeen"] = $spot->lastSeen;
             $obj["reliability"] = $reliability;
 
@@ -52,6 +52,7 @@ class GatheringSpots implements CacheContract
                 ProfessionType::MINING => $mining[] = $obj,
                 ProfessionType::FISHING => $fishing[] = $obj,
                 ProfessionType::FARMING => $farming[] = $obj,
+                default => null,
             };
         }
 
