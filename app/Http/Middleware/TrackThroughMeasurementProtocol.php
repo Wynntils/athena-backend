@@ -24,7 +24,7 @@ class TrackThroughMeasurementProtocol
         $gamp = GAMP::setClientId($clientId);
         $gamp->setDocumentPath('/' . $request->path());
         $gamp->setDocumentReferrer($request->server('HTTP_REFERER', ''));
-        $gamp->setUserAgentOverride($request->server('HTTP_USER_AGENT'));
+        $gamp->setUserAgentOverride($request->server('HTTP_USER_AGENT', 'Missing/1.0'));
 
         // Override the sent IP with the IP from the current request.
         // Otherwhise the servers IP would be sent.

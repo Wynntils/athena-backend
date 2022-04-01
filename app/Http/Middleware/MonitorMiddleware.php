@@ -11,6 +11,7 @@ class MonitorMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
+        /** @var \Illuminate\Http\Response $response */
         $response = $next($request);
         if (defined('LARAVEL_START')) {
             $time = round((microtime(true) - LARAVEL_START) * 1000, 2);
