@@ -35,6 +35,8 @@ class User extends Model implements
      * @var array<int, string>
      */
     protected $fillable = [
+        '_id',
+        'accountType',
         'username',
         'password',
     ];
