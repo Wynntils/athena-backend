@@ -38,13 +38,13 @@ class CacheManager
         return null;
     }
 
-    public static function getHashes(): array
+    public static function getHashes(): object
     {
         $hashes = [];
         foreach (self::$cacheTable as $name => $class) {
             $hashes[$name] = Cache::get($name.'.hash');
         }
 
-        return $hashes;
+        return cleanNull($hashes);
     }
 }

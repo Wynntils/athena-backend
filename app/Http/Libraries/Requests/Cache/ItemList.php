@@ -30,13 +30,13 @@ class ItemList implements CacheContract
 
         foreach ($wynnItems as $item) {
             $converted = ItemManager::convertItem($item);
-            if ($converted['itemInfo'] !== null) {
-                $itemInfo = $converted['itemInfo'];
-                $typeArray = &$materialTypes[$itemInfo['type']];
+            if ($converted->itemInfo !== null) {
+                $itemInfo = $converted->itemInfo;
+                $typeArray = &$materialTypes[$itemInfo->type];
                 if (!is_array($typeArray)) {
                     $typeArray = [];
                 }
-                $material = $itemInfo['material'] ?? null;
+                $material = $itemInfo->material ?? null;
                 if ($material !== null && !in_array($material, $typeArray, true)) {
                     $typeArray[] = $material;
                 }
@@ -57,10 +57,10 @@ class ItemList implements CacheContract
         foreach ($wynnBuilderIDs as $wynnBuilderItem)
         {
             $item = &$items[$wynnBuilderItem['name']];
-            $item['wynnBuilderID'] = $wynnBuilderItem['id'];
+            $item->wynnBuilderID = $wynnBuilderItem['id'];
         }
 
-        $result['items'] = $items;
+        $result['items'] = array_values($items);
         $result['materialTypes'] = $materialTypes;
         $result['translatedReferences'] = $translatedReferences;
 

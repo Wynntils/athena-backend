@@ -5,12 +5,12 @@
 
 
 if (!function_exists('cleanNull')) {
-    function cleanNull(?array &$array)
+    function cleanNull(?array $array): ?object
     {
         if($array === null) {
-            return;
+            return null;
         }
-        $array = array_filter($array, static function ($a) {
+        return (object) array_filter($array, static function ($a) {
             return !is_null($a);
         });
     }

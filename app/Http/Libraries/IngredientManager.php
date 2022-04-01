@@ -5,7 +5,7 @@ namespace App\Http\Libraries;
 class IngredientManager
 {
 
-    public static function convertIngredient(array $items): array
+    public static function convertIngredient(array $items): object
     {
         $result = [];
 
@@ -21,7 +21,7 @@ class IngredientManager
 
         $result['professions'] = $input['skills'];
 
-        $statuses = &$result['statuses'];
+        $statuses = [];
 
         foreach ($input['identifications'] as $key => $identification) {
             $translatedName = self::translateStatusName($key);
@@ -32,7 +32,9 @@ class IngredientManager
             cleanNull($status);
         }
 
-        $itemModifiers = &$result['itemModifiers'];
+        $result['statuses'] = $statuses;
+
+        $itemModifiers = [];
 
         $itemIDs = collect($input['itemOnlyIDs']);
         $consumableIDs = collect($input->get('consumableOnlyIDs', []));
@@ -47,7 +49,9 @@ class IngredientManager
         $itemModifiers['defense'] = ignoreZero($itemIDs->get('defenceRequirement'));
         $itemModifiers['agility'] = ignoreZero($itemIDs->get('agilityRequirement'));
 
-        $ingredientModifiers = &$result['ingredientModifiers'];
+        $result['itemModifiers'] = $itemModifiers;
+
+        $ingredientModifiers = [];
         $modifiers = collect($input['ingredientPositionModifiers']);
 
         $ingredientModifiers['left'] = ignoreZero($modifiers->get('left'));
@@ -57,10 +61,12 @@ class IngredientManager
         $ingredientModifiers['touching'] = ignoreZero($modifiers->get('touching'));
         $ingredientModifiers['notTouching'] = ignoreZero($modifiers->get('notTouching'));
 
-        cleanNull($itemModifiers);
-        cleanNull($ingredientModifiers);
-        cleanNull($result);
-        return $result;
+        $result['ingredientModifiers'] = $ingredientModifiers;
+
+        $result['itemModifiers'] = cleanNull($result['itemModifiers']);
+        $result['ingredientModifiers'] = cleanNull($result['ingredientModifiers']);
+        $result['statuses'] = cleanNull($result['statuses']);
+        return cleanNull($result);
     }
 
     private static function translateStatusName(string $raw): ?string
