@@ -30,27 +30,31 @@ class LegacyApiController extends Controller
 
         $cosmetics = collect($request->validated('cosmetics'));
 
+        $cosmeticInfo = $user->cosmeticInfo->toArray();
+
         if ($cosmetics->has('texture')) {
-            $user->cosmeticInfo->capeTexture = $cosmetics->get('texture');
+            $cosmeticInfo['capeTexture'] = $cosmetics->get('texture');
         }
         if ($cosmetics->has('isElytra')) {
-            $user->cosmeticInfo->elytraEnabled = $cosmetics->get('isElytra');
+            $cosmeticInfo['elytraEnabled'] = $cosmetics->get('isElytra');
         }
         if ($cosmetics->has('maxResolution')) {
-            $user->cosmeticInfo->maxResolution = $cosmetics->get('maxResolution');
+            $cosmeticInfo['maxResolution'] = $cosmetics->get('maxResolution');
         }
         if ($cosmetics->has('allowAnimated')) {
-            $user->cosmeticInfo->allowAnimated = $cosmetics->get('allowAnimated');
+            $cosmeticInfo['allowAnimated'] = $cosmetics->get('allowAnimated');
         }
         if ($cosmetics->has('parts')) {
             foreach ($cosmetics->get('parts') as $part => $value) {
-                $user->cosmeticInfo->parts[$part] = $value;
+                $cosmeticInfo['parts'][$part] = $value;
             }
-            $user->cosmeticInfo->parts = $cosmetics->get('parts');
+            $cosmeticInfo['parts'] = $cosmetics->get('parts');
         }
 
+        $user->cosmeticInfo = $cosmeticInfo;
+
         $user->save();
-        return ["result" => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
+        return ['message' => 'Updated users cosmetics successfully.'];
     }
 
     public function setGuildColor(LegacyApiRequest $request)

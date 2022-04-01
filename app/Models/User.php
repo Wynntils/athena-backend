@@ -51,9 +51,17 @@ class User extends Model implements
 
     protected $casts = [
         'accountType' => AccountType::class,
-        'cosmeticInfo' => CosmeticInfo::class,
-        'discordInfo' => DiscordInfo::class,
     ];
+
+    public function discordInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    {
+        return $this->embedsOne(DiscordInfo::class);
+    }
+
+    public function cosmeticInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    {
+        return $this->embedsOne(CosmeticInfo::class);
+    }
 
     public function updateAccount($username, $version): string
     {
@@ -74,8 +82,10 @@ class User extends Model implements
 
     public function updateDiscord($id, $username): void
     {
-        $this->discordInfo->username = $username;
-        $this->discordInfo->id = $id;
+        $this->discordInfo = [
+            'id' => $id,
+            'username' => $username,
+        ];
 
         $this->save();
     }
