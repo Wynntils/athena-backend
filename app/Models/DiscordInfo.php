@@ -2,13 +2,35 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Contracts\Database\Eloquent\Castable;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 /**
  * @property $id
  * @property $username
  */
-class DiscordInfo extends Model
+class DiscordInfo implements Castable
 {
-    protected $fillable = ['id', 'username'];
+    public static function castUsing(array $arguments)
+    {
+        return new class implements CastsAttributes {
+            public function get($model, $key, $value, $attributes)
+            {
+                $info = new DiscordInfo();
+                $info->username = $value['username'] ?? null;
+                $info->id = $value['id'] ?? null;
+                return $info;
+            }
+
+            public function set($model, $key, $value, $attributes)
+            {
+                return [
+                    'discordInfo' => [
+                        'username' => $value->username,
+                        'id' => $value->id
+                    ]
+                ];
+            }
+        };
+    }
 }
