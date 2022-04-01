@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Libraries\MinecraftFakeAuthInterface;
 use App\Http\Libraries\CacheManager;
-use App\Http\Libraries\MinecraftFakeAuth;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -12,9 +12,16 @@ use Storage;
 
 class AuthController extends Controller
 {
+    private MinecraftFakeAuthInterface $minecraftFakeAuth;
+
+    public function __construct(MinecraftFakeAuthInterface $minecraftFakeAuth)
+    {
+        $this->minecraftFakeAuth = $minecraftFakeAuth;
+    }
+
     public function getPublicKey(): JsonResponse
     {
-        return response()->json(['publicKeyIn' => bin2hex(MinecraftFakeAuth::instance()->getPublicKey())]);
+        return response()->json(['publicKeyIn' => bin2hex($this->minecraftFakeAuth->getPublicKey())]);
     }
 
     public function responseEncryption(AuthRequest $request): JsonResponse
@@ -24,7 +31,7 @@ class AuthController extends Controller
             Storage::put('request.json', $request->getContent());
         }
 
-        $profile = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
+        $profile = $this->minecraftFakeAuth->getGameProfile($request->validated('username'), $request->validated('key'));
 
         if ($profile === null) {
             return response()->json(['message' => 'The provided username or key is invalid'], 401);

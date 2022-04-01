@@ -2,17 +2,15 @@
 
 namespace App\Http\Libraries;
 
-use App\Http\Traits\Singleton;
+use App\Contracts\Libraries\MinecraftFakeAuthInterface;
 use OpenSSLAsymmetricKey;
 
-class MinecraftFakeAuth
+class MinecraftFakeAuth implements MinecraftFakeAuthInterface
 {
-    use Singleton;
-
     private OpenSSLAsymmetricKey $privateKey;
     private OpenSSLAsymmetricKey $publicKey;
 
-    protected function __construct()
+    public function __construct()
     {
         $this->privateKey = openssl_pkey_get_private(\Storage::get('private.key'));
         $public_key_pem = openssl_pkey_get_details($this->privateKey)['key'];
