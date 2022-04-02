@@ -3,7 +3,7 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Enums\ProfessionType;
-use App\Http\Libraries\Requests\WynnRequest;
+use Http;
 use Illuminate\Http\Client\Pool;
 
 class Leaderboard implements CacheContract
@@ -18,7 +18,7 @@ class Leaderboard implements CacheContract
     {
         $result = [];
 
-        $generateProfile = static function($input, $professionName) use (&$result) {
+        $generateProfile = static function ($input, $professionName) use (&$result) {
             $profile = &$result[$input['uuid']];
             $profile['name'] = $input['name'];
             $profile['timePlayed'] = $input['minPlayed'];
@@ -39,9 +39,9 @@ class Leaderboard implements CacheContract
 
     private static function getLeaderboards(): array
     {
-        return WynnRequest::request()->pool(static function (Pool $pool) {
+        return Http::wynn()->pool(static function (Pool $pool) {
             $requests = [];
-            foreach(ProfessionType::cases() as $profession) {
+            foreach (ProfessionType::cases() as $profession) {
                 $requests[] = $pool->as($profession->name)->get(config('athena.api.wynn.leaderboards').$profession->leaderboard());
             }
             return $requests;

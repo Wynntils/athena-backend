@@ -3,7 +3,7 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Libraries\IngredientManager;
-use App\Http\Libraries\Requests\WynnRequest;
+use Http;
 
 class IngredientList implements CacheContract
 {
@@ -15,7 +15,7 @@ class IngredientList implements CacheContract
 
     public function generate(): array
     {
-        $wynnIngredients = WynnRequest::request()->get(config('athena.api.wynn.ingredients'))->collect('data');
+        $wynnIngredients = Http::wynn()->get(config('athena.api.wynn.ingredients'))->collect('data');
         if ($wynnIngredients === null) {
             return [];
         }

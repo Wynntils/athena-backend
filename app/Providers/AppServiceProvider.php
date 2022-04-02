@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Http::macro('wynn', function () {
+            return Http::withHeaders(['apiKey' => config('athena.api.wynn.apiKey')])
+                ->withUserAgent(config('athena.general.userAgent'))
+                ->connectTimeout(50)
+                ->timeout(50);
+        });
     }
 }

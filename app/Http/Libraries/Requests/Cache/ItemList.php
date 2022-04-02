@@ -3,7 +3,9 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Libraries\ItemManager;
-use App\Http\Libraries\Requests\WynnRequest;
+use Http;
+use Illuminate\Http\Client\Pool;
+
 
 class ItemList implements CacheContract
 {
@@ -17,16 +19,17 @@ class ItemList implements CacheContract
     {
         // TODO: itemsMap, converted, itemInfo, typeArray, material
 
-        $wynnItems = WynnRequest::request()->get(config('athena.api.wynn.items'))->collect('items');
+        $responses = Http::wynn()->pool(fn (Pool $pool) => [
+            $pool->as('wynnItems')->get(config('athena.api.wynn.items')),
+            $pool->as('wynnBuilderIDs')->get(config('athena.api.wynn.builderIds'))
+        ]);
+
+        $wynnItems = $responses['wynnItems']->collect('items');
         if ($wynnItems === null) {
             return [];
         }
 
-
-        $result = [];
-        $items = [];
-        $materialTypes = [];
-        $translatedReferences = [];
+        $result = $items = $materialTypes = $translatedReferences = [];
 
         foreach ($wynnItems as $item) {
             $converted = ItemManager::convertItem($item);
@@ -49,13 +52,12 @@ class ItemList implements CacheContract
             $items[$item['name']] = $converted;
         }
 
-        $wynnBuilderIDs = WynnRequest::request()->get(config('athena.api.wynn.builderIds'))->collect('items');
+        $wynnBuilderIDs = $responses['wynnBuilderIDs']->collect('items');
         if ($wynnBuilderIDs === null) {
             return [];
         }
 
-        foreach ($wynnBuilderIDs as $wynnBuilderItem)
-        {
+        foreach ($wynnBuilderIDs as $wynnBuilderItem) {
             $item = &$items[$wynnBuilderItem['name']];
             $item->wynnBuilderID = $wynnBuilderItem['id'];
         }

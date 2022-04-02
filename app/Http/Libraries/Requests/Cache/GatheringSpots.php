@@ -43,9 +43,9 @@ class GatheringSpots implements CacheContract
 
             $location = &$obj['location'];
             [$x, $y, $z] = $spot->getLocation();
-            $location['x'] = (int)$x;
-            $location['y'] = (int)$y;
-            $location['z'] = (int)$z;
+            $location['x'] = (int) $x;
+            $location['y'] = (int) $y;
+            $location['z'] = (int) $z;
 
             match ($spot->type) {
                 ProfessionType::WOODCUTTING => $woodCutting[] = $obj,

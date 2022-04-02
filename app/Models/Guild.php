@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Http\Libraries\Requests\WynnRequest;
+
 use Illuminate\Database\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 
@@ -35,7 +35,7 @@ class Guild extends Model
             return $guild;
         }
 
-        $request = WynnRequest::request()->get(config('athena.api.wynn.guildInfo').$name)->json();
+        $request = \Http::wynn()->get(config('athena.api.wynn.guildInfo').$name)->json();
         if (array_key_exists('error', $request)) {
             return new Guild(['_id' => 'None', 'prefix' => 'ERROR', 'color' => '#ff0000']);
         }

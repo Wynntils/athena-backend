@@ -2,8 +2,9 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-use App\Http\Libraries\Requests\WynnRequest;
+
 use App\Models\Server;
+use Http;
 
 class ServerList implements CacheContract
 {
@@ -15,7 +16,7 @@ class ServerList implements CacheContract
 
     public function generate(): array
     {
-        $wynnOnlinePlayers = WynnRequest::request()->get(config('athena.api.wynn.onlinePlayers'))->collect()->forget('request');
+        $wynnOnlinePlayers = Http::wynn()->get(config('athena.api.wynn.onlinePlayers'))->collect()->forget('request');
         if ($wynnOnlinePlayers === null) {
             return [];
         }
@@ -29,7 +30,8 @@ class ServerList implements CacheContract
 
             $validServers[] = $key;
 
-            $server['firstSeen'] = Server::firstOrCreate(['_id' => $key], ['firstSeen' => currentTimeMillis()])->firstSeen;
+            $server['firstSeen'] = Server::firstOrCreate(['_id' => $key],
+                ['firstSeen' => currentTimeMillis()])->firstSeen;
 
             $server['players'] = $onlinePlayer;
 

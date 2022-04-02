@@ -2,7 +2,9 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-use App\Http\Libraries\Requests\WynnRequest;
+
+use Http;
+use Illuminate\Http\Client\Pool;
 
 class MapLocations implements CacheContract
 {
@@ -14,7 +16,14 @@ class MapLocations implements CacheContract
 
     public function generate(): array
     {
-        $wynnMapLocations = WynnRequest::request()->get(config('athena.api.wynn.mapLocations'))->collect();
+        $responses = Http::wynn()->pool(fn (Pool $pool) => [
+            $pool->as('wynnMapLocations')->get(config('athena.api.wynn.mapLocations')),
+            $pool->as('wynnMapLabels')->get(config('athena.api.wynn.mapLabels')),
+            $pool->as('npcLocations')->get(config('athena.api.wynn.npcLocations')),
+        ]);
+
+
+        $wynnMapLocations = $responses['wynnMapLocations']->collect();
         if ($wynnMapLocations === null) {
             return [];
         }
@@ -23,14 +32,14 @@ class MapLocations implements CacheContract
             return $location['icon'] !== "Content_Raid.png";
         })->values()->toArray();
 
-        $wynnMapLabels = WynnRequest::request()->get(config('athena.api.wynn.mapLabels'))->collect();
+        $wynnMapLabels = $responses['wynnMapLabels']->collect();
         if ($wynnMapLabels === null) {
             return [];
         }
 
         $wynnMapLocations['labels'] = $wynnMapLabels['labels'];
 
-        $npcLocations = WynnRequest::request()->get(config('athena.api.wynn.npcLocations'))->collect();
+        $npcLocations = $responses['npcLocations']->collect();
         if ($npcLocations === null) {
             return [];
         }
