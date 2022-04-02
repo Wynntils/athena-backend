@@ -155,7 +155,7 @@ class ItemManager
         $order['lootQuality'] = 38;
         $order['stealing'] = 39;
         $order['xpBonus'] = 40;
-        $order['gatherXPBonus'] = 41;
+        $order['gatherXpBonus'] = 41;
         $order['gatherSpeed'] = 42;
         //ninth group {spell stuff}
         $order['raw1stSpellCost'] = 43;
@@ -297,9 +297,9 @@ class ItemManager
             'bonusAirDefense' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
             'rainbowSpellDamageRaw' => 'rawSpellDamage',
-            'gatherXpBonus' => 'gatherXPBonus',
             'attackSpeedBonus' => 'attackSpeed',
             //same ones
+            'gatherXpBonus' => 'gatherXpBonus',
             'spellDamage' => 'spellDamage',
             'healthRegen' => 'healthRegen',
             'poison' => 'poison',
