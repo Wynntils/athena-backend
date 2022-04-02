@@ -28,7 +28,7 @@ class TerritoryList implements CacheContract
                 $territory['territory'] = $item['territory'];
                 $territory['guild'] = $guild->id;
                 $territory['guildPrefix'] = $guild->prefix;
-                $territory['guildColor'] = $guild->color;
+                $territory['guildColor'] = empty($guild->color) ? null : $guild->color;
                 $territory['acquired'] = $item['acquired'];
                 $territory['attacker'] = $item['attacker'];
                 $territory['level'] = 1; // not used
