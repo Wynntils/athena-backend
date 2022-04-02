@@ -11,6 +11,7 @@ class MonitorMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
+        /** @var \Illuminate\Http\Response $response */
         $response = $next($request);
         if (defined('LARAVEL_START')) {
             $time = round((microtime(true) - LARAVEL_START) * 1000, 2);
@@ -19,7 +20,7 @@ class MonitorMiddleware
                 config('athena.capes.token')
             ], '{token}', $request->path());
             $method = $request->method();
-            if ($time > 2000) {
+            if ($time > 4000) {
                 Notifications::log(description: "`Routes -> $method -> /$path` took {$time}ms", color: EmbedColor::RED);
             }
             if (

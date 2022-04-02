@@ -7,7 +7,7 @@ use App\Http\Enums\MajorIdentifications;
 class ItemManager
 {
 
-    public static function convertItem(array $item): array
+    public static function convertItem(array $item): object
     {
         $result = [];
         $input = collect($item);
@@ -64,7 +64,7 @@ class ItemManager
         $statuses = &$result['statuses'];
 
         $result['majorIds'] = $input->get('majorIds');
-        $result['restriction'] = $input->get('restriction');
+        $result['restriction'] = $input->get('restrictions');
         $result['lore'] = $input->get('addedLore');
 
         foreach ($item as $key => $value) {
@@ -93,13 +93,12 @@ class ItemManager
             $status['baseValue'] = $value;
         }
 
-        cleanNull($itemInfo);
-        cleanNull($requirements);
-        cleanNull($damageTypes);
-        cleanNull($defenseTypes);
-        cleanNull($statuses);
-        cleanNull($result);
-        return $result;
+        $itemInfo = cleanNull($itemInfo);
+        $requirements = cleanNull($requirements);
+        $damageTypes = cleanNull($damageTypes);
+        $defenseTypes = cleanNull($defenseTypes);
+        $statuses = cleanNull($statuses);
+        return cleanNull($result);
     }
 
 

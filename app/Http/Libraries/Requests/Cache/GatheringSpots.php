@@ -16,10 +16,10 @@ class GatheringSpots implements CacheContract
     public function generate(): array
     {
         $result = [];
-        $woodCutting = &$result['woodCutting'];
-        $mining = &$result['mining'];
-        $farming = &$result['farming'];
-        $fishing = &$result['fishing'];
+        $woodCutting = [];
+        $mining = [];
+        $farming = [];
+        $fishing = [];
 
         $spots = GatheringSpot::all();
         foreach ($spots as $spot) {
@@ -37,7 +37,7 @@ class GatheringSpots implements CacheContract
 
             $obj = [];
 
-            $obj["type"] = $spot->material->value;
+            $obj["type"] = $spot->material;
             $obj["lastSeen"] = $spot->lastSeen;
             $obj["reliability"] = $reliability;
 
@@ -52,8 +52,14 @@ class GatheringSpots implements CacheContract
                 ProfessionType::MINING => $mining[] = $obj,
                 ProfessionType::FISHING => $fishing[] = $obj,
                 ProfessionType::FARMING => $farming[] = $obj,
+                default => null,
             };
         }
+
+        $result['woodCutting'] = $woodCutting;
+        $result['mining'] = $mining;
+        $result['fishing'] = $fishing;
+        $result['farming'] = $farming;
 
         return $result;
     }

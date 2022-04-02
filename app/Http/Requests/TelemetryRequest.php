@@ -7,7 +7,7 @@ use App\Http\Enums\ProfessionType;
 
 class TelemetryRequest extends BaseRequest
 {
-    public function sendGatheringSpot(): array
+    public function saveGatheringSpot(): array
     {;
         return [
             'spot' => 'required|array',

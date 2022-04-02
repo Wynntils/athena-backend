@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Enums\AccountType;
 use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Http\Requests\AuthRequest;
@@ -30,7 +31,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 
-        $user = User::find(Uuid::fromString($profile['id'])->toString());
+        $user = User::firstOrCreate(['_id' => Uuid::fromString($profile['id'])->toString()], ['accountType' => AccountType::NORMAL]);
 
         $user->updateAccount($profile['name'], $request->validated('version'));
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Facades\Storage;
@@ -17,21 +18,29 @@ class CosmeticInfo implements Castable
 {
     public function hasCape(): bool
     {
+        if (Carbon::now()->format('m-d') === '04-01') {
+            return true;
+        }
+
         return !$this->elytraEnabled && $this->isTextureValid();
     }
 
     private function isTextureValid(): bool
     {
-        return !empty($this->capeTexture) && Storage::disk('capes')->exists('approved/'.$this->capeTexture);
+        return !empty($this->capeTexture) && Storage::disk('approved')->exists($this->capeTexture);
     }
 
     public function hasPart($part): bool
     {
-        return !empty($this->parts) && $this->parts->{$part} === true;
+        return !empty($this->parts) && $this->parts[$part] === true;
     }
 
     public function hasElytra(): bool
     {
+        if (Carbon::now()->format('m-d') === '04-01') {
+            return false;
+        }
+
         return $this->elytraEnabled && $this->isTextureValid();
     }
 
@@ -42,8 +51,7 @@ class CosmeticInfo implements Castable
 
     public static function castUsing(array $arguments)
     {
-        return new class implements CastsAttributes
-        {
+        return new class implements CastsAttributes {
             public function get($model, $key, $value, $attributes)
             {
                 $info = new CosmeticInfo();
@@ -58,11 +66,13 @@ class CosmeticInfo implements Castable
             public function set($model, $key, $value, $attributes)
             {
                 return [
-                    'capeTexture' => $value->capeTexture,
-                    'elytraEnabled' => $value->elytraEnabled,
-                    'maxResolution' => $value->maxResolution,
-                    'allowAnimated' => $value->allowAnimated,
-                    'parts' => $value->parts,
+                    'cosmeticInfo' => [
+                        'capeTexture' => $value->capeTexture,
+                        'elytraEnabled' => $value->elytraEnabled,
+                        'maxResolution' => $value->maxResolution,
+                        'allowAnimated' => $value->allowAnimated,
+                        'parts' => $value->parts,
+                    ]
                 ];
             }
         };

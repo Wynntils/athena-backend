@@ -24,6 +24,10 @@ class LegacyApiRequest extends BaseRequest
         return [
             'user' => 'required|string',
             'cosmetics' => 'required|array',
+            'cosmetics.isElytra' => 'boolean',
+            'cosmetics.allowAnimated' => 'boolean',
+            'cosmetics.texture' => 'string',
+            'cosmetics.maxResolution' => 'string',
             'cosmetics.parts' => 'array',
             'cosmetics.parts.ears' => 'boolean',
         ];

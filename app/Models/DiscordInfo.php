@@ -13,21 +13,22 @@ class DiscordInfo implements Castable
 {
     public static function castUsing(array $arguments)
     {
-        return new class implements CastsAttributes
-        {
+        return new class implements CastsAttributes {
             public function get($model, $key, $value, $attributes)
             {
                 $info = new DiscordInfo();
-                $info->username = $value['username'];
-                $info->id = $value['id'];
+                $info->username = $value['username'] ?? null;
+                $info->id = $value['id'] ?? null;
                 return $info;
             }
 
             public function set($model, $key, $value, $attributes)
             {
                 return [
-                    'username' => $value->username,
-                    'id' => $value->id
+                    'discordInfo' => [
+                        'username' => $value->username,
+                        'id' => $value->id
+                    ]
                 ];
             }
         };

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UserNotFoundException;
 use App\Http\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
@@ -30,27 +31,31 @@ class LegacyApiController extends Controller
 
         $cosmetics = collect($request->validated('cosmetics'));
 
+        $cosmeticInfo = $user->cosmeticInfo->toArray();
+
         if ($cosmetics->has('texture')) {
-            $user->cosmeticInfo->capeTexture = $cosmetics->get('texture');
+            $cosmeticInfo['capeTexture'] = $cosmetics->get('texture');
         }
         if ($cosmetics->has('isElytra')) {
-            $user->cosmeticInfo->elytraEnabled = $cosmetics->get('isElytra');
+            $cosmeticInfo['elytraEnabled'] = $cosmetics->get('isElytra');
         }
         if ($cosmetics->has('maxResolution')) {
-            $user->cosmeticInfo->maxResolution = $cosmetics->get('maxResolution');
+            $cosmeticInfo['maxResolution'] = $cosmetics->get('maxResolution');
         }
         if ($cosmetics->has('allowAnimated')) {
-            $user->cosmeticInfo->allowAnimated = $cosmetics->get('allowAnimated');
+            $cosmeticInfo['allowAnimated'] = $cosmetics->get('allowAnimated');
         }
         if ($cosmetics->has('parts')) {
             foreach ($cosmetics->get('parts') as $part => $value) {
-                $user->cosmeticInfo->parts[$part] = $value;
+                $cosmeticInfo['parts'][$part] = $value;
             }
-            $user->cosmeticInfo->parts = $cosmetics->get('parts');
+            $cosmeticInfo['parts'] = $cosmetics->get('parts');
         }
 
+        $user->cosmeticInfo = $cosmeticInfo;
+
         $user->save();
-        return ["result" => collect(new UserResource($user)), 'message' => 'Successfully updated user account.'];
+        return ['message' => 'Updated users cosmetics successfully.'];
     }
 
     public function setGuildColor(LegacyApiRequest $request)
@@ -94,8 +99,10 @@ class LegacyApiController extends Controller
     private function getUser($user): User
     {
         return match (true) {
-            str($user)->startsWith("uuid-") => User::findOrFail(substr($user, 5)),
-            str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username', $user)->firstOrFail(),
+            str($user)->startsWith("uuid-") => User::findOrFail(substr($user, strlen('uuid-'))),
+            str($user)->startsWith("<@") => User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $user))->firstOrFail(),
+            str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username',
+                $user)->firstOrFail(),
             default => User::where('authToken', $user)->firstOrFail()
         };
     }
