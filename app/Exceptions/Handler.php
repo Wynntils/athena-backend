@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if($exception instanceof ModelNotFoundException) {
-            match ($exception->getModel()) {
+            return match ($exception->getModel()) {
                 \App\Models\User::class => response()->json(['message' => 'User not found'], 404),
                 \App\Models\Guild::class => response()->json(['message' => 'Guild not found'], 404),
             };
