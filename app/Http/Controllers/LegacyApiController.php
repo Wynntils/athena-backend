@@ -100,7 +100,7 @@ class LegacyApiController extends Controller
     {
         return match (true) {
             str($user)->startsWith("uuid-") => User::findOrFail(substr($user, strlen('uuid-'))),
-            str($user)->startsWith("<@!") => User::where('discordInfo.id', str_replace(['<@!', '>'], '', $user))->firstOrFail(),
+            str($user)->startsWith("<@") => User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $user))->firstOrFail(),
             str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username',
                 $user)->firstOrFail(),
             default => User::where('authToken', $user)->firstOrFail()
