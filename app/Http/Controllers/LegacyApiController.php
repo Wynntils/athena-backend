@@ -7,6 +7,7 @@ use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Guild;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LegacyApiController extends Controller
 {
@@ -97,10 +98,15 @@ class LegacyApiController extends Controller
 
     private function getUser($user): User
     {
-        return match (true) {
-            str($user)->startsWith("uuid-") => User::findOrFail(substr($user, 5)),
-            str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username', $user)->firstOrFail(),
-            default => User::where('authToken', $user)->firstOrFail()
-        };
+        try {
+            return match (true) {
+                str($user)->startsWith("uuid-") => User::findOrFail(substr($user, 5)),
+                str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username',
+                    $user)->firstOrFail(),
+                default => User::where('authToken', $user)->firstOrFail()
+            };
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('User not found.');
+        }
     }
 }
