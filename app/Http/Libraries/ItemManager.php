@@ -153,7 +153,7 @@ class ItemManager
         $order['soulPointRegen'] = 36;
         $order['lootBonus'] = 37;
         $order['lootQuality'] = 38;
-        $order['emeraldStealing'] = 39;
+        $order['stealing'] = 39;
         $order['xpBonus'] = 40;
         $order['gatherXPBonus'] = 41;
         $order['gatherSpeed'] = 42;
