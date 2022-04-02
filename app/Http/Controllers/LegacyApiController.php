@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UserNotFoundException;
 use App\Http\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
@@ -106,7 +107,7 @@ class LegacyApiController extends Controller
                 default => User::where('authToken', $user)->firstOrFail()
             };
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('User not found.');
+            throw new UserNotFoundException();
         }
     }
 }
