@@ -7,9 +7,9 @@ class IngredientManager
 
     public static function convertIngredient(array $items): object
     {
-        $result = [];
-
         $input = collect($items);
+
+        $result = $statuses = $itemModifiers = $ingredientModifiers = [];
 
         $result['name'] = $input['name'];
         $result['tier'] = $input['tier'];
@@ -21,24 +21,20 @@ class IngredientManager
 
         $result['professions'] = $input['skills'];
 
-        $statuses = [];
-
+        $result['statuses'] = &$statuses;
         foreach ($input['identifications'] as $key => $identification) {
             $translatedName = self::translateStatusName($key);
             $status = &$statuses[$translatedName];
             $status['type'] = getStatusType($translatedName);
             $status['minimum'] = $identification['minimum'];
             $status['maximum'] = $identification['maximum'];
-            cleanNull($status);
+            $status = cleanNull($status);
         }
-
-        $result['statuses'] = $statuses;
-
-        $itemModifiers = [];
 
         $itemIDs = collect($input['itemOnlyIDs']);
         $consumableIDs = collect($input->get('consumableOnlyIDs', []));
 
+        $result['itemModifiers'] = &$itemModifiers;
         $itemModifiers['durability'] = ignoreZero($itemIDs->get('durabilityModifier'));
         $itemModifiers['duration'] = ignoreZero($consumableIDs->get('duration'));
         $itemModifiers['charges'] = ignoreZero($consumableIDs->get('charges'));
@@ -49,11 +45,9 @@ class IngredientManager
         $itemModifiers['defense'] = ignoreZero($itemIDs->get('defenceRequirement'));
         $itemModifiers['agility'] = ignoreZero($itemIDs->get('agilityRequirement'));
 
-        $result['itemModifiers'] = $itemModifiers;
-
-        $ingredientModifiers = [];
         $modifiers = collect($input['ingredientPositionModifiers']);
 
+        $result['ingredientModifiers'] = &$ingredientModifiers;
         $ingredientModifiers['left'] = ignoreZero($modifiers->get('left'));
         $ingredientModifiers['right'] = ignoreZero($modifiers->get('right'));
         $ingredientModifiers['above'] = ignoreZero($modifiers->get('above'));
@@ -61,11 +55,10 @@ class IngredientManager
         $ingredientModifiers['touching'] = ignoreZero($modifiers->get('touching'));
         $ingredientModifiers['notTouching'] = ignoreZero($modifiers->get('notTouching'));
 
-        $result['ingredientModifiers'] = $ingredientModifiers;
+        $itemModifiers = cleanNull($itemModifiers);
+        $ingredientModifiers = cleanNull($ingredientModifiers);
+        $statuses = cleanNull($statuses);
 
-        $result['itemModifiers'] = cleanNull($result['itemModifiers']);
-        $result['ingredientModifiers'] = cleanNull($result['ingredientModifiers']);
-        $result['statuses'] = cleanNull($result['statuses']);
         return cleanNull($result);
     }
 
