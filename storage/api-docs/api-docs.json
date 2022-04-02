@@ -460,6 +460,296 @@
                     }
                 }
             }
+        },
+        "/capes/ban/{token}/{sha}": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "Ban cape by token and sha",
+                "operationId": "banCape",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "The cape token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sha",
+                        "in": "path",
+                        "description": "The cape sha",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/get/{id}": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "getCape",
+                "operationId": "getCape",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The cape id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/list": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "listCapes",
+                "operationId": "listCapes",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/queue/approve/{token}/{sha}": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "approveCape",
+                "operationId": "approveCape",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "The cape token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sha",
+                        "in": "path",
+                        "description": "The cape sha",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/queue/get/{id}": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "getCapeQueue",
+                "operationId": "getCapeQueue",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The cape id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/queue/list": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "listCapeQueue",
+                "operationId": "listCapeQueue",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/queue/upload/{token}": {
+            "post": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "uploadCape",
+                "operationId": "uploadCape",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "The cape token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/capes/user/{uuid}": {
+            "get": {
+                "tags": [
+                    "Cape"
+                ],
+                "summary": "userCapes",
+                "operationId": "userCapes",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The user uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/telemetry/sendGatheringSpot": {
+            "post": {
+                "tags": [
+                    "Telemetry"
+                ],
+                "summary": "sendGatheringSpot",
+                "operationId": "sendGatheringSpot",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/user/getConfigs": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "getUserConfigs",
+                "operationId": "getUserConfigs",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/user/getInfo": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "postUserInfo",
+                "operationId": "postUserInfo",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/user/getInfo/{user}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "getUserInfo",
+                "operationId": "getUserInfo",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/user/updateDiscord": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "updateUserDiscord",
+                "operationId": "updateUserDiscord",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/user/uploadConfigs": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "uploadUserConfigs",
+                "operationId": "uploadUserConfigs",
+                "responses": {
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1068,7 +1358,8 @@
                     },
                     "timePlayed": {
                         "description": "The time played of the player",
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "ranks": {
                         "$ref": "#/components/schemas/LeaderboardRanks"
@@ -1291,7 +1582,7 @@
             "name": "Cape"
         },
         {
-            "name": "Telemetery"
+            "name": "Telemetry"
         },
         {
             "name": "User"

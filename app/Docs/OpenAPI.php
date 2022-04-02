@@ -30,7 +30,7 @@ use OpenApi\Attributes as OA;
             new OA\Tag(name: "Auth"),
             new OA\Tag(name: "Cache"),
             new OA\Tag(name: "Cape"),
-            new OA\Tag(name: "Telemetery"),
+            new OA\Tag(name: "Telemetry"),
             new OA\Tag(name: "User"),
 
         ],
