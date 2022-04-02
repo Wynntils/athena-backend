@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Http\Libraries\Notifications;
 use DiscordWebhook\EmbedColor;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -43,5 +44,26 @@ class Handler extends ExceptionHandler
 
             Notifications::log(title: "An exception occured", description: "`Routes -> $method -> /$path`\n**{$e->getMessage()}** ```" . substr($e->getTraceAsString(), 0, 3000) . "```", color: EmbedColor::RED);
         });
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Throwable
+     */
+    public function render($request, Throwable $exception)
+    {
+        if($exception instanceof ModelNotFoundException) {
+            match ($exception->getModel()) {
+                \App\Models\User::class => response()->json(['message' => 'User not found'], 404),
+                \App\Models\Guild::class => response()->json(['message' => 'Guild not found'], 404),
+            };
+        }
+
+        return parent::render($request, $exception);
     }
 }
