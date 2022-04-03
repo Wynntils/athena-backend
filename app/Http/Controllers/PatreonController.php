@@ -75,8 +75,8 @@ class PatreonController extends Controller
         $patronCount
     ) {
         $color = match ($eventType) {
-            'members:pledge:create' => EmbedColor::GREEN,
-            'members:pledge:delete' => EmbedColor::RED,
+            'members:create', 'members:pledge:create' => EmbedColor::GREEN,
+            'members:delete', 'members:pledge:delete' => EmbedColor::RED,
             'members:update', 'members:pledge:update' => EmbedColor::GOLD,
             default => EmbedColor::RED
         };
