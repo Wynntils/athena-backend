@@ -24,7 +24,7 @@ class CacheManager
 
         return Cache::remember($cacheName, $cache->refreshRate(), static function () use ($cacheName, $cache) {
             $data = $cache->generate();
-            Cache::forever($cacheName.'.hash', sha1(serialize($data)));
+            Cache::forever($cacheName.'.hash', md5(serialize($data)));
             return $data;
         });
     }
