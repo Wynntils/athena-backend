@@ -7,7 +7,7 @@ use Closure;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Http\Request;
 
-class MonitorMiddleware
+class Monitor
 {
     public function handle(Request $request, Closure $next)
     {

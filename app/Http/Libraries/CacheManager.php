@@ -17,7 +17,7 @@ class CacheManager
         'territoryList' => \App\Http\Libraries\Requests\Cache\TerritoryList::class,
     ];
 
-    public static function getCache($cacheName) {
+    public static function generateCache($cacheName) {
         if (!$cache = self::getCacheObj($cacheName)) {
             return null;
         }

@@ -22,3 +22,8 @@ Route::controller(LegacyApiController::class)->middleware('athena.token')->group
     Route::post('setUserPassword/{apiKey}', 'setUserPassword');
     Route::post('getUserByPassword/{apiKey}', 'getUserByPassword');
 });
+
+
+Route::get('/health', function () {
+    return ['result' => 'ok'];
+});
