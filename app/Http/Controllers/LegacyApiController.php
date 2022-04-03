@@ -92,7 +92,10 @@ class LegacyApiController extends Controller
             return ['result' => $user->getConfigFiles()];
         }
 
-        return ['result' => $user->getConfig($lookup)];
+        $result = [];
+        $result['message'] = "Successfully located user '$lookup' configuration.";
+        $result['result'] = $user->getConfig($lookup);
+        return $result;
     }
 
 

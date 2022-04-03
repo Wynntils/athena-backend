@@ -87,7 +87,7 @@ class User extends Model implements
         $files = new ArrayObject();
         $configs = Storage::disk('configs');
         foreach ($configs->files($this->id) as $file) {
-            $files[basename($file)] = json_encode(json_decode(zlib_decode($configs->get($file))));
+            $files[basename($file)] = zlib_decode($configs->get($file));
         }
 
         return $files;
@@ -95,7 +95,7 @@ class User extends Model implements
 
     public function uploadConfig(UploadedFile $file): bool
     {
-        return Storage::disk('configs')->put($this->id.'/'.$file->getClientOriginalName(), zlib_encode(file_get_contents($file), ZLIB_ENCODING_DEFLATE));
+        return Storage::disk('configs')->put($this->id.'/'.$file->getClientOriginalName(), zlib_encode(json_encode(json_decode(file_get_contents($file))), ZLIB_ENCODING_DEFLATE));
     }
 
     public function getConfigAmount(): int
@@ -132,7 +132,7 @@ class User extends Model implements
         $configs = Storage::disk('configs');
 
         return collect($configs->files($this->id))->map(function ($file) {
-            return explode('/', $file)[1];
+            return basename($file);
         })->toArray();
     }
 }
