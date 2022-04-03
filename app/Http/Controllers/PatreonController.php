@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class PatreonController extends Controller
 {
