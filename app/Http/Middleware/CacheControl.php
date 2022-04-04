@@ -12,7 +12,15 @@ class CacheControl
     {
         /** @var Response $response */
         $response = $next($request);
-        if($response->headers->get('Cache-Control') === 'no-cache, private') {
+
+        if ($request->method() === 'POST') {
+            $response->setCache([
+                'private' => true,
+                'no_store' => true,
+                'no_cache' => true,
+                'must_revalidate' => true,
+            ]);
+        } elseif ($response->headers->get('Cache-Control') === 'no-cache, private') {
             $response->setCache(['public' => true, 'max_age' => 60, 's_maxage' => 60]);
         }
 
