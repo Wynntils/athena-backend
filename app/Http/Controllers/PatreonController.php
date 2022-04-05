@@ -129,7 +129,7 @@ class PatreonController extends Controller
                 ->setValue($tier)
                 ->setIsInline(false)
         )->setFooter((new Embed\Footer())
-            ->setText($eventType." | Total Patrons: ".$patronCount." | TEST ")
+            ->setText($eventType." | Total Patrons: ".$patronCount)
         );
         return $wh->addEmbed($embed)->send();
     }
