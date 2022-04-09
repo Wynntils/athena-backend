@@ -41,8 +41,21 @@ class Handler extends ExceptionHandler
             $request = \Request::instance();
             $path = $request->route()?->uri() ?? '';
             $method = $request->method();
-
-            Notifications::log(title: "An exception occured", description: "`Routes -> $method -> /$path`\n**{$e->getMessage()}** ```" . substr($e->getTraceAsString(), 0, 3000) . "```", color: EmbedColor::RED);
+            try {
+                Notifications::log(
+                    title: "An exception occured",
+                    description: sprintf(
+                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
+                        $method,
+                        $path,
+                        $e->getMessage(),
+                        substr($e->getTraceAsString(), 0, 3000)
+                    ),
+                    color: EmbedColor::RED
+                );
+            } catch (Throwable $e) {
+                //
+            }
         });
     }
 
