@@ -15,7 +15,7 @@ class PatreonController extends Controller
     public function webhook(Request $request)
     {
         $payload = $request->getContent();
-        $signature = $request->header('X_PATREON_SIGNATURE');
+        $signature = $request->header('X-Patreon-Signature');
 
         if (!$this->verifySignature($payload, $signature)) {
             abort(403, 'Invalid signature');
@@ -23,17 +23,17 @@ class PatreonController extends Controller
 
         $data = collect(json_decode($payload, true));
 
-        return $this->processEvent($data);
+        return $this->processEvent($request->header('X-Patreon-Event'), $data);
     }
 
     private function verifySignature($payload, $signature)
     {
         $secret = config('services.patreon.webhook_secret');
 
-        return hash_equals(hash_hmac('sha256', $payload, $secret), $signature);
+        return hash_equals(hash_hmac('md5', $payload, $secret), $signature);
     }
 
-    private function processEvent(Collection $data): bool
+    private function processEvent($event, Collection $data): bool
     {
         $includedData = collect($data->get('included'));
         $eventData = collect($data->get('data'));
@@ -65,7 +65,7 @@ class PatreonController extends Controller
         $patronCount = $campaignAttributes->get('patron_count');
 
         return $this->sendDiscordMessage(
-            \Request::header('X_PATREON_EVENT'),
+            $event,
             $discord !== null ? " <@{$discord}>" : null,
             $patronFullName,
             $tier,
@@ -123,21 +123,25 @@ class PatreonController extends Controller
                 ->setName('Months')
                 ->setValue($pledgeMonths)
                 ->setIsInline(true)
-        )->addField(
-            (new Embed\Field())
-                ->setName('Tier')
-                ->setValue($tier)
-                ->setIsInline(false)
         )->setFooter((new Embed\Footer())
             ->setText($eventType." | Total Patrons: ".$patronCount)
         );
+        if($tier !== null) {
+            $embed->addField(
+                (new Embed\Field())
+                    ->setName('Tier')
+                    ->setValue($tier)
+                    ->setIsInline(true)
+            );
+        }
+
         return $wh->addEmbed($embed)->send();
     }
 
     public function test(Request $request)
     {
         $data = collect(json_decode(Storage::get('test.json'), true));
-        $this->processEvent($data);
+        $this->processEvent('members:create', $data);
     }
 
 }
