@@ -61,7 +61,7 @@ class PatreonController extends Controller
         $patronUrl = $userAttributes->get('url');
         $patronImage = $userAttributes->get('image_url');
         $patronFullName = $userAttributes->get('full_name');
-        $discord = $userAttributes->get('social_connections.discord.user_id');
+        $discord = $userAttributes->pull('social_connections.discord.user_id');
         $patronCount = $campaignAttributes->get('patron_count');
 
         return $this->sendDiscordMessage(
