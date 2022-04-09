@@ -47,7 +47,7 @@ class ItemManager
         $requirements['agility'] = $input->get('agility');
 
         $result['damageTypes'] = &$damageTypes;
-        $damageTypes['neutral'] = ignoreZero($input->get('damgae'));
+        $damageTypes['neutral'] = ignoreZero($input->get('damage'));
         $damageTypes['earth'] = ignoreZero($input->get('earthDamage'));
         $damageTypes['thunder'] = ignoreZero($input->get('thunderDamage'));
         $damageTypes['water'] = ignoreZero($input->get('waterDamage'));
