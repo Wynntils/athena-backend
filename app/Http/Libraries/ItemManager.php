@@ -9,8 +9,9 @@ class ItemManager
 
     public static function convertItem(array $item): object
     {
-        $result = [];
         $input = collect($item);
+
+        $result = $itemInfo = $requirements = $damageTypes = $defenseTypes = $statuses = [];
 
         $isFixed = static function ($raw) use ($input) {
             if ($input->get('identified') === true) {
@@ -29,13 +30,13 @@ class ItemManager
         $result['powderAmount'] = $input['sockets'];
         $result['attackSpeed'] = $input->get('attackSpeed');
 
-        $itemInfo = &$result['itemInfo'];
+        $result['itemInfo'] = &$itemInfo;
         $itemInfo['type'] = strtoupper($input->get('type', $input->get('accessoryType')));
         $itemInfo['set'] = $input['set'];
         $itemInfo['dropType'] = strtoupper($input['dropType']);
         $itemInfo['armorColor'] = $input->get('armorColor') === '160,101,64' ? null : $input->get('armorColor');
 
-        $requirements = &$result['requirements'];
+        $result['requirements'] = &$requirements;
         $requirements['quest'] = $input->get('quest');
         $requirements['classType'] = !empty($input->get('classRequirement')) ? strtoupper($input->get('classRequirement')) : null;
         $requirements['level'] = $input->get('level');
@@ -45,15 +46,15 @@ class ItemManager
         $requirements['defense'] = $input->get('defense');
         $requirements['agility'] = $input->get('agility');
 
-        $damageTypes = &$result['damageTypes'];
-        $damageTypes['neutral'] = ignoreZero($input->get('damgae'));
+        $result['damageTypes'] = &$damageTypes;
+        $damageTypes['neutral'] = ignoreZero($input->get('damage'));
         $damageTypes['earth'] = ignoreZero($input->get('earthDamage'));
         $damageTypes['thunder'] = ignoreZero($input->get('thunderDamage'));
         $damageTypes['water'] = ignoreZero($input->get('waterDamage'));
         $damageTypes['fire'] = ignoreZero($input->get('fireDamage'));
         $damageTypes['air'] = ignoreZero($input->get('airDamage'));
 
-        $defenseTypes = &$result['defenseTypes'];
+        $result['defenseTypes'] = &$defenseTypes;
         $defenseTypes['health'] = ignoreZero($input->get('health'));
         $defenseTypes['earth'] = ignoreZero($input->get('earthDefense'));
         $defenseTypes['thunder'] = ignoreZero($input->get('thunderDefense'));
@@ -61,7 +62,7 @@ class ItemManager
         $defenseTypes['fire'] = ignoreZero($input->get('fireDefense'));
         $defenseTypes['air'] = ignoreZero($input->get('airDefense'));
 
-        $statuses = &$result['statuses'];
+        $result['statuses'] = &$statuses;
 
         $result['majorIds'] = $input->get('majorIds');
         $result['restriction'] = $input->get('restrictions');
@@ -153,9 +154,9 @@ class ItemManager
         $order['soulPointRegen'] = 36;
         $order['lootBonus'] = 37;
         $order['lootQuality'] = 38;
-        $order['emeraldStealing'] = 39;
+        $order['stealing'] = 39;
         $order['xpBonus'] = 40;
-        $order['gatherXPBonus'] = 41;
+        $order['gatherXpBonus'] = 41;
         $order['gatherSpeed'] = 42;
         //ninth group {spell stuff}
         $order['raw1stSpellCost'] = 43;
@@ -297,9 +298,9 @@ class ItemManager
             'bonusAirDefense' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
             'rainbowSpellDamageRaw' => 'rawSpellDamage',
-            'gatherXpBonus' => 'gatherXPBonus',
             'attackSpeedBonus' => 'attackSpeed',
             //same ones
+            'gatherXpBonus' => 'gatherXpBonus',
             'spellDamage' => 'spellDamage',
             'healthRegen' => 'healthRegen',
             'poison' => 'poison',

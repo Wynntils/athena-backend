@@ -31,31 +31,27 @@ class LegacyApiController extends Controller
 
         $cosmetics = collect($request->validated('cosmetics'));
 
-        $cosmeticInfo = $user->cosmeticInfo->toArray();
-
         if ($cosmetics->has('texture')) {
-            $cosmeticInfo['capeTexture'] = $cosmetics->get('texture');
+            $user->cosmeticInfo->capeTexture = $cosmetics->get('texture');
         }
         if ($cosmetics->has('isElytra')) {
-            $cosmeticInfo['elytraEnabled'] = $cosmetics->get('isElytra');
+            $user->cosmeticInfo->elytraEnabled = $cosmetics->get('isElytra');
         }
         if ($cosmetics->has('maxResolution')) {
-            $cosmeticInfo['maxResolution'] = $cosmetics->get('maxResolution');
+            $user->cosmeticInfo->maxResolution = $cosmetics->get('maxResolution');
         }
         if ($cosmetics->has('allowAnimated')) {
-            $cosmeticInfo['allowAnimated'] = $cosmetics->get('allowAnimated');
+            $user->cosmeticInfo->allowAnimated = $cosmetics->get('allowAnimated');
         }
         if ($cosmetics->has('parts')) {
             foreach ($cosmetics->get('parts') as $part => $value) {
-                $cosmeticInfo['parts'][$part] = $value;
+                $user->cosmeticInfo['parts'][$part] = $value;
             }
-            $cosmeticInfo['parts'] = $cosmetics->get('parts');
+            $user->cosmeticInfo->parts = $cosmetics->get('parts');
         }
 
-        $user->cosmeticInfo = $cosmeticInfo;
-
         $user->save();
-        return ['message' => 'Updated users cosmetics successfully.'];
+        return ["result" => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
     }
 
     public function setGuildColor(LegacyApiRequest $request)
@@ -77,11 +73,11 @@ class LegacyApiController extends Controller
     public function getUserByPassword(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
-        if(\Hash::check($request->validated('password'), $user->password)) {
-            return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
+        if(!\Hash::check($request->validated('password'), $user->password)) {
+            return ['message' => 'Invalid password.'];
         }
 
-        return ['message' => 'Invalid password.'];
+        return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
     }
 
     public function getUserConfig(LegacyApiRequest $request)
@@ -92,7 +88,10 @@ class LegacyApiController extends Controller
             return ['result' => $user->getConfigFiles()];
         }
 
-        return ['result' => $user->getConfig($lookup)];
+        $result = [];
+        $result['message'] = "Successfully located user '$lookup' configuration.";
+        $result['result'] = $user->getConfig($lookup);
+        return $result;
     }
 
 

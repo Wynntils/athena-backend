@@ -2,8 +2,9 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-use App\Http\Libraries\Requests\WynnRequest;
+
 use App\Models\Guild;
+use Http;
 
 class TerritoryList implements CacheContract
 {
@@ -15,7 +16,7 @@ class TerritoryList implements CacheContract
 
     public function generate(): array
     {
-        $wynnTerritories = WynnRequest::request()->get(config('athena.api.wynn.territories'))->collect('territories');
+        $wynnTerritories = Http::wynn()->get(config('athena.api.wynn.territories'))->collect('territories');
         if ($wynnTerritories === null) {
             return [];
         }
@@ -28,7 +29,7 @@ class TerritoryList implements CacheContract
                 $territory['territory'] = $item['territory'];
                 $territory['guild'] = $guild->id;
                 $territory['guildPrefix'] = $guild->prefix;
-                $territory['guildColor'] = $guild->color;
+                $territory['guildColor'] = empty($guild->color) ? "" : $guild->color;
                 $territory['acquired'] = $item['acquired'];
                 $territory['attacker'] = $item['attacker'];
                 $territory['level'] = 1; // not used

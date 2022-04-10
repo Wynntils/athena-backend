@@ -3,7 +3,8 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Enums\ProfessionType;
-use App\Http\Libraries\Requests\WynnRequest;
+use Http;
+use Illuminate\Http\Client\Pool;
 
 class Leaderboard implements CacheContract
 {
@@ -17,30 +18,34 @@ class Leaderboard implements CacheContract
     {
         $result = [];
 
-        $generateProfile = static function($input, ProfessionType $profession) use (&$result) {
+        $generateProfile = static function ($input, $professionName) use (&$result) {
             $profile = &$result[$input['uuid']];
             $profile['name'] = $input['name'];
             $profile['timePlayed'] = $input['minPlayed'];
 
             $ranks = &$profile['ranks'];
-            $ranks[$profession->name] = $input['pos'];
+            $ranks[$professionName] = $input['pos'];
         };
 
-        foreach (ProfessionType::cases() as $enum) {
-            $output = self::getLeaderBoard($enum->leaderboard());
-
+        foreach (self::getLeaderboards() as $leaderboard => $response) {
+            $data = $response->json('data');
             for ($x = 99; $x >= 91; $x--) {
-                $generateProfile($output[$x], $enum);
+                $generateProfile($data[$x], $leaderboard);
             }
         }
 
         return $result;
     }
 
-    private static function getLeaderBoard(string $leaderboard): array
+    private static function getLeaderboards(): array
     {
-        $wynnLeaderboards = WynnRequest::request()->get(config('athena.api.wynn.leaderboards').$leaderboard)->json('data');
-        return $wynnLeaderboards ?? [];
+        return Http::wynn()->pool(static function (Pool $pool) {
+            $requests = [];
+            foreach (ProfessionType::cases() as $profession) {
+                $requests[] = $pool->as($profession->name)->get(config('athena.api.wynn.leaderboards').$profession->leaderboard());
+            }
+            return $requests;
+        });
     }
 }
 

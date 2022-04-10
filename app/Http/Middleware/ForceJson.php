@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class ForceJsonMiddleware
+class ForceJson
 {
     public function handle(Request $request, Closure $next)
     {

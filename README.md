@@ -6,7 +6,7 @@
     <a href="https://github.com/Wynntils/Athena/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGLP%203.0-green.svg"></a>
 </p>
 
-#Athena
+# Athena
 Athena is the codename of Wynntils Account Management System and the new version of Flary.<br>
 This project uses Laravel as a base.<br>
 Athena handles a bunch of data, including all the accounts, every request/response sent via socket and a lot of caches.

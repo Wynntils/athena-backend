@@ -6,12 +6,14 @@ use App\Http\Libraries\Notifications;
 use Closure;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Throwable;
 
-class MonitorMiddleware
+class Monitor
 {
     public function handle(Request $request, Closure $next)
     {
-        /** @var \Illuminate\Http\Response $response */
+        /** @var Response $response */
         $response = $next($request);
         if (defined('LARAVEL_START')) {
             $time = round((microtime(true) - LARAVEL_START) * 1000, 2);
@@ -32,15 +34,23 @@ class MonitorMiddleware
             ) {
                 $param = json_encode($request->all(), JSON_PRETTY_PRINT);
                 $prettyResponse = json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT);
+                if($prettyResponse === null) {
+                    $prettyResponse = $response->getContent();
+                }
                 try {
                     Notifications::log(
-                        title: "Debug Information",
-                        description: substr("`Routes -> $method -> /$path`\n**Request:** ```json\n$param```\n**Response:**```json\n{$prettyResponse}",
+                        title: "Debug Information Request",
+                        description: substr("`Routes -> ".$method." -> /".$path."`\n**Request:** ```json\n{$request->headers}\n".$param, 0, 3000) . (strlen($param) > 3000 ? '...' : '') . '```',
+                        color: EmbedColor::AQUA
+                    );
+                    Notifications::log(
+                        title: "Debug Information Response",
+                        description: substr("`Routes -> $method -> /$path`\n**Response {$response->getStatusCode()}:**```json\n{$prettyResponse}",
                             0, 3000).(strlen($prettyResponse) > 3000 ? '...' : '')."```",
                         color: EmbedColor::AQUA
                     );
-                } catch (\Exception $e) {
-
+                } catch (Throwable $e) {
+                    //
                 }
             }
         }

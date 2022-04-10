@@ -5,10 +5,10 @@ namespace App\Http\Middleware;
 use Closure;
 use GAMP;
 use Illuminate\Http\Request;
-use TheIconic\Tracking\GoogleAnalytics\Analytics;
+use TheIconic\Tracking\GoogleAnalytics\Analytics as GoogleAnalytics;
 
 
-class TrackThroughMeasurementProtocol
+class Analytics
 {
     /**
      * Handle an incoming request.
@@ -20,9 +20,9 @@ class TrackThroughMeasurementProtocol
     public function handle(Request $request, Closure $next)
     {
         $clientId = $this->getClientId($request);
-        /** @var Analytics $gamp */
+        /** @var GoogleAnalytics $gamp */
         $gamp = GAMP::setClientId($clientId);
-        $gamp->setDocumentPath('/' . $request->path());
+        $gamp->setDocumentPath('/'.$request->path());
         $gamp->setDocumentReferrer($request->server('HTTP_REFERER', ''));
         $gamp->setUserAgentOverride($request->server('HTTP_USER_AGENT', 'Missing/1.0'));
 

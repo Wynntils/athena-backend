@@ -17,14 +17,14 @@ class CacheManager
         'territoryList' => \App\Http\Libraries\Requests\Cache\TerritoryList::class,
     ];
 
-    public static function getCache($cacheName) {
+    public static function generateCache($cacheName) {
         if (!$cache = self::getCacheObj($cacheName)) {
             return null;
         }
 
         return Cache::remember($cacheName, $cache->refreshRate(), static function () use ($cacheName, $cache) {
             $data = $cache->generate();
-            Cache::forever($cacheName.'.hash', sha1(serialize($data)));
+            Cache::forever($cacheName.'.hash', md5(serialize($data)));
             return $data;
         });
     }

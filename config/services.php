@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'patreon' => [
+        'webhook_secret' => env('PATREON_WEBHOOK_SECRET'),
+        'discord_webhook' => env('PATREON_DISCORD_WEBHOOK'),
+    ]
+
 ];

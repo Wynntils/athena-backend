@@ -7,9 +7,9 @@ class IngredientManager
 
     public static function convertIngredient(array $items): object
     {
-        $result = [];
-
         $input = collect($items);
+
+        $result = $statuses = $itemModifiers = $ingredientModifiers = [];
 
         $result['name'] = $input['name'];
         $result['tier'] = $input['tier'];
@@ -21,24 +21,20 @@ class IngredientManager
 
         $result['professions'] = $input['skills'];
 
-        $statuses = [];
-
+        $result['statuses'] = &$statuses;
         foreach ($input['identifications'] as $key => $identification) {
             $translatedName = self::translateStatusName($key);
             $status = &$statuses[$translatedName];
             $status['type'] = getStatusType($translatedName);
             $status['minimum'] = $identification['minimum'];
             $status['maximum'] = $identification['maximum'];
-            cleanNull($status);
+            $status = cleanNull($status);
         }
-
-        $result['statuses'] = $statuses;
-
-        $itemModifiers = [];
 
         $itemIDs = collect($input['itemOnlyIDs']);
         $consumableIDs = collect($input->get('consumableOnlyIDs', []));
 
+        $result['itemModifiers'] = &$itemModifiers;
         $itemModifiers['durability'] = ignoreZero($itemIDs->get('durabilityModifier'));
         $itemModifiers['duration'] = ignoreZero($consumableIDs->get('duration'));
         $itemModifiers['charges'] = ignoreZero($consumableIDs->get('charges'));
@@ -49,11 +45,9 @@ class IngredientManager
         $itemModifiers['defense'] = ignoreZero($itemIDs->get('defenceRequirement'));
         $itemModifiers['agility'] = ignoreZero($itemIDs->get('agilityRequirement'));
 
-        $result['itemModifiers'] = $itemModifiers;
-
-        $ingredientModifiers = [];
         $modifiers = collect($input['ingredientPositionModifiers']);
 
+        $result['ingredientModifiers'] = &$ingredientModifiers;
         $ingredientModifiers['left'] = ignoreZero($modifiers->get('left'));
         $ingredientModifiers['right'] = ignoreZero($modifiers->get('right'));
         $ingredientModifiers['above'] = ignoreZero($modifiers->get('above'));
@@ -61,11 +55,10 @@ class IngredientManager
         $ingredientModifiers['touching'] = ignoreZero($modifiers->get('touching'));
         $ingredientModifiers['notTouching'] = ignoreZero($modifiers->get('notTouching'));
 
-        $result['ingredientModifiers'] = $ingredientModifiers;
+        $itemModifiers = cleanNull($itemModifiers);
+        $ingredientModifiers = cleanNull($ingredientModifiers);
+        $statuses = cleanNull($statuses);
 
-        $result['itemModifiers'] = cleanNull($result['itemModifiers']);
-        $result['ingredientModifiers'] = cleanNull($result['ingredientModifiers']);
-        $result['statuses'] = cleanNull($result['statuses']);
         return cleanNull($result);
     }
 
@@ -164,6 +157,19 @@ class IngredientManager
         $result["Autonomous Core"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRhMzMyYWJkZTMzM2ExNWE2YzZmY2ZlY2E4M2YwMTU5ZWE5NGI2OGU4ZjI3NGJhZmMwNDg5MmI2ZGJmYyJ9fX0=";
         $result["Coalescence"] = "eyJ0aW1lc3RhbXAiOjE1NDQzOTU4MzA5NTUsInByb2ZpbGVJZCI6IjQ5ODU2NTcwYWUwODRlYWY5OTg4MDQwY2VhZGI5ZGQxIiwicHJvZmlsZU5hbWUiOiJTbmVycCIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM3N2EyOTZmNjc4NzMzMjE4YzFiOWVkOWJjNmFhY2Y4NDE1MGI4MTM2OWQ5ZmUxNWUzN2IzMjk0NmY4NTEyYSJ9fX0=";
         $result["Gaze of Darkness"] = "eyJ0aW1lc3RhbXAiOjE0NDk1MDYwNTE1NTksInByb2ZpbGVJZCI6IjY2ODYxMDY1YzMzYjQ4MGNhOWQ0MWJiODlkYjcxMDhjIiwicHJvZmlsZU5hbWUiOiJEYXJrbmVzc2ZhbGwiLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg3ZTQ3OTJmZjY1NDJkY2FiMThmOWY0OWY0OTMzM2YxM2ViMTAzOTRjNDQ4YWMxNDUzOTY3ODYyYzhmMzgifX19";
+
+        // 1.20.?
+        $result["Shattered Aspect"] = "eyJ0aW1lc3RhbXAiOjE0NjE1NDgzMDAyMjgsInByb2ZpbGVJZCI6IjUwNzk4YjJhN2QxYjQxYTRiNmFlYzRiNWUwOWJjMTcxIiwicHJvZmlsZU5hbWUiOiJFbHN3ZXlyIiwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQzNWY3MGZjMmMzMTNmNjhlN2NkNDBkMmQ1MjQzZmFjNDhhMjMwNzg3YmY5ZTBlMTU1ODZjZGU3NmIxM2FiNCJ9fX0=";
+        $result["Disturbed Aspect"] = "eyJ0aW1lc3RhbXAiOjE0Mzc2OTk0NjIwNTMsInByb2ZpbGVJZCI6IjUwNzk4YjJhN2QxYjQxYTRiNmFlYzRiNWUwOWJjMTcxIiwicHJvZmlsZU5hbWUiOiJFbHN3ZXlyIiwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Y3MThiZjc5M2U3NjFiODIyNWQwZGQwNGEzMDk0MzRhZGY3ZTM0Y2I5Y2E4OTVlZjNiMzE2M2U1NjI4MjUifX19=";
+        $result["Atmospheric Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWE2ZGQ3NWY0MWU0MjY4ZTBhMTI2OTA1MDkwN2FhNjc0NmZmZDM3YTRhOTI5ZTczMjUyNDY0MmMzMzZiYyJ9fX0=";
+        $result["Wintery Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkNjZmOTM5MDlhNmQ0NjQxYzY1MzA4MmUwNDc0OTY5MWRlODJjZjc3MjMyYmQyMGFiMzJhZGY0ZiJ9fX0=";
+        $result["Evaporated Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIzNTFjOWRhZDJjYWU2MzNlODI4YzU0N2M0ODJmZTY3YTg1NzlmYzRhMzhlMWQ2Yzg2YzRjMGVhZjAxZiJ9fX0=";
+        $result["Overload Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzY3OWVmYzU5ZTIyZmNmMzRmNzQ0OGJmN2FiNjY2NGY3OTljM2RmZjY1NmNmNDgzMDk4YmUzNmM5YWUxIn19fQ==";
+        $result["Repulsive Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU1YjhhMzdhMjc1NzE3NWY3M2RjZjliZjI1ZWI5ZDI0NDFjODU4OWVhMTEzMWI2NDE3YWEzNDVjMGUzZmM0NyJ9fX0=";
+        $result["Compressed Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVjM2JkMWJlMWI1YzljNWRlYTM1MWY4YzM0ZjlhMDdiZjBlZTc2NDM2NDVhNDQzNWU1MmQ3YTc4NzIwZmIifX19";
+        $result["Erratic Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjYyODNlN2E4OGQzMjcxOTMwNGEzN2VkZTBjNmE4YzVkYzlkOWNmOWIwMGExNzljZjkwNGU4Y2U4MjEzMTIifX19";
+        $result["Igneous Aspect"] = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJiMGEyNzA5YWQyN2M1NzgzYmE3YWNiZGFlODc4N2QxNzY3M2YwODg4ZjFiNmQ0ZTI0ZWUxMzI5OGQ0In19fQ==";
+
 
         return $result;
     }
