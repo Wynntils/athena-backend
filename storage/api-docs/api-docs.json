@@ -461,27 +461,27 @@
                 }
             }
         },
-        "/capes/ban/{token}/{sha}": {
+        "/capes/ban/{Token}/{capeID}": {
             "get": {
                 "tags": [
                     "Cape"
                 ],
-                "summary": "Ban cape by token and sha",
+                "summary": "Ban cape by Token and capeID",
                 "operationId": "banCape",
                 "parameters": [
                     {
-                        "name": "token",
+                        "name": "Token",
                         "in": "path",
-                        "description": "The cape token",
+                        "description": "The cape Token",
                         "required": true,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "sha",
+                        "name": "capeID",
                         "in": "path",
-                        "description": "The cape sha",
+                        "description": "The cape ID",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -489,13 +489,45 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The provided cape was banned successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The provided cape was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "There's not a cape with the provided SHA-1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
                 }
             }
         },
-        "/capes/get/{id}": {
+        "/capes/get/{capeID}": {
             "get": {
                 "tags": [
                     "Cape"
@@ -504,9 +536,9 @@
                 "operationId": "getCape",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "capeID",
                         "in": "path",
-                        "description": "The cape id",
+                        "description": "The cape ID",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -534,7 +566,7 @@
                 }
             }
         },
-        "/capes/queue/approve/{token}/{sha}": {
+        "/capes/queue/approve/{Token}/{capeID}": {
             "get": {
                 "tags": [
                     "Cape"
@@ -543,18 +575,18 @@
                 "operationId": "approveCape",
                 "parameters": [
                     {
-                        "name": "token",
+                        "name": "Token",
                         "in": "path",
-                        "description": "The cape token",
+                        "description": "The cape Token",
                         "required": true,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "sha",
+                        "name": "capeID",
                         "in": "path",
-                        "description": "The cape sha",
+                        "description": "The cape ID",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -568,7 +600,7 @@
                 }
             }
         },
-        "/capes/queue/get/{id}": {
+        "/capes/queue/get/{capeID}": {
             "get": {
                 "tags": [
                     "Cape"
@@ -577,9 +609,9 @@
                 "operationId": "getCapeQueue",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "capeID",
                         "in": "path",
-                        "description": "The cape id",
+                        "description": "The cape ID",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -607,7 +639,7 @@
                 }
             }
         },
-        "/capes/queue/upload/{token}": {
+        "/capes/queue/upload/{Token}": {
             "post": {
                 "tags": [
                     "Cape"
@@ -616,9 +648,9 @@
                 "operationId": "uploadCape",
                 "parameters": [
                     {
-                        "name": "token",
+                        "name": "Token",
                         "in": "path",
-                        "description": "The cape token",
+                        "description": "The cape Token",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -632,7 +664,7 @@
                 }
             }
         },
-        "/capes/user/{uuid}": {
+        "/capes/user/{UUID}": {
             "get": {
                 "tags": [
                     "Cape"
@@ -641,9 +673,9 @@
                 "operationId": "userCapes",
                 "parameters": [
                     {
-                        "name": "uuid",
+                        "name": "UUID",
                         "in": "path",
-                        "description": "The user uuid",
+                        "description": "The user UUID",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -682,7 +714,12 @@
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ]
             }
         },
         "/user/getInfo": {
@@ -734,7 +771,12 @@
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ]
             }
         },
         "/user/uploadConfigs": {
@@ -748,7 +790,12 @@
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ]
             }
         }
     },
@@ -1559,11 +1606,6 @@
             }
         },
         "securitySchemes": {
-            "ApiKey": {
-                "type": "apiKey",
-                "name": "apiKey",
-                "in": "header"
-            },
             "AuthToken": {
                 "type": "apiKey",
                 "name": "authToken",
@@ -1587,8 +1629,5 @@
         {
             "name": "User"
         }
-    ],
-    "security": [
-        []
     ]
 }

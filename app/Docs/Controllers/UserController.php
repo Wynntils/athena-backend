@@ -2,6 +2,7 @@
 
 namespace App\Docs\Controllers;
 
+use App\Docs\OpenAPI;
 use OpenApi\Attributes as OA;
 
 #[
@@ -9,6 +10,7 @@ use OpenApi\Attributes as OA;
         path: "/user/getConfigs",
         operationId: "getUserConfigs",
         summary: "getUserConfigs",
+        security: OpenAPI::SECURITY_AUTH_TOKEN,
         tags: ["User"],
         responses: [
             new OA\Response(
@@ -53,6 +55,7 @@ use OpenApi\Attributes as OA;
         path: "/user/updateDiscord",
         operationId: "updateUserDiscord",
         summary: "updateUserDiscord",
+        security: OpenAPI::SECURITY_AUTH_TOKEN,
         tags: ["User"],
         responses: [
             new OA\Response(
@@ -65,6 +68,7 @@ use OpenApi\Attributes as OA;
         path: "/user/uploadConfigs",
         operationId: "uploadUserConfigs",
         summary: "uploadUserConfigs",
+        security: OpenAPI::SECURITY_AUTH_TOKEN,
         tags: ["User"],
         responses: [
             new OA\Response(

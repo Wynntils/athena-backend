@@ -71,7 +71,7 @@ class CapeController extends Controller
         $sha = $request->route('sha');
         if (!$this->manager->isQueued($sha))
         {
-            return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 400);
+            return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 404);
         }
 
         $this->manager->approveCape($sha);
@@ -81,6 +81,11 @@ class CapeController extends Controller
     public function banCape(Request $request): \Illuminate\Http\JsonResponse
     {
         $sha1 = $request->route('sha');
+
+        if (!$this->manager->isQueued($sha1) && !$this->manager->isApproved($sha1))
+        {
+            return response()->json(['message' => 'There\'s not a cape with the provided SHA-1'], 404);
+        }
 
         $this->manager->banCape($sha1);
 

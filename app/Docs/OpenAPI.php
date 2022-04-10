@@ -36,12 +36,6 @@ use OpenApi\Attributes as OA;
         ],
     ),
     OA\SecurityScheme(
-        securityScheme: "ApiKey",
-        type: "apiKey",
-        name: "apiKey",
-        in: "header"
-    ),
-    OA\SecurityScheme(
         securityScheme: "AuthToken",
         type: "apiKey",
         name: "authToken",
@@ -57,7 +51,6 @@ use OpenApi\Attributes as OA;
 ]
 class OpenAPI
 {
-    public const SECURITY_API_KEY = [['ApiKey' => []]];
     public const SECURITY_AUTH_TOKEN = [['AuthToken' => []]];
     public const REF_RESPONSE_SERVER_ERROR = '#/components/responses/ServerError';
 
