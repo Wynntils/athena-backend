@@ -2,8 +2,6 @@
 
 namespace App\Exceptions;
 
-use App\Http\Libraries\Notifications;
-use DiscordWebhook\EmbedColor;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -37,26 +35,35 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            $request = \Request::instance();
-            $path = $request->route()?->uri() ?? '';
-            $method = $request->method();
-            try {
-                Notifications::log(
-                    title: "An exception occured",
-                    description: sprintf(
-                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
-                        $method,
-                        $path,
-                        $e->getMessage(),
-                        substr($e->getTraceAsString(), 0, 3000)
-                    ),
-                    color: EmbedColor::RED
-                );
-            } catch (Throwable $e) {
-                //
-            }
-        });
+//        $this->reportable(function (Throwable $e) {
+//            $request = \Request::instance();
+//            $path = $request->route()?->uri() ?? '';
+//            $method = $request->method();
+//            try {
+//                Notifications::log(
+//                    title: "An exception occured",
+//                    description: sprintf(
+//                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
+//                        $method,
+//                        $path,
+//                        $e->getMessage(),
+//                        substr($e->getTraceAsString(), 0, 3000)
+//                    ),
+//                    color: EmbedColor::RED
+//                );
+//            } catch (Throwable $e) {
+//                //
+//            }
+//        });
+    }
+
+    public function report(Throwable $exception)
+    {
+        if (app()->bound('sentry') && $this->shouldReport($exception)) {
+            app('sentry')->captureException($exception);
+        }
+
+        parent::report($exception);
     }
 
     /**
