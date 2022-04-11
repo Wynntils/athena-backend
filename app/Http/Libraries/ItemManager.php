@@ -71,7 +71,7 @@ class ItemManager
         foreach ($item as $key => $value) {
 
             if ($key === 'armorType') {
-                $itemInfo['material'] = strtolower(str_replace('chain', 'chainmail', 'minecraft:'.$value.'_'.$itemInfo["type"]));
+                $itemInfo['material'] = str_replace('chain', 'chainmail', 'minecraft:'.strtolower($value).'_'.strtolower($itemInfo["type"]));
                 continue;
             }
 
