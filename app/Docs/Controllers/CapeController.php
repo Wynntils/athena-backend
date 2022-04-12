@@ -75,6 +75,16 @@ use OpenApi\Attributes as OA;
         ],
         responses: [
             new OA\Response(
+                response: 200,
+                description: "Successful operation",
+                content: new OA\MediaType(
+                    mediaType: "image/png",
+                    schema: new OA\Schema(
+                        type: "file",
+                    )
+                )
+            ),
+            new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
             )
@@ -86,6 +96,23 @@ use OpenApi\Attributes as OA;
         summary: "listCapes",
         tags: ["Cape"],
         responses: [
+            new OA\Response(
+                response:200,
+                description: "Successful operation",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "result",
+                            type: "array",
+                            items: new OA\Items(
+                                type: "string",
+                                format: "sha1",
+                                example: "defaultCape"
+                            )
+                        )
+                    ]
+                )
+            ),
             new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
@@ -115,6 +142,32 @@ use OpenApi\Attributes as OA;
         ],
         responses: [
             new OA\Response(
+                response: 200,
+                description: "Successful operation",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "message",
+                            type: "string",
+                            example: "Successfully approved the cape."
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "The provided cape was not found",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "message",
+                            type: "string",
+                            example: "There's not a cape with the provided SHA-1"
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
             )
@@ -135,6 +188,16 @@ use OpenApi\Attributes as OA;
             )
         ],
         responses: [
+            new OA\Response(
+                response: 200,
+                description: "Successful operation",
+                content: new OA\MediaType(
+                    mediaType: "image/png",
+                    schema: new OA\Schema(
+                        type: "file",
+                    )
+                )
+            ),
             new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
@@ -169,6 +232,63 @@ use OpenApi\Attributes as OA;
         ],
         responses: [
             new OA\Response(
+                response: 200,
+                description: "Successful operation",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "message",
+                            type: "string",
+                            example: "The cape has been queued for approval."
+                        ),
+                        new OA\Property(
+                            property: "sha-1",
+                            type: "string",
+                            example: "582915bd8c7bc8f12407cc2615be769fa288bdc4"
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "The provided cape is already approved.",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "message",
+                            type: "string",
+                            example: "The provided cape is already approved."
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "The provided cape is already queued.",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "message",
+                            type: "string",
+                            example: "The provided cape is already queued."
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "The provided cape is banned.",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "message",
+                            type: "string",
+                            example: "The provided cape is banned."
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
             )
@@ -189,6 +309,16 @@ use OpenApi\Attributes as OA;
             )
         ],
         responses: [
+            new OA\Response(
+                response: 200,
+                description: "Successful operation",
+                content: new OA\MediaType(
+                    mediaType: "image/png",
+                    schema: new OA\Schema(
+                        type: "file",
+                    )
+                )
+            ),
             new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500

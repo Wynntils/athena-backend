@@ -546,6 +546,16 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "image/png": {
+                                "schema": {
+                                    "type": "file"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -560,6 +570,26 @@
                 "summary": "listCapes",
                 "operationId": "listCapes",
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "format": "sha1",
+                                                "example": "defaultCape"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
