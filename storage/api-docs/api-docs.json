@@ -461,18 +461,18 @@
                 }
             }
         },
-        "/capes/ban/{Token}/{capeID}": {
+        "/capes/ban/{capeToken}/{capeID}": {
             "get": {
                 "tags": [
                     "Cape"
                 ],
-                "summary": "Ban cape by Token and capeID",
+                "summary": "Ban cape by capeToken and capeID",
                 "operationId": "banCape",
                 "parameters": [
                     {
-                        "name": "Token",
+                        "name": "capeToken",
                         "in": "path",
-                        "description": "The cape Token",
+                        "description": "The cape token",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -596,7 +596,7 @@
                 }
             }
         },
-        "/capes/queue/approve/{Token}/{capeID}": {
+        "/capes/queue/approve/{capeToken}/{capeID}": {
             "get": {
                 "tags": [
                     "Cape"
@@ -605,9 +605,9 @@
                 "operationId": "approveCape",
                 "parameters": [
                     {
-                        "name": "Token",
+                        "name": "capeToken",
                         "in": "path",
-                        "description": "The cape Token",
+                        "description": "The cape token",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -624,6 +624,38 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully approved the cape."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The provided cape was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "There's not a cape with the provided SHA-1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -649,6 +681,16 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "image/png": {
+                                "schema": {
+                                    "type": "file"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -669,7 +711,7 @@
                 }
             }
         },
-        "/capes/queue/upload/{Token}": {
+        "/capes/queue/upload/{capeToken}": {
             "post": {
                 "tags": [
                     "Cape"
@@ -678,9 +720,9 @@
                 "operationId": "uploadCape",
                 "parameters": [
                     {
-                        "name": "Token",
+                        "name": "capeToken",
                         "in": "path",
-                        "description": "The cape Token",
+                        "description": "The cape token",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -688,6 +730,62 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The cape has been queued for approval."
+                                        },
+                                        "sha-1": {
+                                            "type": "string",
+                                            "example": "582915bd8c7bc8f12407cc2615be769fa288bdc4"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The provided cape is already approved.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The provided cape is already approved."
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "examples": {
+                                    "CapeApproved": {
+                                        "summary": "Cape is already approved",
+                                        "value": {
+                                            "message": "The provided cape is already approved."
+                                        }
+                                    },
+                                    "CapeQueued": {
+                                        "summary": "Cape is already queued",
+                                        "value": {
+                                            "message": "The provided cape is already queued."
+                                        }
+                                    },
+                                    "CapeBanned": {
+                                        "summary": "Cape is already rejected",
+                                        "value": {
+                                            "message": "The provided cape is banned."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -713,6 +811,16 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "image/png": {
+                                "schema": {
+                                    "type": "file"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -726,7 +834,57 @@
                 ],
                 "summary": "sendGatheringSpot",
                 "operationId": "sendGatheringSpot",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "spot"
+                                ],
+                                "properties": {
+                                    "spot": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "material": {
+                                                "type": "string"
+                                            },
+                                            "x": {
+                                                "type": "integer"
+                                            },
+                                            "y": {
+                                                "type": "integer"
+                                            },
+                                            "z": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Gathering spot saved"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -741,6 +899,24 @@
                 "summary": "getUserConfigs",
                 "operationId": "getUserConfigs",
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "configs": {
+                                            "type": "object",
+                                            "example": {
+                                                "map-overlay_mini_map.config": "{\"active\":true,\"position\":{\"offsetX\":10,\"offsetY\":10,\"anchorX\":0,\"anchorY\":0}}"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -760,10 +936,26 @@
                 "summary": "postUserInfo",
                 "operationId": "postUserInfo",
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
-                }
+                },
+                "deprecated": true
             }
         },
         "/user/getInfo/{user}": {
@@ -784,6 +976,21 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -797,6 +1004,27 @@
                 ],
                 "summary": "updateUserDiscord",
                 "operationId": "updateUserDiscord",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "username"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "500": {
                         "$ref": "#/components/responses/ServerError"
@@ -816,6 +1044,24 @@
                 ],
                 "summary": "uploadUserConfigs",
                 "operationId": "uploadUserConfigs",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "config": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "file",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "500": {
                         "$ref": "#/components/responses/ServerError"
@@ -1611,6 +1857,40 @@
                     },
                     "endZ": {
                         "type": "number"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "properties": {
+                    "accountType": {
+                        "type": "enum",
+                        "enum": [
+                            "NORMAL",
+                            "BANNED",
+                            "DONATOR",
+                            "CONTENT_TEAM",
+                            "HELPER",
+                            "MODERATOR"
+                        ]
+                    },
+                    "cosmetics": {
+                        "properties": {
+                            "hasCape": {
+                                "type": "boolean"
+                            },
+                            "hasElytra": {
+                                "type": "boolean"
+                            },
+                            "hasEars": {
+                                "type": "boolean"
+                            },
+                            "texture": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
                     }
                 },
                 "type": "object"

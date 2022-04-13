@@ -6,14 +6,14 @@ use OpenApi\Attributes as OA;
 
 #[
     OA\Get(
-        path: "/capes/ban/{Token}/{capeID}",
+        path: "/capes/ban/{capeToken}/{capeID}",
         operationId: "banCape",
-        summary: "Ban cape by Token and capeID",
+        summary: "Ban cape by capeToken and capeID",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
-                name: "Token",
-                description: "The cape Token",
+                name: "capeToken",
+                description: "The cape token",
                 in: "path",
                 required: true,
                 schema: new OA\Schema(type: "string")
@@ -97,7 +97,7 @@ use OpenApi\Attributes as OA;
         tags: ["Cape"],
         responses: [
             new OA\Response(
-                response:200,
+                response: 200,
                 description: "Successful operation",
                 content: new OA\JsonContent(
                     properties: [
@@ -120,14 +120,14 @@ use OpenApi\Attributes as OA;
         ]
     ),
     OA\Get(
-        path: "/capes/queue/approve/{Token}/{capeID}",
+        path: "/capes/queue/approve/{capeToken}/{capeID}",
         operationId: "approveCape",
         summary: "approveCape",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
-                name: "Token",
-                description: "The cape Token",
+                name: "capeToken",
+                description: "The cape token",
                 in: "path",
                 required: true,
                 schema: new OA\Schema(type: "string")
@@ -217,14 +217,14 @@ use OpenApi\Attributes as OA;
         ]
     ),
     OA\Post(
-        path: "/capes/queue/upload/{Token}",
+        path: "/capes/queue/upload/{capeToken}",
         operationId: "uploadCape",
         summary: "uploadCape",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
-                name: "Token",
-                description: "The cape Token",
+                name: "capeToken",
+                description: "The cape token",
                 in: "path",
                 required: true,
                 schema: new OA\Schema(type: "string")
@@ -253,37 +253,34 @@ use OpenApi\Attributes as OA;
                 response: 400,
                 description: "The provided cape is already approved.",
                 content: new OA\JsonContent(
+                    examples: [
+                        new OA\Examples(
+                            example: "CapeApproved",
+                            summary: "Cape is already approved",
+                            value: [
+                                "message" => "The provided cape is already approved.",
+                            ]
+                        ),
+                        new OA\Examples(
+                            example: "CapeQueued",
+                            summary: "Cape is already queued",
+                            value: [
+                                "message" => "The provided cape is already queued.",
+                            ]
+                        ),
+                        new OA\Examples(
+                            example: "CapeBanned",
+                            summary: "Cape is already rejected",
+                            value: [
+                                "message" => "The provided cape is banned.",
+                            ]
+                        ),
+                    ],
                     properties: [
                         new OA\Property(
                             property: "message",
                             type: "string",
                             example: "The provided cape is already approved."
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 400,
-                description: "The provided cape is already queued.",
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "The provided cape is already queued."
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 400,
-                description: "The provided cape is banned.",
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "The provided cape is banned."
                         ),
                     ]
                 )

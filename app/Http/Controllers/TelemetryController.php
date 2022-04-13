@@ -7,7 +7,7 @@ use App\Models\GatheringSpot;
 
 class TelemetryController extends Controller
 {
-    public function saveGatheringSpot(TelemetryRequest $request): \Illuminate\Http\JsonResponse
+    public function sendGatheringSpot(TelemetryRequest $request): \Illuminate\Http\JsonResponse
     {
         $gatheringSpot = GatheringSpot::firstOrCreate(
             ['_id' => $request->validated('spot.x').':'.$request->validated('spot.y').':'.$request->validated('spot.z')],

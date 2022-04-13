@@ -14,6 +14,17 @@ use OpenApi\Attributes as OA;
         tags: ["User"],
         responses: [
             new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "configs", type: "object", example: [
+                            "map-overlay_mini_map.config" => "{\"active\":true,\"position\":{\"offsetX\":10,\"offsetY\":10,\"anchorX\":0,\"anchorY\":0}}"
+                        ]),
+                    ]
+                )
+            ),
+            new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
             )
@@ -26,10 +37,20 @@ use OpenApi\Attributes as OA;
         tags: ["User"],
         responses: [
             new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    ]
+                )
+            ),
+            new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
             )
-        ]
+        ],
+        deprecated: true
     ),
     OA\Get(
         path: "/user/getInfo/{user}",
@@ -46,6 +67,15 @@ use OpenApi\Attributes as OA;
         ],
         responses: [
             new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    ]
+                )
+            ),
+            new OA\Response(
                 ref: "#/components/responses/ServerError",
                 response: 500
             )
@@ -56,6 +86,15 @@ use OpenApi\Attributes as OA;
         operationId: "updateUserDiscord",
         summary: "updateUserDiscord",
         security: OpenAPI::SECURITY_AUTH_TOKEN,
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                required: ["id", "username"],
+                properties: [
+                    new OA\Property(property: "id", type: "string"),
+                    new OA\Property(property: "username", type: "string"),
+                ]
+            )
+        ),
         tags: ["User"],
         responses: [
             new OA\Response(
@@ -69,6 +108,25 @@ use OpenApi\Attributes as OA;
         operationId: "uploadUserConfigs",
         summary: "uploadUserConfigs",
         security: OpenAPI::SECURITY_AUTH_TOKEN,
+        requestBody: new OA\RequestBody(
+            content: [
+                new OA\MediaType(
+                    mediaType: "multipart/form-data",
+                    schema: new OA\Schema(
+                        properties: [
+                            new OA\Property(
+                                property: "config",
+                                type: "array",
+                                items: new OA\Items(
+                                    type: "file",
+                                    format: "binary"
+                                )
+                            ),
+                        ]
+                    )
+                )
+            ]
+        ),
         tags: ["User"],
         responses: [
             new OA\Response(
