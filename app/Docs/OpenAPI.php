@@ -18,13 +18,13 @@ use OpenApi\Attributes as OA;
         ),
         servers: [
             new OA\Server(
+                url: "https://athena.wynntils.com",
+                description: "Production"
+            ),
+            new OA\Server(
                 url: "http://127.0.0.1:8000",
                 description: "Localhost"
             ),
-            new OA\Server(
-                url: "https://athena.wynntils.com",
-                description: "Production"
-            )
         ],
         tags: [
             new OA\Tag(name: "Auth"),
