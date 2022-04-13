@@ -7,7 +7,8 @@ class UserRequest extends BaseRequest
     public function uploadConfigs(): array
     {
         return [
-            'config' => 'required|file|max:500'
+            'config' => 'required|array|min:1',
+            'config.*' => 'required|file|max:500',
         ];
     }
 

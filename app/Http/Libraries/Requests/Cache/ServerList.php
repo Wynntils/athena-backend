@@ -30,8 +30,10 @@ class ServerList implements CacheContract
 
             $validServers[] = $key;
 
-            $server['firstSeen'] = Server::firstOrCreate(['_id' => $key],
-                ['firstSeen' => currentTimeMillis()])->firstSeen;
+            $server['firstSeen'] = Server::firstOrCreate(
+                ['_id' => $key],
+                ['firstSeen' => currentTimeMillis()]
+            )->firstSeen;
 
             $server['players'] = $onlinePlayer;
 

@@ -57,7 +57,7 @@ class User extends Model implements
         'discordInfo' => DiscordInfo::class
     ];
 
-    public function updateAccount($username, $version): string
+    public function updateAccount($username, $version): void
     {
         $this->authToken = \Str::uuid()->toString();
         $this->lastActivity = currentTimeMillis();
@@ -70,8 +70,6 @@ class User extends Model implements
         $this->usedVersions = $usedVersions;
 
         $this->save();
-
-        return $this->authToken;
     }
 
     public function updateDiscord($id, $username): void

@@ -40,10 +40,10 @@ class Guild extends Model
             return new Guild(['_id' => 'None', 'prefix' => 'ERROR', 'color' => '#ff0000']);
         }
 
-        return Guild::create([
-            '_id' => $name,
-            'prefix' => $request['prefix'],
-        ]);
+        return Guild::firstOrCreate(
+            ['_id' => $name],
+            ['prefix' => $request['prefix']]
+        );
     }
 
 }

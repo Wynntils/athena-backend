@@ -6,6 +6,7 @@ use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Auth;
+use Illuminate\Http\UploadedFile;
 
 class UserController extends Controller
 {
@@ -17,8 +18,32 @@ class UserController extends Controller
 
     public function uploadConfigs(UserRequest $request): \Illuminate\Http\JsonResponse
     {
-        Auth::user()?->uploadConfig($request->validated('config'));
-        return response()->json(['message' => 'Successfully uploaded config.'], 200);
+        $result = $uploadResult = [];
+        $result['results'] = &$uploadResult;
+
+        /** @var \App\Models\User $user */
+        $user = \Auth::user();
+        /** @var UploadedFile $config */
+        foreach($request->validated('config') as $config) {
+            $fileResult = [];
+            $uploadResult[] = &$fileResult;
+            $fileResult['name'] = $config->getClientOriginalName();
+
+            if ($config->getSize() > 200000) {
+                $fileResult['message'] = 'The provided configuration is bigger than 200 kilobytes.';
+                continue;
+            }
+
+            if($user->getConfigAmount() >= 80) {
+                $fileResult['message'] = 'User exceeded the configuration amount limit.';
+                continue;
+            }
+
+            $user->uploadConfig($config);
+            $fileResult['message'] = 'Configuration stored successfully';
+        }
+
+        return response()->json($result, 200);
     }
 
     public function getConfigs(): \Illuminate\Http\JsonResponse
