@@ -52,14 +52,6 @@ use OpenApi\Attributes as OA;
                 ])
             ),
             new OA\Response(
-                response: 400,
-                description: "Missing required parameters",
-                content: new OA\JsonContent(properties: [
-                    new OA\Property(property: "message", type: "string",
-                        example: "Expecting parameters 'username', 'key' and 'version'."),
-                ])
-            ),
-            new OA\Response(
                 response: 401,
                 description: "Key or username is invalid",
                 content: new OA\JsonContent(properties: [
@@ -67,6 +59,7 @@ use OpenApi\Attributes as OA;
                         example: "The provided username or key is invalid"),
                 ])
             ),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_BAD_REQUEST, response: 422),
             new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500),
         ]
     )

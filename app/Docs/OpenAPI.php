@@ -32,7 +32,6 @@ use OpenApi\Attributes as OA;
             new OA\Tag(name: "Cape"),
             new OA\Tag(name: "Telemetry"),
             new OA\Tag(name: "User"),
-
         ],
     ),
     OA\SecurityScheme(
@@ -48,10 +47,29 @@ use OpenApi\Attributes as OA;
             new OA\Property(property: "message", description: "Error message", type: "string", example: "Server Error"),
         ])
     ),
+    OA\Response(
+        response: 'Unauthorized',
+        description: "Unauthorized",
+        content: new OA\JsonContent(properties: [
+            new OA\Property(property: "message", description: "Error message", type: "string", example: "Unauthenticated"),
+        ])
+    ),
+    OA\Response(
+        response: 'BadRequest',
+        description: "Unprocessable Content",
+        content: new OA\JsonContent(properties: [
+            new OA\Property(property: "message", description: "Error description", type: "string", example: "The X field is required."),
+            new OA\Property(property: "errors", description: "Error message", properties: [
+                new OA\Property(property: "X", description: "Error message", type: "array", items: new OA\Items(type: "string", example: "The X field is required.")),
+            ], type: "object"),
+        ])
+    ),
 ]
 class OpenAPI
 {
     public const SECURITY_AUTH_TOKEN = [['AuthToken' => []]];
     public const REF_RESPONSE_SERVER_ERROR = '#/components/responses/ServerError';
+    public const REF_RESPONSE_UNAUTHORIZED = '#/components/responses/Unauthorized';
+    public const REF_RESPONSE_BAD_REQUEST = '#/components/responses/BadRequest';
 
 }

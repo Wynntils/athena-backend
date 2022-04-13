@@ -7,8 +7,8 @@ use App\Http\Enums\ProfessionType;
 
 class TelemetryRequest extends BaseRequest
 {
-    public function saveGatheringSpot(): array
-    {;
+    public function sendGatheringSpot(): array
+    {
         return [
             'spot' => 'required|array',
             'spot.type' => 'required|string|in:'.collect(ProfessionType::cases())->pluck('value')->implode(','),

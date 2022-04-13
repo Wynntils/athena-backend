@@ -113,22 +113,6 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Missing required parameters",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Expecting parameters 'username', 'key' and 'version'."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
                     "401": {
                         "description": "Key or username is invalid",
                         "content": {
@@ -144,6 +128,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/BadRequest"
                     },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
@@ -521,6 +508,9 @@
                             }
                         }
                     },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -656,6 +646,9 @@
                             }
                         }
                     },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -786,6 +779,9 @@
                             }
                         }
                     },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -885,10 +881,18 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ]
             }
         },
         "/user/getConfigs": {
@@ -916,6 +920,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
                     },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
@@ -950,6 +957,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
                     },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
@@ -1026,6 +1036,28 @@
                     }
                 },
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -1063,6 +1095,40 @@
                     }
                 },
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "map-overlay_mini_map.config"
+                                                    },
+                                                    "message": {
+                                                        "type": "string",
+                                                        "example": "Configuration stored successfully"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
@@ -1907,6 +1973,54 @@
                                     "description": "Error message",
                                     "type": "string",
                                     "example": "Server Error"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Error message",
+                                    "type": "string",
+                                    "example": "Unauthenticated"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "BadRequest": {
+                "description": "Unprocessable Content",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Error description",
+                                    "type": "string",
+                                    "example": "The X field is required."
+                                },
+                                "errors": {
+                                    "description": "Error message",
+                                    "properties": {
+                                        "X": {
+                                            "description": "Error message",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "The X field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             },
                             "type": "object"

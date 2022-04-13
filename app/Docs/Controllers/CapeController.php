@@ -2,6 +2,7 @@
 
 namespace App\Docs\Controllers;
 
+use App\Docs\OpenAPI;
 use OpenApi\Attributes as OA;
 
 #[
@@ -53,10 +54,8 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Get(
@@ -84,10 +83,7 @@ use OpenApi\Attributes as OA;
                     )
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Get(
@@ -113,10 +109,7 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Get(
@@ -167,10 +160,8 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Get(
@@ -198,10 +189,7 @@ use OpenApi\Attributes as OA;
                     )
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Get(
@@ -210,10 +198,7 @@ use OpenApi\Attributes as OA;
         summary: "listCapeQueue",
         tags: ["Cape"],
         responses: [
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Post(
@@ -285,10 +270,8 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Get(
@@ -316,10 +299,7 @@ use OpenApi\Attributes as OA;
                     )
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
 ]

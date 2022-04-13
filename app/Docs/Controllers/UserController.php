@@ -24,10 +24,8 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Post(
@@ -45,10 +43,8 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ],
         deprecated: true
     ),
@@ -75,10 +71,7 @@ use OpenApi\Attributes as OA;
                     ]
                 )
             ),
-            new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Post(
@@ -98,9 +91,17 @@ use OpenApi\Attributes as OA;
         tags: ["User"],
         responses: [
             new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+                response: 200,
+                description: "Success",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Success"),
+                    ]
+                )
+            ),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_BAD_REQUEST, response: 422),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
     OA\Post(
@@ -130,9 +131,27 @@ use OpenApi\Attributes as OA;
         tags: ["User"],
         responses: [
             new OA\Response(
-                ref: "#/components/responses/ServerError",
-                response: 500
-            )
+                response: 200,
+                description: "Success",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "results",
+                            type: "array",
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: "name", type: "string", example: "map-overlay_mini_map.config"),
+                                    new OA\Property(property: "message", type: "string", example: "Configuration stored successfully"),
+                                ],
+                                type: "object"
+                            )
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_BAD_REQUEST, response: 422),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ]
     ),
 
