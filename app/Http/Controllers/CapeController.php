@@ -59,9 +59,9 @@ class CapeController extends Controller
         $hash = sha1($image->getEncoded());
 
         return match (true) {
-            $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.']),
-            $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.']),
-            $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.']),
+            $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.'], 400),
+            $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.'], 400),
+            $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.'], 400),
             default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($image)]),
         };
     }
@@ -71,7 +71,7 @@ class CapeController extends Controller
         $sha = $request->route('sha');
         if (!$this->manager->isQueued($sha))
         {
-            return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 400);
+            return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 404);
         }
 
         $this->manager->approveCape($sha);
@@ -81,6 +81,11 @@ class CapeController extends Controller
     public function banCape(Request $request): \Illuminate\Http\JsonResponse
     {
         $sha1 = $request->route('sha');
+
+        if (!$this->manager->isQueued($sha1) && !$this->manager->isApproved($sha1))
+        {
+            return response()->json(['message' => 'There\'s not a cape with the provided SHA-1'], 404);
+        }
 
         $this->manager->banCape($sha1);
 
