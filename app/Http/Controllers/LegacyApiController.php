@@ -90,7 +90,7 @@ class LegacyApiController extends Controller
 
         $result = [];
         $result['message'] = "Successfully located user '$lookup' configuration.";
-        $result['result'] = $user->getConfig($lookup);
+        $result['result'] = json_decode($user->getConfig($lookup), true, 512, JSON_THROW_ON_ERROR);
         return $result;
     }
 
