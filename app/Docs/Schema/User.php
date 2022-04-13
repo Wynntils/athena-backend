@@ -2,6 +2,7 @@
 
 namespace App\Docs\Schema;
 
+use App\Http\Enums\AccountType;
 use OpenApi\Attributes as OA;
 
 #[
@@ -12,12 +13,12 @@ use OpenApi\Attributes as OA;
                 property: "accountType",
                 type: "enum",
                 enum: [
-                    "NORMAL",
-                    "BANNED",
-                    "DONATOR",
-                    "CONTENT_TEAM",
-                    "HELPER",
-                    "MODERATOR",
+                    AccountType::NORMAL,
+                    AccountType::BANNED,
+                    AccountType::DONATOR,
+                    AccountType::CONTENT_TEAM,
+                    AccountType::HELPER,
+                    AccountType::MODERATOR,
                 ],
             ),
             new OA\Property(

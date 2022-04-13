@@ -841,10 +841,63 @@
                                     "spot": {
                                         "properties": {
                                             "type": {
-                                                "type": "string"
+                                                "type": "enum",
+                                                "enum": [
+                                                    "WOODCUTTING",
+                                                    "MINING",
+                                                    "FARMING",
+                                                    "FISHING"
+                                                ]
                                             },
                                             "material": {
-                                                "type": "string"
+                                                "type": "enum",
+                                                "enum": [
+                                                    "OAK",
+                                                    "BIRCH",
+                                                    "WILLOW",
+                                                    "ACACIA",
+                                                    "SPRUCE",
+                                                    "JUNGLE",
+                                                    "DARK",
+                                                    "LIGHT",
+                                                    "PINE",
+                                                    "AVO",
+                                                    "SKY",
+                                                    "COPPER",
+                                                    "GRANITE",
+                                                    "GOLD",
+                                                    "SANDSTONE",
+                                                    "IRON",
+                                                    "SILVER",
+                                                    "COBALT",
+                                                    "KANDERSTONE",
+                                                    "DIAMOND",
+                                                    "MOLTEN",
+                                                    "VOIDSTONE",
+                                                    "WHEAT",
+                                                    "BARLEY",
+                                                    "OATS",
+                                                    "MALT",
+                                                    "HOPS",
+                                                    "RYE",
+                                                    "MILLET",
+                                                    "DECAY_ROOTS",
+                                                    "RICE",
+                                                    "SORGHUM",
+                                                    "HEMP",
+                                                    "GUDGEON",
+                                                    "TROUT",
+                                                    "SALMON",
+                                                    "CARP",
+                                                    "ICEFISH",
+                                                    "PIRANHA",
+                                                    "KOI",
+                                                    "GYLIA_FISH",
+                                                    "BASS",
+                                                    "MOLTEN_EEL",
+                                                    "STARFISH",
+                                                    "DERNIC"
+                                                ]
                                             },
                                             "x": {
                                                 "type": "integer"

@@ -11,7 +11,12 @@ class TelemetryRequest extends BaseRequest
     {
         return [
             'spot' => 'required|array',
-            'spot.type' => 'required|string|in:'.collect(ProfessionType::cases())->pluck('value')->implode(','),
+            'spot.type' => 'required|string|in:'.collect([
+                    ProfessionType::WOODCUTTING,
+                    ProfessionType::MINING,
+                    ProfessionType::FARMING,
+                    ProfessionType::FISHING,
+                ])->implode(','),
             'spot.material' => 'required|string|in:'.collect(GatheringMaterial::cases())->pluck('value')->implode(','),
             'spot.x' => 'required|integer',
             'spot.y' => 'required|integer',

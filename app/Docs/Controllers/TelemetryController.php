@@ -3,6 +3,8 @@
 namespace App\Docs\Controllers;
 
 use App\Docs\OpenAPI;
+use App\Http\Enums\GatheringMaterial;
+use App\Http\Enums\ProfessionType;
 use OpenApi\Attributes as OA;
 
 #[
@@ -18,8 +20,59 @@ use OpenApi\Attributes as OA;
                     new OA\Property(
                         property: "spot",
                         properties: [
-                            new OA\Property(property: "type", type: "string"),
-                            new OA\Property(property: "material", type: "string"),
+                            new OA\Property(property: "type", type: "enum", enum: [
+                                ProfessionType::WOODCUTTING,
+                                ProfessionType::MINING,
+                                ProfessionType::FARMING,
+                                ProfessionType::FISHING,
+                            ]),
+                            new OA\Property(property: "material", type: "enum", enum: [
+                                GatheringMaterial::OAK,
+                                GatheringMaterial::BIRCH,
+                                GatheringMaterial::WILLOW,
+                                GatheringMaterial::ACACIA,
+                                GatheringMaterial::SPRUCE,
+                                GatheringMaterial::JUNGLE,
+                                GatheringMaterial::DARK,
+                                GatheringMaterial::LIGHT,
+                                GatheringMaterial::PINE,
+                                GatheringMaterial::AVO,
+                                GatheringMaterial::SKY,
+                                GatheringMaterial::COPPER,
+                                GatheringMaterial::GRANITE,
+                                GatheringMaterial::GOLD,
+                                GatheringMaterial::SANDSTONE,
+                                GatheringMaterial::IRON,
+                                GatheringMaterial::SILVER,
+                                GatheringMaterial::COBALT,
+                                GatheringMaterial::KANDERSTONE,
+                                GatheringMaterial::DIAMOND,
+                                GatheringMaterial::MOLTEN,
+                                GatheringMaterial::VOIDSTONE,
+                                GatheringMaterial::WHEAT,
+                                GatheringMaterial::BARLEY,
+                                GatheringMaterial::OATS,
+                                GatheringMaterial::MALT,
+                                GatheringMaterial::HOPS,
+                                GatheringMaterial::RYE,
+                                GatheringMaterial::MILLET,
+                                GatheringMaterial::DECAY_ROOTS,
+                                GatheringMaterial::RICE,
+                                GatheringMaterial::SORGHUM,
+                                GatheringMaterial::HEMP,
+                                GatheringMaterial::GUDGEON,
+                                GatheringMaterial::TROUT,
+                                GatheringMaterial::SALMON,
+                                GatheringMaterial::CARP,
+                                GatheringMaterial::ICEFISH,
+                                GatheringMaterial::PIRANHA,
+                                GatheringMaterial::KOI,
+                                GatheringMaterial::GYLIA_FISH,
+                                GatheringMaterial::BASS,
+                                GatheringMaterial::MOLTEN_EEL,
+                                GatheringMaterial::STARFISH,
+                                GatheringMaterial::DERNIC,
+                            ]),
                             new OA\Property(property: "x", type: "integer"),
                             new OA\Property(property: "y", type: "integer"),
                             new OA\Property(property: "z", type: "integer"),
