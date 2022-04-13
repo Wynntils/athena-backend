@@ -8,7 +8,7 @@ use OpenApi\Attributes as OA;
     OA\OpenApi(
         openapi: "3.0.0",
         info: new OA\Info(
-            version: "Dev-Master",
+            version: "1.0.0",
             description: "Athena Backend API",
             title: "Athena-Backend",
             license: new OA\License(
