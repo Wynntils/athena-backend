@@ -11,7 +11,7 @@ use OpenApi\Attributes as OA;
         properties: [
             new OA\Property(
                 property: "accountType",
-                type: "enum",
+                type: "string",
                 enum: [
                     AccountType::NORMAL,
                     AccountType::BANNED,

@@ -120,7 +120,7 @@ use OpenApi\Attributes as OA;
                                 property: "config",
                                 type: "array",
                                 items: new OA\Items(
-                                    type: "file",
+                                    type: "string",
                                     format: "binary"
                                 )
                             ),

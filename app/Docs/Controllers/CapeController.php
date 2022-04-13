@@ -79,7 +79,8 @@ use OpenApi\Attributes as OA;
                 content: new OA\MediaType(
                     mediaType: "image/png",
                     schema: new OA\Schema(
-                        type: "file",
+                        type: "string",
+                        format: "binary"
                     )
                 )
             ),
@@ -185,7 +186,8 @@ use OpenApi\Attributes as OA;
                 content: new OA\MediaType(
                     mediaType: "image/png",
                     schema: new OA\Schema(
-                        type: "file",
+                        type: "string",
+                        format: "binary"
                     )
                 )
             ),
@@ -295,7 +297,8 @@ use OpenApi\Attributes as OA;
                 content: new OA\MediaType(
                     mediaType: "image/png",
                     schema: new OA\Schema(
-                        type: "file",
+                        type: "string",
+                        format: "binary"
                     )
                 )
             ),

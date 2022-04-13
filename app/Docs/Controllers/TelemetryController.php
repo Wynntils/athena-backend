@@ -20,13 +20,13 @@ use OpenApi\Attributes as OA;
                     new OA\Property(
                         property: "spot",
                         properties: [
-                            new OA\Property(property: "type", type: "enum", enum: [
+                            new OA\Property(property: "type", type: "string", enum: [
                                 ProfessionType::WOODCUTTING,
                                 ProfessionType::MINING,
                                 ProfessionType::FARMING,
                                 ProfessionType::FISHING,
                             ]),
-                            new OA\Property(property: "material", type: "enum", enum: [
+                            new OA\Property(property: "material", type: "string", enum: [
                                 GatheringMaterial::OAK,
                                 GatheringMaterial::BIRCH,
                                 GatheringMaterial::WILLOW,

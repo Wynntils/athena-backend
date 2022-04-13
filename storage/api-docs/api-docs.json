@@ -541,7 +541,8 @@
                         "content": {
                             "image/png": {
                                 "schema": {
-                                    "type": "file"
+                                    "type": "string",
+                                    "format": "binary"
                                 }
                             }
                         }
@@ -679,7 +680,8 @@
                         "content": {
                             "image/png": {
                                 "schema": {
-                                    "type": "file"
+                                    "type": "string",
+                                    "format": "binary"
                                 }
                             }
                         }
@@ -812,7 +814,8 @@
                         "content": {
                             "image/png": {
                                 "schema": {
-                                    "type": "file"
+                                    "type": "string",
+                                    "format": "binary"
                                 }
                             }
                         }
@@ -841,7 +844,7 @@
                                     "spot": {
                                         "properties": {
                                             "type": {
-                                                "type": "enum",
+                                                "type": "string",
                                                 "enum": [
                                                     "WOODCUTTING",
                                                     "MINING",
@@ -850,7 +853,7 @@
                                                 ]
                                             },
                                             "material": {
-                                                "type": "enum",
+                                                "type": "string",
                                                 "enum": [
                                                     "OAK",
                                                     "BIRCH",
@@ -1140,7 +1143,7 @@
                                     "config": {
                                         "type": "array",
                                         "items": {
-                                            "type": "file",
+                                            "type": "string",
                                             "format": "binary"
                                         }
                                     }
@@ -1987,7 +1990,7 @@
                 "title": "User",
                 "properties": {
                     "accountType": {
-                        "type": "enum",
+                        "type": "string",
                         "enum": [
                             "NORMAL",
                             "BANNED",
