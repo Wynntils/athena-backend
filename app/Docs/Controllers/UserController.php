@@ -114,6 +114,7 @@ use OpenApi\Attributes as OA;
                 new OA\MediaType(
                     mediaType: "multipart/form-data",
                     schema: new OA\Schema(
+                        required: ["config"],
                         properties: [
                             new OA\Property(
                                 property: "config",

@@ -1133,6 +1133,9 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
+                                "required": [
+                                    "config"
+                                ],
                                 "properties": {
                                     "config": {
                                         "type": "array",
