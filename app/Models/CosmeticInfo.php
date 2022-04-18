@@ -59,7 +59,7 @@ class CosmeticInfo implements Castable
                 $info->elytraEnabled = $value['elytraEnabled'] ?? null;
                 $info->maxResolution = $value['maxResolution'] ?? null;
                 $info->allowAnimated = $value['allowAnimated'] ?? null;
-                $info->parts = $value['parts'] ?? null;
+                $info->parts = new PartInfo($value['parts']['ears'] ?? null);
                 return $info;
             }
 

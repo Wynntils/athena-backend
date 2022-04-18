@@ -10,6 +10,11 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
  */
 class PartInfo implements Castable
 {
+    public function __construct($ears = null)
+    {
+        $this->ears = $ears;
+    }
+
     /**
      * @var array<int, string>
      */
@@ -31,7 +36,9 @@ class PartInfo implements Castable
             public function set($model, $key, $value, $attributes)
             {
                 return [
-                    'ears' => $value->ears
+                    'partInfo' => [
+                        'ears' => $value->ears
+                    ]
                 ];
             }
         };

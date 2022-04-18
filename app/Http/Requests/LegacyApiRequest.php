@@ -26,7 +26,7 @@ class LegacyApiRequest extends BaseRequest
             'cosmetics' => 'required|array',
             'cosmetics.isElytra' => 'boolean',
             'cosmetics.allowAnimated' => 'boolean',
-            'cosmetics.texture' => 'string',
+            'cosmetics.texture' => 'nullable|string',
             'cosmetics.maxResolution' => 'string',
             'cosmetics.parts' => 'array',
             'cosmetics.parts.ears' => 'boolean',

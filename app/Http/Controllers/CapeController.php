@@ -59,9 +59,9 @@ class CapeController extends Controller
         $hash = sha1($image->getEncoded());
 
         return match (true) {
-            $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.'], 400),
-            $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.'], 400),
-            $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.'], 400),
+            $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $hash], 400),
+            $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.', 'sha-1' => $hash], 400),
+            $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.', 'sha-1' => $hash], 400),
             default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($image)]),
         };
     }

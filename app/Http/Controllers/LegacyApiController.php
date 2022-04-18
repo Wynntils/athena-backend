@@ -45,7 +45,7 @@ class LegacyApiController extends Controller
         }
         if ($cosmetics->has('parts')) {
             foreach ($cosmetics->get('parts') as $part => $value) {
-                $user->cosmeticInfo['parts'][$part] = $value;
+                $user->cosmeticInfo->parts->{$part} = $value;
             }
             $user->cosmeticInfo->parts = $cosmetics->get('parts');
         }
