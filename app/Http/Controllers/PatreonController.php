@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Enums\AccountType;
+use App\Models\User;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
@@ -201,10 +203,26 @@ class PatreonController extends Controller
 
         $discordList = $activePatrons->map(function($item) {
             $item = collect($item);
-            return sprintf("%-21s|%-25s|%-10s",
-                "<@" . $item->pull('attributes.social_connections.discord.user_id') . ">",
+            $discordId = $item->pull('attributes.social_connections.discord.user_id');
+            if(!empty($discordId)) {
+                $user = User::where('discordInfo.id', $discordId)->get();
+            } else {
+                $user = collect([]);
+            }
+
+            foreach($user as $usr) {
+                if($usr->accountType === AccountType::DONATOR) {
+                    $user = collect([$usr]);
+                    break;
+                }
+            }
+
+            return sprintf("%-21s|%-25s|%-10s|%-25s|%-25s",
+                "<@" . $discordId . ">",
                 "`" . $item->pull('attributes.full_name') . "`",
-                $item->pull('tier')
+                $item->pull('tier'),
+                $user->map(function($item) {return $item->username;})->join(','),
+                $user->map(function($item) {return $item->accountType->value;})->join(','),
             );
         });
 
