@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fe1864fdbfe128544230608eb856ec5",
+    "content-hash": "ce9a097f6cedf0e592525507ac0a3e3d",
     "packages": [
         {
             "name": "brick/math",
@@ -2628,6 +2628,46 @@
                 "source": "https://github.com/nikic/PHP-Parser/tree/v4.13.2"
             },
             "time": "2021-11-30T19:35:32+00:00"
+        },
+        {
+            "name": "patreon/patreon",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Patreon/patreon-php.git",
+                "reference": "206575a16ce9a447b79b2367e1d4991ce76202d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Patreon/patreon-php/zipball/206575a16ce9a447b79b2367e1d4991ce76202d2",
+                "reference": "206575a16ce9a447b79b2367e1d4991ce76202d2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Patreon\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Patreon",
+                    "email": "platform-team@patreon.com"
+                }
+            ],
+            "description": "Interact with the Patreon API via OAuth.",
+            "support": {
+                "issues": "https://github.com/Patreon/patreon-php/issues",
+                "source": "https://github.com/Patreon/patreon-php/tree/1.0.0"
+            },
+            "time": "2019-08-21T20:25:53+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -8952,5 +8992,5 @@
         "ext-zlib": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

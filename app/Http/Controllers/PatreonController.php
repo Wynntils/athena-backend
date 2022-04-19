@@ -7,7 +7,7 @@ use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Storage;
+use Patreon\{API};
 
 class PatreonController extends Controller
 {
@@ -126,7 +126,7 @@ class PatreonController extends Controller
         )->setFooter((new Embed\Footer())
             ->setText($eventType." | Total Patrons: ".$patronCount)
         );
-        if($tier !== null) {
+        if ($tier !== null) {
             $embed->addField(
                 (new Embed\Field())
                     ->setName('Tier')
@@ -138,10 +138,82 @@ class PatreonController extends Controller
         return $wh->addEmbed($embed)->send();
     }
 
-    public function test(Request $request)
+    public function list(Request $request)
     {
-        $data = collect(json_decode(Storage::get('test.json'), true));
-        $this->processEvent('members:create', $data);
+        $api_client = new API(config('services.patreon.access_token'));
+        $campaign_id = '2422432';
+
+        $queryData = [
+            'page' => [
+                'count' => 100
+            ],
+            'include' => join(',', [
+                'user',
+                'currently_entitled_tiers'
+            ]),
+            'fields' => [
+                'user' => join(',', [
+                    'social_connections'
+                ]),
+                'member' => join(',', [
+                    'full_name',
+                    'is_follower',
+                    'last_charge_date',
+                    'last_charge_status',
+                    'lifetime_support_cents',
+                    'currently_entitled_amount_cents',
+                    'patron_status',
+                ]),
+                'tier' => join(',', [
+                    'title',
+                ])
+            ]
+        ];
+
+        $memberList = [];
+
+        $continue = true;
+
+        do {
+            $query = str_replace("%2C", ',', http_build_query($queryData));
+
+            $data = $api_client->get_data("campaigns/{$campaign_id}/members?{$query}");
+
+            $members = collect($data['data'])->map(function ($item) use ($data) {
+                $item = collect($item);
+                $userData = collect($data['included'])->where('type', 'user')->where('id', $item->pull('relationships.user.data.id'))->first();
+                $tierData = collect($data['included'])->where('type', 'tier')->where('id', $item->pull('relationships.currently_entitled_tiers.data.0.id'))->first();
+                return $item->mergeRecursive($userData)->put('tier', $tierData['attributes']['title'] ?? 'None');
+            })->keyBy('id.1');
+
+            $memberList += $members->toArray();
+
+            if(isset($data['meta']['pagination']['cursors'])) {
+                $queryData['page']['cursor'] = $data['meta']['pagination']['cursors']['next'];
+            } else {
+                $continue = false;
+            }
+        } while ($continue);
+
+        $memberList = collect($memberList);
+
+        $activePatrons = $memberList->where('attributes.patron_status', 'active_patron');
+
+        $discordList = $activePatrons->map(function($item) {
+            $item = collect($item);
+            return sprintf("%-21s|%-25s|%-10s",
+                "<@" . $item->pull('attributes.social_connections.discord.user_id') . ">",
+                "`" . $item->pull('attributes.full_name') . "`",
+                $item->pull('tier')
+            );
+        });
+
+        $output = "";
+        foreach($discordList as $info) {
+            $output .= $info . "\n";
+        }
+
+        return response($output)->header('Content-Type', 'text/plain');
     }
 
 }

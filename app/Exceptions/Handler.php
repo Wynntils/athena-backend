@@ -74,6 +74,7 @@ class Handler extends ExceptionHandler
             return match ($exception->getModel()) {
                 \App\Models\User::class => response()->json(['message' => 'User not found'], 404),
                 \App\Models\Guild::class => response()->json(['message' => 'Guild not found'], 404),
+                default => response()->json($exception->getMessage(), 404),
             };
         }
 

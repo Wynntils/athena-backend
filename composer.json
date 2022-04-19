@@ -19,6 +19,7 @@
         "laravel/framework": "^9.2",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "patreon/patreon": "^1.0",
         "ramsey/uuid": "^4.2",
         "zircote/swagger-php": "^4.2"
     },

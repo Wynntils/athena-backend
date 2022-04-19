@@ -33,6 +33,7 @@ return [
     'patreon' => [
         'webhook_secret' => env('PATREON_WEBHOOK_SECRET'),
         'discord_webhook' => env('PATREON_DISCORD_WEBHOOK'),
+        'access_token' => env('PATREON_ACCESS_TOKEN')
     ]
 
 ];
