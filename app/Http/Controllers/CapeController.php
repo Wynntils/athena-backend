@@ -29,7 +29,15 @@ class CapeController extends Controller
 
     public function list(): \Illuminate\Http\JsonResponse
     {
-        return response()->json(['result' => $this->manager->listCapes()]);
+        $result = $this->manager->listCapes();
+        return response()->json(['result' => $result])
+            ->setCache([
+                'max_age' => 60,
+                's_maxage' => 60,
+                'public' => true,
+            ])
+            ->setExpires(now()->addSeconds(60))
+            ->setEtag(md5(serialize($result)));
     }
 
     public function queueGetCape($capeId)
