@@ -63,6 +63,7 @@ class CapeManager
 
     public function listCapes(): array
     {
+        ini_set('memory_limit','-1');
         return collect($this->approved->files())->filter(static function ($item) {
             return $item !== '.gitignore';
         })->map(function($item) {
