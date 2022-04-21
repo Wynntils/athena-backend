@@ -6,6 +6,7 @@ use App\Http\Traits\Singleton;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Support\Facades\Storage;
+use Imagick;
 use Intervention\Image\Facades\Image as ImageFactory;
 use Intervention\Image\Image;
 
@@ -84,9 +85,20 @@ class CapeManager
         })->values()->toArray();
     }
 
+    public function getSha(Image $image): string
+    {
+        $imagick = new Imagick();
+
+        $image->encode('png');
+
+        $imagick->readImageBlob($image->getEncoded());
+
+        return sha1($imagick->getImageSignature());
+    }
+
     public function queueCape(Image $image): string|bool
     {
-        $capeId = sha1($image->getEncoded());
+        $capeId = $this->getSha($image);
 
         $image->save($this->queue->path($capeId));
 

@@ -62,9 +62,7 @@ class CapeController extends Controller
 
         $this->manager->maskCapeImage($image);
 
-        $image->encode('png');
-
-        $hash = sha1($image->getEncoded());
+        $hash = $this->manager->getSha($image);
 
         return match (true) {
             $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $hash], 400),

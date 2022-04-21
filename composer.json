@@ -10,6 +10,7 @@
         "ext-gmp": "*",
         "ext-openssl": "*",
         "ext-zlib": "*",
+        "ext-imagick": "*",
         "darkaonline/l5-swagger": "^8.3",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.7",
