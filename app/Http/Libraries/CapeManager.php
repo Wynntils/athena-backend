@@ -41,7 +41,7 @@ class CapeManager
             return $this->approved->delete($capeId);
         }
 
-        if($this->isQueued($capeId)) {
+        if ($this->isQueued($capeId)) {
             return $this->queue->delete($capeId);
         }
 
@@ -64,10 +64,10 @@ class CapeManager
 
     public function listCapes(): array
     {
-        ini_set('memory_limit','-1');
+        ini_set('memory_limit', '-1');
         return collect($this->approved->files())->filter(static function ($item) {
             return $item !== '.gitignore';
-        })->map(function($item) {
+        })->map(function ($item) {
             $image = ImageFactory::make($this->approved->path($item));
             return ['sha' => $item, 'width' => $image->getWidth(), 'height' => $image->getHeight()];
         })->values()->toArray();
@@ -165,11 +165,18 @@ class CapeManager
 
     public function maskCapeImage(Image $image): void
     {
-        if($image->width() !== $image->height() * 2) {
-            return;
+        $mask = ImageFactory::make(Storage::get('cape-mask.png'));
+        if(
+            $mask->width() !== $image->width()
+            && $mask->height() !== $image->height()
+        ) {
+            $mask->resize($image->width(), $image->width() / 2);
         }
 
-        $mask = ImageFactory::make(Storage::get('cape-mask.png'))->resize($image->width(), $image->height());
+        if($image->height() !== $image->width() / 2) {
+            $mask = ImageFactory::canvas($image->width(), $image->height())->fill($mask);
+        }
+
         $image->mask($mask, true);
     }
 }
