@@ -149,7 +149,8 @@ class CapeManager
         Notifications::cape(
             title: "A cape was banned",
             description: "➡️ **SHA-1**: $capeId",
-            color: EmbedColor::RED
+            color: EmbedColor::RED,
+            imageUrl: url("capes/queue/get/$capeId")
         );
     }
 
