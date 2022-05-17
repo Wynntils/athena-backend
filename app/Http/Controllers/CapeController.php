@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Enums\MaskType;
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
 use App\Models\User;
@@ -75,9 +76,31 @@ class CapeController extends Controller
     public function approveCape(Request $request): \Illuminate\Http\JsonResponse
     {
         $sha = $request->route('sha');
+        $type = MaskType::tryFrom($request->route('type'))??MaskType::FULL;
+
         if (!$this->manager->isQueued($sha))
         {
             return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 404);
+        }
+
+        if ($type !== MaskType::FULL)
+        {
+            // Copy the sha
+            $originalSha = $sha;
+
+            // Mask the image and approve it
+            $newImage = Image::make($this->manager->getQueuedCape($sha));
+            $this->manager->maskCapeImage($newImage, $type);
+            $sha = $this->manager->queueCape($newImage);
+
+            // Delete the old image
+            $this->manager->deleteQueuedCape($originalSha);
+
+            // Set users who had the cape to have the new cape
+            foreach (User::where('cosmeticInfo.capeTexture', $originalSha)->get() as $user) {
+                $user->cosmeticInfo->capeTexture = $sha;
+                $user->save();
+            }
         }
 
         $this->manager->approveCape($sha);

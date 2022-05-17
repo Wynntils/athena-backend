@@ -2,6 +2,7 @@
 
 namespace App\Http\Libraries;
 
+use App\Http\Enums\MaskType;
 use App\Http\Traits\Singleton;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
@@ -104,9 +105,11 @@ class CapeManager
 
         Notifications::cape(
             title: "A new cape needs approval!",
-            description: sprintf("➡️ **Choose:** [Approve](%s) or [Ban](%s)\n**SHA-1:** %s",
-                url("capes/queue/approve/".$this->token."/".$capeId),
-                url("capes/ban/".$this->token."/".$capeId),
+            description: sprintf("➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
+                route('cape.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
+                route('cape.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
+                route('cape.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'elytra']),
+                route('cape.ban', ['token' => $this->token, 'sha' => $capeId]),
                 $capeId),
             color: EmbedColor::GOLD,
             imageUrl: url("capes/queue/get/$capeId")
@@ -164,9 +167,16 @@ class CapeManager
         return $this->token;
     }
 
-    public function maskCapeImage(Image $image): void
+    public function maskCapeImage(Image $image, MaskType $type = MaskType::FULL): void
     {
-        $mask = ImageFactory::make(Storage::get('cape-mask.png'));
+        $maskImage = match ($type) {
+            MaskType::FULL => Storage::get('full-mask.png'),
+            MaskType::CAPE => Storage::get('cape-mask.png'),
+            MaskType::ELYTRA => Storage::get('elytra-mask.png'),
+        };
+
+        $mask = ImageFactory::make($maskImage);
+
         if(
             $mask->width() !== $image->width()
             && $mask->height() !== $image->height()
@@ -179,5 +189,10 @@ class CapeManager
         }
 
         $image->mask($mask, true);
+    }
+
+    public function deleteQueuedCape(string $capeId): void
+    {
+        $this->queue->delete($capeId);
     }
 }
