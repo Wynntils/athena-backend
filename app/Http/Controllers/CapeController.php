@@ -91,7 +91,7 @@ class CapeController extends Controller
             // Mask the image and approve it
             $newImage = Image::make($this->manager->getQueuedCape($sha));
             $this->manager->maskCapeImage($newImage, $type);
-            $sha = $this->manager->queueCape($newImage);
+            $sha = $this->manager->queueCape($newImage, false);
 
             // Delete the old image
             $this->manager->deleteQueuedCape($originalSha);
