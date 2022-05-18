@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CapeController;
+use App\Http\Controllers\V2\CapeController as CapeControllerV2;
 
 Route::controller(CapeController::class)->group(static function () {
     Route::get('get/{id}', 'getCape');
@@ -15,3 +16,9 @@ Route::controller(CapeController::class)->group(static function () {
     });
 });
 
+Route::controller(CapeControllerV2::class)->prefix('/v2')->group(static function () {
+    Route::get('/info/{id}', 'getCapeInfo');
+    Route::prefix('queue')->group(function () {
+        Route::post('upload/{token}', 'uploadCape')->middleware(['cape.token', 'auth:token']);
+    });
+});
