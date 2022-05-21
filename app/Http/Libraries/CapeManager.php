@@ -69,8 +69,12 @@ class CapeManager
         return collect($this->approved->files())->filter(static function ($item) {
             return $item !== '.gitignore';
         })->map(function ($item) {
-            $image = ImageFactory::make($this->approved->path($item));
-            return ['sha' => $item, 'width' => $image->getWidth(), 'height' => $image->getHeight()];
+            try {
+                $image = ImageFactory::make($this->approved->path($item));
+                return ['sha' => $item, 'width' => $image->getWidth(), 'height' => $image->getHeight()];
+            } catch (\Throwable $e) {
+                return ['sha' => $item, 'width' => 0, 'height' => 0];
+            }
         })->values()->toArray();
     }
 
