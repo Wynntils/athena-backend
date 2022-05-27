@@ -15,6 +15,7 @@ class GatheringSpots implements CacheContract
 
     public function generate(): array
     {
+        ini_set('memory_limit', '-1');
         $result = $woodCutting = $mining = $farming = $fishing = [];
 
         $result['woodCutting'] = &$woodCutting;
