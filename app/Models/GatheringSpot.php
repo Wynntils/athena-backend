@@ -32,6 +32,7 @@ class GatheringSpot extends Model
     protected $casts = [
         'type' => ProfessionType::class,
         'material' => GatheringMaterial::class,
+        'users' => 'array',
     ];
 
     public function calculateReliability(): int

@@ -16,7 +16,7 @@ class TelemetryRequest extends BaseRequest
                     ProfessionType::MINING,
                     ProfessionType::FARMING,
                     ProfessionType::FISHING,
-                ])->implode(','),
+                ])->map(fn($enum) => $enum->value)->implode(','),
             'spot.material' => 'required|string|in:'.collect(GatheringMaterial::cases())->pluck('value')->implode(','),
             'spot.x' => 'required|integer',
             'spot.y' => 'required|integer',
