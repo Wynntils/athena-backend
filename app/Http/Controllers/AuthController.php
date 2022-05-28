@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Enums\AccountType;
 use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
+use App\Http\Libraries\Notifications;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +29,11 @@ class AuthController extends Controller
         $profile = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
 
         if ($profile === null) {
+            return response()->json(['message' => 'The provided username or key is invalid'], 401);
+        }
+
+        if (!array_key_exists('id', $profile)) {
+            Notifications::log('<@&980223126619176960>', 'Unknown Profile', "```json\n" . json_encode($profile, JSON_PRETTY_PRINT) . '```');
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 

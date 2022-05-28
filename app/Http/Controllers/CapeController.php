@@ -76,30 +76,32 @@ class CapeController extends Controller
     public function approveCape(Request $request): \Illuminate\Http\JsonResponse
     {
         $sha = $request->route('sha');
-        $type = MaskType::tryFrom($request->route('type'))??MaskType::FULL;
+        $type = MaskType::tryFrom($request->route('type')) ?? MaskType::FULL;
 
-        if (!$this->manager->isQueued($sha))
-        {
+        if (!$this->manager->isQueued($sha)) {
             return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 404);
         }
 
-        if ($type !== MaskType::FULL)
-        {
+        if ($type !== MaskType::FULL) {
             // Copy the sha
             $originalSha = $sha;
 
             // Mask the image and approve it
             $newImage = Image::make($this->manager->getQueuedCape($sha));
             $this->manager->maskCapeImage($newImage, $type);
-            $sha = $this->manager->queueCape($newImage, false);
+            // Check if the image content is the same
+            if ($this->manager->getSha($newImage) !== $originalSha) {
+                $sha = $this->manager->queueCape($newImage, false);
 
-            // Delete the old image
-            $this->manager->deleteQueuedCape($originalSha);
+                // Delete the old image
+                $this->manager->deleteQueuedCape($originalSha);
 
-            // Set users who had the cape to have the new cape
-            foreach (User::where('cosmeticInfo.capeTexture', $originalSha)->get() as $user) {
-                $user->cosmeticInfo->capeTexture = $sha;
-                $user->save();
+                // Set users who had the cape to have the new cape
+                foreach (User::where('cosmeticInfo.capeTexture', $originalSha)->get() as $user) {
+                    $user->cosmeticInfo->capeTexture = $sha;
+                    $user->save();
+                }
+
             }
         }
 

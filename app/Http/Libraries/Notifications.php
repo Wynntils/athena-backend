@@ -21,20 +21,31 @@ class Notifications
         $imageUrl = null,
         $footer = null
     ): void {
-        self::sendNotification(config('athena.webhook.discord.webhook.capes'), $title, $description, $color, $imageUrl,
-            $footer);
+        self::sendNotification(
+            url: config('athena.webhook.discord.webhook.capes'),
+            title: $title,
+            description: $description,
+            color: $color,
+            imageUrl: $imageUrl,
+            footer: $footer
+        );
     }
 
     private static function sendNotification(
         $url,
+        $content = null,
         $title = null,
         $description = null,
         EmbedColor $color = null,
         $imageUrl = null,
-        $footer = null
+        $footer = null,
     ) {
         $wh = new Webhook($url);
         $wh->setUsername(config('athena.webhook.discord.username'))->setAvatar(config('athena.webhook.discord.avatar'));
+
+        if ($content !== null) {
+            $wh->setMessage($content);
+        }
 
         $embed = (new Embed())
             ->setTitle($title)
@@ -56,13 +67,22 @@ class Notifications
     }
 
     public static function log(
+        $content = null,
         $title = null,
         $description = null,
         EmbedColor $color = null,
         $imageUrl = null,
         $footer = null
     ): void {
-        self::sendNotification(config('athena.webhook.discord.webhook.log'), $title, $description, $color, $imageUrl,
-            $footer);
+        self::sendNotification(
+            url: config('athena.webhook.discord.webhook.log'),
+            content: $content,
+            title: $title,
+            description: $description,
+            color: $color,
+            imageUrl: $imageUrl,
+            footer: $footer
+        );
+
     }
 }
