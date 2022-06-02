@@ -181,6 +181,13 @@ class PatreonController extends Controller
 
             $data = $api_client->get_data("campaigns/{$campaign_id}/members?{$query}");
 
+            if(!is_array($data)) {
+                return response()->json([
+                    'error' => 'Invalid response from Patreon',
+                    'data' => $data
+                ], 500);
+            }
+
             $members = collect($data['data'])->map(function ($item) use ($data) {
                 $item = collect($item);
                 $userData = collect($data['included'])->where('type', 'user')->where('id', $item->pull('relationships.user.data.id'))->first();
