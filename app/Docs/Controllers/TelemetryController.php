@@ -11,7 +11,7 @@ use OpenApi\Attributes as OA;
     OA\Post(
         path: "/telemetry/sendGatheringSpot",
         operationId: "sendGatheringSpot",
-        summary: "sendGatheringSpot",
+        summary: "Send a gathering spot",
         security: OpenAPI::SECURITY_AUTH_TOKEN,
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(

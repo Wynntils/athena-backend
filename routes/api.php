@@ -27,3 +27,7 @@ Route::controller(LegacyApiController::class)->middleware('athena.token')->group
 Route::get('/health', function () {
     return ['result' => 'ok'];
 });
+
+Route::get('/docs', function () {
+    return view('docs');
+});

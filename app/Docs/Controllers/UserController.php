@@ -9,7 +9,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/user/getConfigs",
         operationId: "getUserConfigs",
-        summary: "getUserConfigs",
+        summary: "Get user configs",
         security: OpenAPI::SECURITY_AUTH_TOKEN,
         tags: ["User"],
         responses: [
@@ -31,7 +31,7 @@ use OpenApi\Attributes as OA;
     OA\Post(
         path: "/user/getInfo",
         operationId: "postUserInfo",
-        summary: "postUserInfo",
+        summary: "Get user info",
         tags: ["User"],
         responses: [
             new OA\Response(
@@ -51,7 +51,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/user/getInfo/{user}",
         operationId: "getUserInfo",
-        summary: "getUserInfo",
+        summary: "Get user info",
         tags: ["User"],
         parameters: [
             new OA\Parameter(
@@ -77,7 +77,7 @@ use OpenApi\Attributes as OA;
     OA\Post(
         path: "/user/updateDiscord",
         operationId: "updateUserDiscord",
-        summary: "updateUserDiscord",
+        summary: "Update user discord",
         security: OpenAPI::SECURITY_AUTH_TOKEN,
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
@@ -107,7 +107,7 @@ use OpenApi\Attributes as OA;
     OA\Post(
         path: "/user/uploadConfigs",
         operationId: "uploadUserConfigs",
-        summary: "uploadUserConfigs",
+        summary: "Upload user configs",
         security: OpenAPI::SECURITY_AUTH_TOKEN,
         requestBody: new OA\RequestBody(
             content: [

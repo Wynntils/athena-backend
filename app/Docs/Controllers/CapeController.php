@@ -9,7 +9,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/capes/ban/{capeToken}/{capeID}",
         operationId: "banCape",
-        summary: "Ban cape by capeToken and capeID",
+        summary: "Ban Cape",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
@@ -61,7 +61,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/capes/get/{capeID}",
         operationId: "getCape",
-        summary: "getCape",
+        summary: "Get Cape",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
@@ -90,7 +90,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/capes/list",
         operationId: "listCapes",
-        summary: "listCapes",
+        summary: "List Capes",
         tags: ["Cape"],
         responses: [
             new OA\Response(
@@ -116,7 +116,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/capes/queue/approve/{capeToken}/{capeID}",
         operationId: "approveCape",
-        summary: "approveCape",
+        summary: "Approve Cape",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
@@ -168,7 +168,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/capes/queue/get/{capeID}",
         operationId: "getCapeQueue",
-        summary: "getCapeQueue",
+        summary: "Get cape in queue",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
@@ -197,7 +197,7 @@ use OpenApi\Attributes as OA;
     OA\Get(
         path: "/capes/queue/list",
         operationId: "listCapeQueue",
-        summary: "listCapeQueue",
+        summary: "List cape queue",
         tags: ["Cape"],
         responses: [
             new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
@@ -206,7 +206,25 @@ use OpenApi\Attributes as OA;
     OA\Post(
         path: "/capes/queue/upload/{capeToken}",
         operationId: "uploadCape",
-        summary: "uploadCape",
+        summary: "Upload cape to queue",
+        requestBody: new OA\RequestBody(
+            content: [
+                new OA\MediaType(
+                    mediaType: "multipart/form-data",
+                    schema: new OA\Schema(
+                        required: ["cape"],
+                        properties: [
+                            new OA\Property(
+                                property: "cape",
+                                description: "The cape file",
+                                type: "string",
+                                format: "binary"
+                            ),
+                        ]
+                    )
+                )
+            ]
+        ),
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
@@ -278,8 +296,8 @@ use OpenApi\Attributes as OA;
     ),
     OA\Get(
         path: "/capes/user/{UUID}",
-        operationId: "userCapes",
-        summary: "userCapes",
+        operationId: "userCape",
+        summary: "Get user cape",
         tags: ["Cape"],
         parameters: [
             new OA\Parameter(
@@ -298,7 +316,7 @@ use OpenApi\Attributes as OA;
                     mediaType: "image/png",
                     schema: new OA\Schema(
                         type: "string",
-                        format: "binary"
+                        format: "binary",
                     )
                 )
             ),

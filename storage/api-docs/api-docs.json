@@ -453,7 +453,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "Ban cape by capeToken and capeID",
+                "summary": "Ban Cape",
                 "operationId": "banCape",
                 "parameters": [
                     {
@@ -522,7 +522,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "getCape",
+                "summary": "Get Cape",
                 "operationId": "getCape",
                 "parameters": [
                     {
@@ -558,7 +558,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "listCapes",
+                "summary": "List Capes",
                 "operationId": "listCapes",
                 "responses": {
                     "200": {
@@ -592,7 +592,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "approveCape",
+                "summary": "Approve Cape",
                 "operationId": "approveCape",
                 "parameters": [
                     {
@@ -661,7 +661,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "getCapeQueue",
+                "summary": "Get cape in queue",
                 "operationId": "getCapeQueue",
                 "parameters": [
                     {
@@ -697,7 +697,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "listCapeQueue",
+                "summary": "List cape queue",
                 "operationId": "listCapeQueue",
                 "responses": {
                     "500": {
@@ -711,7 +711,7 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "uploadCape",
+                "summary": "Upload cape to queue",
                 "operationId": "uploadCape",
                 "parameters": [
                     {
@@ -724,6 +724,25 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "cape"
+                                ],
+                                "properties": {
+                                    "cape": {
+                                        "description": "The cape file",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -795,8 +814,8 @@
                 "tags": [
                     "Cape"
                 ],
-                "summary": "userCapes",
-                "operationId": "userCapes",
+                "summary": "Get user cape",
+                "operationId": "userCape",
                 "parameters": [
                     {
                         "name": "UUID",
@@ -816,6 +835,13 @@
                                 "schema": {
                                     "type": "string",
                                     "format": "binary"
+                                },
+                                "examples": {
+                                    "CapeApproved": {
+                                        "summary": "Cape is already approved",
+                                        "value": "https://capes.mcpe.fun/capes/user/582915bd8c7bc8f12407cc2615be769fa288bdc4",
+                                        "externalValue": "https://capes.mcpe.fun/capes/user/582915bd8c7bc8f12407cc2615be769fa288bdc4"
+                                    }
                                 }
                             }
                         }
@@ -831,7 +857,7 @@
                 "tags": [
                     "Telemetry"
                 ],
-                "summary": "sendGatheringSpot",
+                "summary": "Send a gathering spot",
                 "operationId": "sendGatheringSpot",
                 "requestBody": {
                     "content": {
@@ -956,7 +982,7 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "getUserConfigs",
+                "summary": "Get user configs",
                 "operationId": "getUserConfigs",
                 "responses": {
                     "200": {
@@ -996,7 +1022,7 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "postUserInfo",
+                "summary": "Get user info",
                 "operationId": "postUserInfo",
                 "responses": {
                     "200": {
@@ -1029,7 +1055,7 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "getUserInfo",
+                "summary": "Get user info",
                 "operationId": "getUserInfo",
                 "parameters": [
                     {
@@ -1068,7 +1094,7 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "updateUserDiscord",
+                "summary": "Update user discord",
                 "operationId": "updateUserDiscord",
                 "requestBody": {
                     "content": {
@@ -1130,7 +1156,7 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "uploadUserConfigs",
+                "summary": "Upload user configs",
                 "operationId": "uploadUserConfigs",
                 "requestBody": {
                     "content": {
