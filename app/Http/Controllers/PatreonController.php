@@ -145,6 +145,8 @@ class PatreonController extends Controller
         $api_client = new API(config('services.patreon.access_token'));
         $campaign_id = '2422432';
 
+        $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get();
+
         $queryData = [
             'page' => [
                 'count' => 100
@@ -208,7 +210,7 @@ class PatreonController extends Controller
 
         $activePatrons = $memberList->where('attributes.patron_status', 'active_patron');
 
-        $discordList = $activePatrons->map(function($item) {
+        $discordList = $activePatrons->map(function($item) use (&$currentDonators) {
             $item = collect($item);
             $discordId = $item->pull('attributes.social_connections.discord.user_id');
             if(!empty($discordId)) {
@@ -216,6 +218,12 @@ class PatreonController extends Controller
             } else {
                 $user = collect([]);
             }
+
+            $user->each(function($user) use (&$currentDonators) {
+                $currentDonators = $currentDonators->reject(function($currentDonator) use ($user) {
+                    return $currentDonator->id === $user->id;
+                });
+            });
 
             foreach($user as $usr) {
                 if($usr->accountType === AccountType::DONATOR) {
@@ -233,10 +241,17 @@ class PatreonController extends Controller
             );
         });
 
-        $output = "";
-        foreach($discordList as $info) {
-            $output .= $info . "\n";
-        }
+        $output = "**Current Patreon Donators:**\n" . $discordList->join("\n");
+        $output .= "\n";
+        $output .= "\n";
+        $output .= "**Donators not tracked via Patreon:**\n";
+        $output .= $currentDonators->map(function($item) {
+            return sprintf("%-21s|%-25s|%-10s",
+                "<@" . $item->discordInfo->id . ">",
+                "`" . $item->username . "`",
+                $item->accountType->value,
+            );
+        })->join("\n");
 
         return response($output)->header('Content-Type', 'text/plain');
     }
