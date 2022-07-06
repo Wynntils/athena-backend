@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Casts;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Castable;

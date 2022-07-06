@@ -8,7 +8,7 @@ class UserRequest extends BaseRequest
     {
         return [
             'config' => 'required|array|min:1',
-            'config.*' => 'required|file|max:500',
+            'config.*' => 'required|file|max:5000',
         ];
     }
 
@@ -23,7 +23,7 @@ class UserRequest extends BaseRequest
     public function getInfoLegacy(): array
     {
         return [
-            'uuid' => 'required|uuid|exists:App\Models\User,_id',
+            'uuid' => 'required|uuid',
         ];
     }
 }

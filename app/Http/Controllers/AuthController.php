@@ -26,14 +26,18 @@ class AuthController extends Controller
             Storage::put('request.json', $request->getContent());
         }
 
-        $profile = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
+        try {
+            $profile = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
 
         if ($profile === null) {
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 
         if (!array_key_exists('id', $profile)) {
-            Notifications::log('<@&980223126619176960>', 'Unknown Profile', "```json\n" . json_encode($profile, JSON_PRETTY_PRINT) . '```');
+            Notifications::log('<@&980223126619176960>', "Unknown Profile for `{$request->validated('username')}`", "```json\n" . json_encode($profile, JSON_PRETTY_PRINT) . '```');
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 

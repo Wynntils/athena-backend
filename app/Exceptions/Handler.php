@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Http\Libraries\Notifications;
+use Composer\Semver\Comparator;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -70,12 +71,47 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if($exception instanceof ModelNotFoundException) {
+        if ($exception instanceof ModelNotFoundException) {
             return match ($exception->getModel()) {
                 \App\Models\User::class => response()->json(['message' => 'User not found'], 404),
                 \App\Models\Guild::class => response()->json(['message' => 'Guild not found'], 404),
                 default => response()->json($exception->getMessage(), 404),
             };
+        }
+
+        // Log the exception if it's a validation exception.
+        if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            // Ignore the following versions for specific validation errors.
+            $versionString = str_replace('WynntilsClient v', '', $request->userAgent());
+            [$version, $build] = explode('/', $versionString);
+
+            if (Comparator::lessThan($version, '1.11.2') && $request->path() === 'user/uploadConfigs') {
+                return response()->json(['message' => 'This version of Wynntils does not meet new configuration standards. Please update.'], 400);
+            }
+
+            if ($request->input('authToken') !== null) {
+                $user = \App\Models\User::where('authToken', $request->input('authToken'))->first(['username']);
+            }
+            \Log::error(
+                sprintf("(%s) %s %s: %s", $request->userAgent(), $request->method(), $request->path(), $exception->getMessage()),
+                [
+                    'user' => $user->username ?? null,
+                    'input' => $request->post(),
+                    'files' => collect($request->allFiles())
+                        ->filter(function ($config) {
+                            return $config instanceof \Illuminate\Http\UploadedFile;
+                        })
+                        ->map(function (\Illuminate\Http\UploadedFile $config) {
+                            return [
+                                'name' => $config->getClientOriginalName(),
+                                'size' => humanFileSize($config->getSize()),
+                                'type' => $config->getMimeType(),
+                            ];
+                        })
+                        ->toArray(),
+                    'errors' => $exception->errors()
+                ]
+            );
         }
 
         return parent::render($request, $exception);

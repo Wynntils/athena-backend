@@ -29,11 +29,6 @@ class UserController extends Controller
             $uploadResult[] = &$fileResult;
             $fileResult['name'] = $config->getClientOriginalName();
 
-            if ($config->getSize() > 200000) {
-                $fileResult['message'] = 'The provided configuration is bigger than 200 kilobytes.';
-                continue;
-            }
-
             if($user->getConfigAmount() >= 80) {
                 $fileResult['message'] = 'User exceeded the configuration amount limit.';
                 continue;

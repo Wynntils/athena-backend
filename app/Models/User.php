@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Http\Enums\AccountType;
+use App\Models\Casts\CosmeticInfo;
+use App\Models\Casts\DiscordInfo;
 use ArrayObject;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;

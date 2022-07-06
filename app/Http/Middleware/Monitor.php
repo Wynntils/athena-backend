@@ -23,7 +23,12 @@ class Monitor
             ], '{token}', $request->path());
             $method = $request->method();
             if ($time > 4000) {
-                Notifications::log(description: "`Routes -> $method -> /$path` took {$time}ms", color: EmbedColor::RED);
+                try {
+                    Notifications::log(description: "`Routes -> $method -> /$path` took {$time}ms",
+                        color: EmbedColor::RED);
+                } catch (Throwable $e) {
+                    //
+                }
             }
             if (
                 !in_array($path, [
@@ -32,15 +37,32 @@ class Monitor
                     'docs/api-docs.json',
                 ]) && config('app.debug')
             ) {
-                $param = json_encode($request->all(), JSON_PRETTY_PRINT);
+                if ($request->has('config')) {
+                    $configs = [
+                        'config' => collect($request->file('config'))
+                            ->filter(function ($config) {
+                                return $config instanceof \Illuminate\Http\UploadedFile;
+                            })
+                            ->map(function (\Illuminate\Http\UploadedFile $config) {
+                                return [
+                                    'name' => $config->getClientOriginalName(),
+                                    'size' => humanFileSize($config->getSize()),
+                                    'type' => $config->getMimeType(),
+                                ];
+                            })
+                            ->toArray()
+                    ];
+                }
+
+                $param = json_encode(array_merge($request->all(), ($configs ?? [])), JSON_PRETTY_PRINT);
                 $prettyResponse = json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT);
-                if($prettyResponse === null) {
+                if ($prettyResponse === null) {
                     $prettyResponse = $response->getContent();
                 }
                 try {
                     Notifications::log(
                         title: "Debug Information Request",
-                        description: substr("`Routes -> ".$method." -> /".$path."`\n**Request:** ```json\n{$request->headers}\n".$param, 0, 3000) . (strlen($param) > 3000 ? '...' : '') . '```',
+                        description: substr("`Routes -> ".$method." -> /".$path."`\n**Request:** ```json\n{$request->userAgent()}\n".$param, 0, 3000) . (strlen($param) > 3000 ? '...' : '') . '```',
                         color: EmbedColor::AQUA
                     );
                     Notifications::log(
