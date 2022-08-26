@@ -59,7 +59,8 @@ class ItemList implements CacheContract
 
         foreach ($wynnBuilderIDs as $wynnBuilderItem) {
             $item = &$items[$wynnBuilderItem['name']];
-            $item->wynnBuilderID = $wynnBuilderItem['id'];
+            if ($item)
+                $item->wynnBuilderID = $wynnBuilderItem['id'];
         }
 
         $result['items'] = array_values($items);
