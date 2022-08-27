@@ -63,7 +63,7 @@ class ItemList implements CacheContract
                 $item->wynnBuilderID = $wynnBuilderItem['id'];
         }
 
-        $result['items'] = array_values($items);
+        $result['items'] = array_values(array_filter($items));
         $result['materialTypes'] = $materialTypes;
         $result['translatedReferences'] = $translatedReferences;
 
