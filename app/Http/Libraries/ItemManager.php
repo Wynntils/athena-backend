@@ -295,7 +295,7 @@ class ItemManager
             'bonusThunderDefense', 'thunderDefenseBonus' => 'thunderDefence',
             'bonusWaterDefense', 'waterDefenseBonus' => 'waterDefence',
             'bonusFireDefense', 'fireDefenseBonus' => 'fireDefence',
-            'bonusAirDefense', 'airDefenseBonusu' => 'airDefence',
+            'bonusAirDefense', 'airDefenseBonus' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
             'rainbowSpellDamageRaw' => 'rawSpellDamage',
             'attackSpeedBonus' => 'attackSpeed',
