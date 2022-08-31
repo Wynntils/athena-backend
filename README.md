@@ -17,4 +17,4 @@ We do not endorse using it. We will not support you with it.
 
 # Licenses
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT). <br>
-Athena is open-sourced software licensed under the [GNU Affero General Public License v3.0](https://github.com/Wynntils/athena-backend/blob/master/LICENSE)
+Athena is open-sourced software licensed under the [GNU Affero General Public License v3.0](https://github.com/Wynntils/athena-backend/blob/main/LICENSE)
