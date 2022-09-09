@@ -204,10 +204,10 @@ class ItemManager
         $result['INTELLIGENCEPOINTS'] = 'rawIntelligence';
         $result['DEFENSEPOINTS'] = 'rawDefence';
         $result['AGILITYPOINTS'] = 'rawAgility';
-        $result['DAMAGEBONUS'] = 'mainAttackDamage';
-        $result['DAMAGEBONUSRAW'] = 'rawMainAttackNeutralDamage';
-        $result['SPELLDAMAGE'] = 'spellDamage';
-        $result['SPELLDAMAGERAW'] = 'rawNeutralSpellDamage';
+        $result['MAINATTACKDAMAGEBONUS'] = 'mainAttackDamage';
+        $result['MAINATTACKDAMAGEBONUSRAW'] = 'rawMainAttackNeutralDamage';
+        $result['SPELLDAMAGEBONUS'] = 'spellDamage';
+        $result['SPELLDAMAGEBONUSRAW'] = 'rawNeutralSpellDamage';
         $result['HEALTHREGEN'] = 'healthRegen';
         $result['HEALTHREGENRAW'] = 'rawHealthRegen';
         $result['HEALTHBONUS'] = 'rawHealth';
@@ -273,9 +273,9 @@ class ItemManager
             'spellCostRaw2' => 'raw2ndSpellCost',
             'spellCostRaw3' => 'raw3rdSpellCost',
             'spellCostRaw4' => 'raw4thSpellCost',
-            'spellDamageRaw' => 'rawNeutralSpellDamage',
-            'damageBonusRaw' => 'rawMainAttackNeutralDamage',
-            'damageBonus' => 'mainAttackDamage',
+            'spellDamageBonusRaw' => 'rawNeutralSpellDamage',
+            'mainAttackDamageBonusRaw' => 'rawMainAttackNeutralDamage',
+            'mainAttackDamageBonus' => 'mainAttackDamage',
             'healthRegenRaw' => 'rawHealthRegen',
             'healthBonus' => 'rawHealth',
             'speed' => 'walkSpeed',
@@ -287,7 +287,7 @@ class ItemManager
             'defensePoints' => 'rawDefence',
             'agilityPoints' => 'rawAgility',
             'bonusEarthDamage', 'earthDamageBonus' => 'earthDamage',
-            'bonusThunderDamage' 'thunderDamageBonus' => 'thunderDamage',
+            'bonusThunderDamage', 'thunderDamageBonus' => 'thunderDamage',
             'bonusWaterDamage', 'waterDamageBonus' => 'waterDamage',
             'bonusFireDamage', 'fireDamageBonus' => 'fireDamage',
             'bonusAirDamage', 'airDamageBonus' => 'airDamage',
@@ -297,11 +297,11 @@ class ItemManager
             'bonusFireDefense', 'fireDefenseBonus' => 'fireDefence',
             'bonusAirDefense', 'airDefenseBonus' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
-            'rainbowSpellDamageRaw' => 'rawSpellDamage',
+            'spellElementalDamageBonusRaw' => 'rawSpellDamage',
             'attackSpeedBonus' => 'attackSpeed',
             //same ones
             'gatherXpBonus' => 'gatherXpBonus',
-            'spellDamage' => 'spellDamage',
+            'spellDamageBonus' => 'spellDamage',
             'healthRegen' => 'healthRegen',
             'poison' => 'poison',
             'lifeSteal' => 'lifeSteal',
