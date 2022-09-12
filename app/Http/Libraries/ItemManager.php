@@ -121,52 +121,57 @@ class ItemManager
         $order['rawNeutralSpellDamage'] = 9;
         $order['rawSpellDamage'] = 10;
         $order['spellDamage'] = 11;
+        $order['rawThunderSpellDamage'] = 12;
+        $order['rawFireSpellDamage'] = 13;
+        $order['rawAirSpellDamage'] = 14;
+        $order['rawEarthSpellDamage'] = 15;
+        $order['rawWaterSpellDamage'] = 16;
         //third group {health/mana stuff}
-        $order['rawHealth'] = 12;
-        $order['rawHealthRegen'] = 13;
-        $order['healthRegen'] = 14;
-        $order['lifeSteal'] = 15;
-        $order['manaRegen'] = 16;
-        $order['manaSteal'] = 17;
+        $order['rawHealth'] = 17;
+        $order['rawHealthRegen'] = 18;
+        $order['healthRegen'] = 19;
+        $order['lifeSteal'] = 20;
+        $order['manaRegen'] = 21;
+        $order['manaSteal'] = 22;
         //fourth group {damage stuff}
-        $order['earthDamage'] = 18;
-        $order['thunderDamage'] = 19;
-        $order['waterDamage'] = 20;
-        $order['fireDamage'] = 21;
-        $order['airDamage'] = 22;
+        $order['earthDamage'] = 23;
+        $order['thunderDamage'] = 24;
+        $order['waterDamage'] = 25;
+        $order['fireDamage'] = 26;
+        $order['airDamage'] = 27;
         //fifth group {defence stuff}
-        $order['earthDefence'] = 23;
-        $order['thunderDefence'] = 24;
-        $order['waterDefence'] = 25;
-        $order['fireDefence'] = 26;
-        $order['airDefence'] = 27;
+        $order['earthDefence'] = 28;
+        $order['thunderDefence'] = 29;
+        $order['waterDefence'] = 30;
+        $order['fireDefence'] = 31;
+        $order['airDefence'] = 32;
         //sixth group {passive damage}
-        $order['exploding'] = 28;
-        $order['poison'] = 29;
-        $order['thorns'] = 30;
-        $order['reflection'] = 31;
+        $order['exploding'] = 33;
+        $order['poison'] = 34;
+        $order['thorns'] = 35;
+        $order['reflection'] = 36;
         //seventh group {movement stuff}
-        $order['walkSpeed'] = 32;
-        $order['sprint'] = 33;
-        $order['sprintRegen'] = 34;
-        $order['rawJumpHeight'] = 35;
+        $order['walkSpeed'] = 37;
+        $order['sprint'] = 38;
+        $order['sprintRegen'] = 39;
+        $order['rawJumpHeight'] = 40;
         //eigth group {XP/Gathering stuff}
-        $order['soulPointRegen'] = 36;
-        $order['lootBonus'] = 37;
-        $order['lootQuality'] = 38;
-        $order['stealing'] = 39;
-        $order['xpBonus'] = 40;
-        $order['gatherXpBonus'] = 41;
-        $order['gatherSpeed'] = 42;
+        $order['soulPointRegen'] = 41;
+        $order['lootBonus'] = 42;
+        $order['lootQuality'] = 43;
+        $order['stealing'] = 44;
+        $order['xpBonus'] = 45;
+        $order['gatherXpBonus'] = 46;
+        $order['gatherSpeed'] = 47;
         //ninth group {spell stuff}
-        $order['raw1stSpellCost'] = 43;
-        $order['1stSpellCost'] = 44;
-        $order['raw2ndSpellCost'] = 45;
-        $order['2ndSpellCost'] = 46;
-        $order['raw3rdSpellCost'] = 47;
-        $order['3rdSpellCost'] = 48;
-        $order['raw4thSpellCost'] = 49;
-        $order['4thSpellCost'] = 50;
+        $order['raw1stSpellCost'] = 48;
+        $order['1stSpellCost'] = 49;
+        $order['raw2ndSpellCost'] = 50;
+        $order['2ndSpellCost'] = 51;
+        $order['raw3rdSpellCost'] = 52;
+        $order['3rdSpellCost'] = 53;
+        $order['raw4thSpellCost'] = 54;
+        $order['4thSpellCost'] = 55;
 
         $groups = &$result['groups'];
 
@@ -245,6 +250,11 @@ class ItemManager
         $result['WATERDEFENSE'] = 'waterDefence';
         $result['FIREDEFENSE'] = 'fireDefence';
         $result['AIRDEFENSE'] = 'airDefence';
+        $result['SPELLTHUNDERDAMAGEBONUSRAW'] = 'rawThunderSpellDamage';
+        $result['SPELLFIREDAMAGEBONUSRAW'] = 'rawFireSpellDamage';
+        $result['SPELLWATERDAMAGEBONUSRAW'] = 'rawWaterSpellDamage';
+        $result['SPELLAIRDAMAGEBONUSRAW'] = 'rawAirSpellDamage';
+        $result['SPELLEARTHDAMAGEBONUSRAW'] = 'rawEarthSpellDamage';
 
         return $result;
     }
@@ -298,6 +308,11 @@ class ItemManager
             'bonusAirDefense', 'airDefenseBonus' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
             'spellElementalDamageBonusRaw' => 'rawSpellDamage',
+            'spellThunderDamageBonusRaw' => 'rawThunderSpellDamage',
+            'spellFireDamageBonusRaw' => 'rawFireSpellDamage',
+            'spellAirDamageBonusRaw' => 'rawAirSpellDamage',
+            'spellEarthDamageBonusRaw' => 'rawEarthSpellDamage',
+            'spellWaterDamageBonusRaw' => 'rawWaterSpellDamage',
             'attackSpeedBonus' => 'attackSpeed',
             //same ones
             'gatherXpBonus' => 'gatherXpBonus',
