@@ -107,66 +107,73 @@ class ItemManager
     {
         $result = [];
 
-        $order = &$result['order'];
-
-        $order['rawStrength'] = 1;
-        $order['rawDexterity'] = 2;
-        $order['rawIntelligence'] = 3;
-        $order['rawDefence'] = 4;
-        $order['rawAgility'] = 5;
-        //second group {attack stuff}
-        $order['attackSpeed'] = 6;
-        $order['rawMainAttackNeutralDamage'] = 7;
-        $order['mainAttackDamage'] = 8;
-        $order['rawNeutralSpellDamage'] = 9;
-        $order['rawSpellDamage'] = 10;
-        $order['spellDamage'] = 11;
-        //third group {health/mana stuff}
-        $order['rawHealth'] = 12;
-        $order['rawHealthRegen'] = 13;
-        $order['healthRegen'] = 14;
-        $order['lifeSteal'] = 15;
-        $order['manaRegen'] = 16;
-        $order['manaSteal'] = 17;
-        //fourth group {damage stuff}
-        $order['earthDamage'] = 18;
-        $order['thunderDamage'] = 19;
-        $order['waterDamage'] = 20;
-        $order['fireDamage'] = 21;
-        $order['airDamage'] = 22;
-        //fifth group {defence stuff}
-        $order['earthDefence'] = 23;
-        $order['thunderDefence'] = 24;
-        $order['waterDefence'] = 25;
-        $order['fireDefence'] = 26;
-        $order['airDefence'] = 27;
-        //sixth group {passive damage}
-        $order['exploding'] = 28;
-        $order['poison'] = 29;
-        $order['thorns'] = 30;
-        $order['reflection'] = 31;
-        //seventh group {movement stuff}
-        $order['walkSpeed'] = 32;
-        $order['sprint'] = 33;
-        $order['sprintRegen'] = 34;
-        $order['rawJumpHeight'] = 35;
-        //eigth group {XP/Gathering stuff}
-        $order['soulPointRegen'] = 36;
-        $order['lootBonus'] = 37;
-        $order['lootQuality'] = 38;
-        $order['stealing'] = 39;
-        $order['xpBonus'] = 40;
-        $order['gatherXpBonus'] = 41;
-        $order['gatherSpeed'] = 42;
-        //ninth group {spell stuff}
-        $order['raw1stSpellCost'] = 43;
-        $order['1stSpellCost'] = 44;
-        $order['raw2ndSpellCost'] = 45;
-        $order['2ndSpellCost'] = 46;
-        $order['raw3rdSpellCost'] = 47;
-        $order['3rdSpellCost'] = 48;
-        $order['raw4thSpellCost'] = 49;
-        $order['4thSpellCost'] = 50;
+        $result['order'] = collect([
+            'rawStrength',
+            'rawDexterity',
+            'rawIntelligence',
+            'rawDefence',
+            'rawAgility',
+            //second group {attack stuff}
+            'attackSpeed',
+            'rawMainAttackNeutralDamage',
+            'mainAttackDamage',
+            'rawNeutralSpellDamage',
+            'rawSpellDamage',
+            'spellDamage',
+            'rawThunderSpellDamage',
+            'rawFireSpellDamage',
+            'rawAirSpellDamage',
+            'rawEarthSpellDamage',
+            'rawWaterSpellDamage',
+            //third group {health/mana stuff}
+            'rawHealth',
+            'rawHealthRegen',
+            'healthRegen',
+            'lifeSteal',
+            'manaRegen',
+            'manaSteal',
+            //fourth group {damage stuff}
+            'earthDamage',
+            'thunderDamage',
+            'waterDamage',
+            'fireDamage',
+            'airDamage',
+            //fifth group {defence stuff}
+            'earthDefence',
+            'thunderDefence',
+            'waterDefence',
+            'fireDefence',
+            'airDefence',
+            //sixth group {passive damage}
+            'exploding',
+            'poison',
+            'thorns',
+            'reflection',
+            //seventh group {movement stuff}
+            'walkSpeed',
+            'sprint',
+            'sprintRegen',
+            'rawJumpHeight',
+            //eigth group {XP/Gathering stuff}
+            'soulPointRegen',
+            'lootBonus',
+            'lootQuality',
+            'stealing',
+            'xpBonus',
+            'gatherXpBonus',
+            'gatherSpeed',
+            //ninth group {spell stuff}
+            'raw1stSpellCost',
+            '1stSpellCost',
+            'raw2ndSpellCost',
+            '2ndSpellCost',
+            'raw3rdSpellCost',
+            '3rdSpellCost',
+            'raw4thSpellCost',
+            '4thSpellCost',
+        ])->mapWithKeys(
+            fn($value, $key) => [$value => $key + 1]
+        )->toArray();
 
         $groups = &$result['groups'];
 
@@ -245,6 +252,11 @@ class ItemManager
         $result['WATERDEFENSE'] = 'waterDefence';
         $result['FIREDEFENSE'] = 'fireDefence';
         $result['AIRDEFENSE'] = 'airDefence';
+        $result['SPELLTHUNDERDAMAGEBONUSRAW'] = 'rawThunderSpellDamage';
+        $result['SPELLFIREDAMAGEBONUSRAW'] = 'rawFireSpellDamage';
+        $result['SPELLWATERDAMAGEBONUSRAW'] = 'rawWaterSpellDamage';
+        $result['SPELLAIRDAMAGEBONUSRAW'] = 'rawAirSpellDamage';
+        $result['SPELLEARTHDAMAGEBONUSRAW'] = 'rawEarthSpellDamage';
 
         return $result;
     }
@@ -298,6 +310,11 @@ class ItemManager
             'bonusAirDefense', 'airDefenseBonus' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
             'spellElementalDamageBonusRaw' => 'rawSpellDamage',
+            'spellThunderDamageBonusRaw' => 'rawThunderSpellDamage',
+            'spellFireDamageBonusRaw' => 'rawFireSpellDamage',
+            'spellAirDamageBonusRaw' => 'rawAirSpellDamage',
+            'spellEarthDamageBonusRaw' => 'rawEarthSpellDamage',
+            'spellWaterDamageBonusRaw' => 'rawWaterSpellDamage',
             'attackSpeedBonus' => 'attackSpeed',
             //same ones
             'gatherXpBonus' => 'gatherXpBonus',
