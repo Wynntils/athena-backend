@@ -49,12 +49,12 @@ use OpenApi\Attributes as OA;
                 nullable: true,
             ),
             new OA\Property(
-                property: 'rawNeutralSpellDamage',
+                property: 'rawSpellDamage',
                 ref: '#/components/schemas/ItemStatus',
                 nullable: true,
             ),
             new OA\Property(
-                property: 'rawMainAttackNeutralDamage',
+                property: 'rawMainAttackDamage',
                 ref: '#/components/schemas/ItemStatus',
                 nullable: true,
             ),

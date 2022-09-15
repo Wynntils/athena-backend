@@ -1681,10 +1681,10 @@
                     "raw4thSpellCost": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "rawNeutralSpellDamage": {
+                    "rawSpellDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "rawMainAttackNeutralDamage": {
+                    "rawMainAttackDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "mainAttackDamage": {
