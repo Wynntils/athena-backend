@@ -73,7 +73,7 @@ class IngredientManager
             'DAMAGEBONUS' => 'mainAttackDamage',
             'DAMAGEBONUSRAW' => 'rawMainAttackDamage',
             'SPELLDAMAGE' => 'spellDamage',
-            'SPELLDAMAGERAW' => 'rawNeutralSpellDamage',
+            'SPELLDAMAGERAW' => 'rawSpellDamage',
             'HEALTHREGEN' => 'healthRegen',
             'HEALTHREGENRAW' => 'rawHealthRegen',
             'HEALTHBONUS' => 'rawHealth',
