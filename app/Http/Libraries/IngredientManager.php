@@ -71,7 +71,7 @@ class IngredientManager
             'DEFENSEPOINTS' => 'rawDefence',
             'AGILITYPOINTS' => 'rawAgility',
             'DAMAGEBONUS' => 'mainAttackDamage',
-            'DAMAGEBONUSRAW' => 'rawMainAttackNeutralDamage',
+            'DAMAGEBONUSRAW' => 'rawMainAttackDamage',
             'SPELLDAMAGE' => 'spellDamage',
             'SPELLDAMAGERAW' => 'rawNeutralSpellDamage',
             'HEALTHREGEN' => 'healthRegen',
