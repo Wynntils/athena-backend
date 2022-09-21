@@ -71,7 +71,7 @@ enum MajorIdentifications
            self::HERO => 'While under 50% maximum health, nearby allies gain 50% bonus damage and defence',
            self::ARCANES => '50% chance for spells to cost no mana when casted',
            self::ENTROPY => 'Meteor falls three times faster',
-           self::ROVINGASSASSIN => 'Vanish no longer drains mana while invisible',
+           self::ROVINGASSASSIN => 'Vanish will no longer block mana and health regeneration',
            self::MAGNET => 'Pulls items within an 8 block radius towards you',
            self::MADNESS => 'Casts a random ability every 3 seconds',
            self::LIGHTWEIGHT => 'You no longer take fall damage',
