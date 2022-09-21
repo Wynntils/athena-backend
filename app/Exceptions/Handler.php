@@ -88,6 +88,7 @@ class Handler extends ExceptionHandler
                 [$version, $build] = $explode;
             } else {
                 \Log::error('Invalid user agent: ' . $request->userAgent());
+                return parent::render($request, $exception);
             }
 
             if (Comparator::lessThan($version, '1.11.2') && $request->path() === 'user/uploadConfigs') {
