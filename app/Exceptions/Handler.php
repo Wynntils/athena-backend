@@ -83,7 +83,12 @@ class Handler extends ExceptionHandler
         if ($exception instanceof \Illuminate\Validation\ValidationException) {
             // Ignore the following versions for specific validation errors.
             $versionString = str_replace('WynntilsClient v', '', $request->userAgent());
-            [$version, $build] = explode('/', $versionString);
+            $explode = explode('/', $versionString);
+            if (count($explode) === 2) {
+                [$version, $build] = $explode;
+            } else {
+                \Log::error('Invalid user agent: ' . $request->userAgent());
+            }
 
             if (Comparator::lessThan($version, '1.11.2') && $request->path() === 'user/uploadConfigs') {
                 return response()->json(['message' => 'This version of Wynntils does not meet new configuration standards. Please update.'], 400);
