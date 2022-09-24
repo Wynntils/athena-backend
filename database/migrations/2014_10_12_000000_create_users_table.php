@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+//        Schema::dropIfExists('users'); // We never want to drop the users collection
     }
 };
