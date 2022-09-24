@@ -11,6 +11,7 @@
         "ext-imagick": "*",
         "ext-openssl": "*",
         "ext-zlib": "*",
+        "beyondcode/laravel-websockets": "^1.13",
         "composer/semver": "^3.3",
         "darkaonline/l5-swagger": "^8.3",
         "guzzlehttp/guzzle": "^7.2",
