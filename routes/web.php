@@ -23,6 +23,11 @@ if(config('app.debug') !== false) {
     });
 }
 
+Route::get('/playground', static function () {
+    event(new \App\Events\PlaygroundEvent());
+    return ['message' => 'Event sent'];
+});
+
 Route::fallback(static function () {
     return redirect('https://wynntils.com');
 });
