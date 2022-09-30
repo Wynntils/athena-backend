@@ -211,10 +211,10 @@ class ItemManager
         $result['INTELLIGENCEPOINTS'] = 'rawIntelligence';
         $result['DEFENSEPOINTS'] = 'rawDefence';
         $result['AGILITYPOINTS'] = 'rawAgility';
-        $result['MAINATTACKDAMAGEBONUS'] = 'mainAttackDamage';
-        $result['MAINATTACKDAMAGEBONUSRAW'] = 'rawMainAttackDamage';
-        $result['SPELLDAMAGEBONUS'] = 'spellDamage';
-        $result['SPELLDAMAGEBONUSRAW'] = 'rawSpellDamage';
+        $result['DAMAGEBONUS'] = 'mainAttackDamage';
+        $result['AMAGEBONUSRAW'] = 'rawMainAttackDamage';
+        $result['SPELLDAMAGE'] = 'spellDamage';
+        $result['SPELLDAMAGERAW'] = 'rawSpellDamage';
         $result['HEALTHREGEN'] = 'healthRegen';
         $result['HEALTHREGENRAW'] = 'rawHealthRegen';
         $result['HEALTHBONUS'] = 'rawHealth';
