@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Http\Enums\AccountType;
-use App\Models\Casts\CosmeticInfo;
-use App\Models\Casts\DiscordInfo;
+use App\Models\Embedded\CosmeticInfo;
+use App\Models\Embedded\DiscordInfo;
 use ArrayObject;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -56,9 +56,17 @@ class User extends Model implements
 
     protected $casts = [
         'accountType' => AccountType::class,
-        'cosmeticInfo' => CosmeticInfo::class,
-        'discordInfo' => DiscordInfo::class
     ];
+
+    public function discordInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    {
+        return $this->embedsOne(DiscordInfo::class);
+    }
+
+    public function cosmeticInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    {
+        return $this->embedsOne(CosmeticInfo::class);
+    }
 
     public function updateAccount($username, $version): void
     {

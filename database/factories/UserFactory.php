@@ -3,9 +3,7 @@
 namespace Database\Factories;
 
 use App\Http\Enums\AccountType;
-use App\Models\Casts\PartInfo;
 use App\Models\User;
-use Faker\Core\Uuid;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
