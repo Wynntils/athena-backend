@@ -2,4 +2,6 @@
 !approved/
 !queue/
 !banned/
+!special/
+!special/*
 !.gitignore

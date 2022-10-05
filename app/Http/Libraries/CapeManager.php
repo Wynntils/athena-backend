@@ -13,13 +13,23 @@ use Intervention\Image\Image;
 
 class CapeManager
 {
-    // banCape, ApproveCape, queueCape, deleteCape, hasCape
+    // array for special occasions on specific dates
+    private array $specialCapes = [
+        '01-01' => 'newYears',
+        '04-01' => 'aprilFools',
+        '07-04' => 'independenceDay',
+        '10-31' => 'halloween',
+        '12-24' => 'christmasEve',
+        '12-25' => 'christmas',
+        '12-31' => 'newYearsEve',
+    ];
 
     use Singleton;
 
     private \Illuminate\Contracts\Filesystem\Filesystem $queue;
     private \Illuminate\Contracts\Filesystem\Filesystem $banned;
     private \Illuminate\Contracts\Filesystem\Filesystem $approved;
+    private \Illuminate\Contracts\Filesystem\Filesystem $special;
     private string $token;
 
     public function __construct()
@@ -27,6 +37,7 @@ class CapeManager
         $this->queue = Storage::disk('queue');
         $this->banned = Storage::disk('banned');
         $this->approved = Storage::disk('approved');
+        $this->special = Storage::disk('special');
 
         $this->token = config('athena.capes.token');
     }
@@ -54,10 +65,20 @@ class CapeManager
         return $this->approved->exists($capeId);
     }
 
+    public function isSpecialDate(): bool
+    {
+        return array_key_exists(Carbon::now()->format('m-d'), $this->specialCapes);
+    }
+
+    public function getSpecialCape(): string
+    {
+        return $this->special->get($this->specialCapes[Carbon::now()->format('m-d')]) ?? $this->approved->get('defaultCape');
+    }
+
     public function getCapeAsBase64($capeId): ?string
     {
-        if (Carbon::now()->format('m-d') === '04-01') {
-            return base64_encode($this->approved->get('582915bd8c7bc8f12407cc2615be769fa288bdc4'));
+        if ($this->isSpecialDate()) {
+            return base64_encode($this->getSpecialCape());
         }
 
         return base64_encode($this->approved->get($capeId) ?? $this->approved->get('defaultCape'));

@@ -2,7 +2,7 @@
 
 namespace App\Models\Embedded;
 
-use Carbon\Carbon;
+use App\Http\Libraries\CapeManager;
 use Illuminate\Support\Facades\Storage;
 use Jenssegers\Mongodb\Eloquent\Model;
 
@@ -22,7 +22,7 @@ class CosmeticInfo extends Model
 
     public function hasCape(): bool
     {
-        if (Carbon::now()->format('m-d') === '04-01') {
+        if (CapeManager::instance()->isSpecialDate()) {
             return true;
         }
 
@@ -41,7 +41,7 @@ class CosmeticInfo extends Model
 
     public function hasElytra(): bool
     {
-        if (Carbon::now()->format('m-d') === '04-01') {
+        if (CapeManager::instance()->isSpecialDate()) {
             return false;
         }
 

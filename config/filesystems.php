@@ -55,6 +55,11 @@ return [
             'root' => storage_path('app/capes/banned'),
         ],
 
+        'special' => [
+            'driver' => 'local',
+            'root' => storage_path('app/capes/special'),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
