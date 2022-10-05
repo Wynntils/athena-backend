@@ -15,6 +15,7 @@ use App\Http\Controllers\LegacyApiController;
 
 Route::controller(LegacyApiController::class)->middleware('athena.token')->group(static function () {
     Route::post('getUser/{apiKey}', 'getUserData');
+    Route::post('getLinkedUsers/{apiKey}', 'getLinkedUsersData');
     Route::post('getUserConfig/{apiKey}', 'getUserConfig');
     Route::post('setAccountType/{apiKey}', 'setAccountType');
     Route::post('updateCosmetics/{apiKey}', 'updateCosmetics');

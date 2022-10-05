@@ -17,6 +17,14 @@ class LegacyApiController extends Controller
         return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found user account.'];
     }
 
+    public function getLinkedUsersData(LegacyApiRequest $request)
+    {
+        $userList = $this->getLinkedDiscordUsers($request->validated('user'))->map(function ($user) {
+            return new UserResource($user);
+        });
+        return ["result" => $userList, 'message' => 'Successfully found user accounts.'];
+    }
+
     public function setAccountType(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -104,5 +112,11 @@ class LegacyApiController extends Controller
                 $user)->firstOrFail(),
             default => User::where('authToken', $user)->firstOrFail()
         };
+    }
+
+
+    private function getLinkedDiscordUsers($discordId): \Illuminate\Support\Collection
+    {
+        return User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $discordId))->get();
     }
 }
