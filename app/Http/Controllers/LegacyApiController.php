@@ -19,9 +19,10 @@ class LegacyApiController extends Controller
 
     public function getLinkedUsersData(LegacyApiRequest $request)
     {
-        $userList = $this->getLinkedUsers($request->validated('user'));
-        $toUserResource = function ($userData) { return new UserResource($userData); };
-        return ["result" => collect(array_map($toUserResource, $userList)), 'message' => 'Successfully found user accounts.'];
+        $userList = $this->getLinkedDiscordUsers($request->validated('user'))->map(function ($user) {
+            return new UserResource($user);
+        });
+        return ["result" => $userList, 'message' => 'Successfully found user accounts.'];
     }
 
     public function setAccountType(LegacyApiRequest $request)
@@ -114,13 +115,8 @@ class LegacyApiController extends Controller
     }
 
 
-    private function getLinkedUsers($user)
+    private function getLinkedDiscordUsers($discordId): \Illuminate\Support\Collection
     {
-        return match (true) {
-            str($user)->startsWith("uuid-") => User::where('uuid', substr($user, strlen('uuid-'))),
-            str($user)->startsWith("<@") => User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $user)),
-            str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username', $user),
-            default => User::where('authToken', $user)
-        };
+        return User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $discordId))->get();
     }
 }

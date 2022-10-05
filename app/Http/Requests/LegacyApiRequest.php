@@ -12,6 +12,14 @@ class LegacyApiRequest extends BaseRequest
             'user' => 'required|string',
         ];
     }
+
+    public function getLinkedUsersData(): array
+    {
+        return [
+            'user' => 'required|string',
+        ];
+    }
+
     public function setAccountType(): array
     {
         return [
@@ -19,6 +27,7 @@ class LegacyApiRequest extends BaseRequest
             'type' => 'required|string|in:'.collect(AccountType::cases())->pluck('value')->implode(','),
         ];
     }
+
     public function updateCosmetics(): array
     {
         return [
@@ -32,6 +41,7 @@ class LegacyApiRequest extends BaseRequest
             'cosmetics.parts.ears' => 'boolean',
         ];
     }
+
     public function setGuildColor(): array
     {
         return [
@@ -39,6 +49,7 @@ class LegacyApiRequest extends BaseRequest
             'color' => 'required|string|regex:/^#[0-9a-fA-F]{6}$/|max:7|min:7|unique:guilds,color',
         ];
     }
+
     public function setUserPassword(): array
     {
         return [
@@ -46,6 +57,7 @@ class LegacyApiRequest extends BaseRequest
             'password' => 'required|string',
         ];
     }
+
     public function getUserByPassword(): array
     {
         return [
@@ -53,6 +65,7 @@ class LegacyApiRequest extends BaseRequest
             'password' => 'required|string',
         ];
     }
+
     public function getUserConfig(): array
     {
         return [
@@ -60,4 +73,5 @@ class LegacyApiRequest extends BaseRequest
             'configName' => 'required|string',
         ];
     }
+
 }
