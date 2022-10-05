@@ -26,8 +26,8 @@ class DiscordInfo implements Castable
             {
                 return [
                     'discordInfo' => [
-                        'username' => $value->username,
-                        'id' => $value->id
+                        'username' => $value['username'],
+                        'id' => $value['id']
                     ]
                 ];
             }

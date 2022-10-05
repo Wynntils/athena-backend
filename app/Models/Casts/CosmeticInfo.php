@@ -67,11 +67,11 @@ class CosmeticInfo implements Castable
             {
                 return [
                     'cosmeticInfo' => [
-                        'capeTexture' => $value->capeTexture,
-                        'elytraEnabled' => $value->elytraEnabled,
-                        'maxResolution' => $value->maxResolution,
-                        'allowAnimated' => $value->allowAnimated,
-                        'parts' => $value->parts,
+                        'capeTexture' => $value['capeTexture'],
+                        'elytraEnabled' => $value['elytraEnabled'],
+                        'maxResolution' => $value['maxResolution'],
+                        'allowAnimated' => $value['allowAnimated'],
+                        'parts' => $value['parts'],
                     ]
                 ];
             }
