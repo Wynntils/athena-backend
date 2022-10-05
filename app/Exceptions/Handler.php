@@ -82,11 +82,27 @@ class Handler extends ExceptionHandler
         // Log the exception if it's a validation exception.
         if ($exception instanceof \Illuminate\Validation\ValidationException) {
             // Ignore the following versions for specific validation errors.
-            $versionString = str_replace('WynntilsClient v', '', $request->userAgent());
-            $explode = explode('/', $versionString);
-            if (count($explode) === 2) {
-                [$version, $build] = $explode;
-            } else {
+            $versionString = str($request->userAgent());
+            $usingArtemis = $versionString->contains('Artemis');
+
+            if ($versionString->contains('/')) {
+                $versionString->replace('WynntilsClient v', '');
+                [$version, $build] = $versionString->split('/');
+            }
+
+            /*
+             * Handle the following validation user agent
+             * Wynntils Artemis\1.1.0-389 (client) FABRIC
+             * Wynntils\1.12.1-2 (client)
+             */
+            if ($versionString->contains('\\')) {
+                $versionString->replace(['Wynntils', ' Artemis', '\\'], '');
+                [$version, $versionInfo] = $versionString->split('-');
+                $versionInfo = str($versionInfo);
+                [$build, $client, $modloader] = $versionInfo->split(' ');
+            }
+
+            if (!isset($version, $build) && !$versionString->contains('PHP')) {
                 \Log::error('Invalid user agent: ' . $request->userAgent());
                 return parent::render($request, $exception);
             }
@@ -102,6 +118,11 @@ class Handler extends ExceptionHandler
                 sprintf("(%s) %s %s: %s", $request->userAgent(), $request->method(), $request->path(), $exception->getMessage()),
                 [
                     'user' => $user->username ?? null,
+                    'version' => $version ?? null,
+                    'usingArtemis' => $usingArtemis ?? null,
+                    'build' => $build ?? null,
+                    'client' => $client ?? null,
+                    'modloader' => $modloader ?? null,
                     'input' => $request->post(),
                     'files' => collect($request->allFiles())
                         ->filter(function ($config) {
