@@ -28,11 +28,11 @@ class UserResource extends JsonResource
                 'id' => $this->discordInfo->id,
             ],
             'cosmetics' => [
-                "texture" => $this->cosmeticInfo->capeTexture,
-                "isElytra" => $this->cosmeticInfo->elytraEnabled,
-                "maxResolution" => $this->cosmeticInfo->maxResolution,
-                "allowAnimated" => $this->cosmeticInfo->allowAnimated,
-                'parts' => $this->cosmeticInfo->parts,
+                'texture' => $this->cosmeticInfo?->capeTexture ?? '',
+                'isElytra' => $this->cosmeticInfo?->elytraEnabled ?? false,
+                'maxResolution' => $this->cosmeticInfo?->maxResolution ?? '0x0',
+                'allowAnimated' => $this->cosmeticInfo?->allowAnimated ?? false,
+                'parts' => $this->cosmeticInfo?->parts ?? [],
             ],
         ];
     }

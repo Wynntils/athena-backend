@@ -25,7 +25,7 @@ class CapeController extends Controller
 
     public function getUserCape($uuid)
     {
-        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo->getFormattedTexture()));
+        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo?->getFormattedTexture() ?? ''));
     }
 
     public function list(): \Illuminate\Http\JsonResponse
@@ -98,8 +98,9 @@ class CapeController extends Controller
 
                 // Set users who had the cape to have the new cape
                 foreach (User::where('cosmeticInfo.capeTexture', $originalSha)->get() as $user) {
-                    $user->cosmeticInfo->capeTexture = $sha;
-                    $user->save();
+                    $cosmeticInfo = $user->cosmeticInfo;
+                    $cosmeticInfo->capeTexture = $sha;
+                    $cosmeticInfo->save();
                 }
 
             }

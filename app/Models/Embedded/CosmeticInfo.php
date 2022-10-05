@@ -15,6 +15,16 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class CosmeticInfo extends Model
 {
+    public $timestamps = false;
+
+    protected $fillable = [
+        'capeTexture',
+        'elytraEnabled',
+        'maxResolution',
+        'allowAnimated',
+        'parts',
+    ];
+
     protected $casts = [
         'elytraEnabled' => 'bool',
         'allowAnimated' => 'bool'

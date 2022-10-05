@@ -10,5 +10,10 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class DiscordInfo extends Model
 {
+    public $timestamps = false;
 
+    protected $fillable = [
+        'id',
+        'username',
+    ];
 }

@@ -20,8 +20,8 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $username
  * @property string $authToken
  * @property AccountType $accountType
- * @property DiscordInfo $discordInfo
- * @property CosmeticInfo $cosmeticInfo
+ * @property DiscordInfo|null $discordInfo
+ * @property CosmeticInfo|null $cosmeticInfo
  *
  * @mixin Builder
  */
@@ -85,10 +85,10 @@ class User extends Model implements
 
     public function updateDiscord($id, $username): void
     {
-        $this->discordInfo->username = $username;
-        $this->discordInfo->id = $id;
-
-        $this->save();
+        $this->discordInfo()->create([
+            'id' => $id,
+            'username' => $username,
+        ]);
     }
 
     public function getConfigs(): ArrayObject

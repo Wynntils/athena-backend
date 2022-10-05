@@ -39,26 +39,14 @@ class LegacyApiController extends Controller
 
         $cosmetics = collect($request->validated('cosmetics'));
 
-        if ($cosmetics->has('texture')) {
-            $user->cosmeticInfo->capeTexture = $cosmetics->get('texture');
-        }
-        if ($cosmetics->has('isElytra')) {
-            $user->cosmeticInfo->elytraEnabled = $cosmetics->get('isElytra');
-        }
-        if ($cosmetics->has('maxResolution')) {
-            $user->cosmeticInfo->maxResolution = $cosmetics->get('maxResolution');
-        }
-        if ($cosmetics->has('allowAnimated')) {
-            $user->cosmeticInfo->allowAnimated = $cosmetics->get('allowAnimated');
-        }
-        if ($cosmetics->has('parts')) {
-            foreach ($cosmetics->get('parts') as $part => $value) {
-                $user->cosmeticInfo->parts->{$part} = $value;
-            }
-            $user->cosmeticInfo->parts = $cosmetics->get('parts');
-        }
+        $user->cosmeticInfo()->create([
+            'capeTexture' => $cosmetics->get('texture') ?? '',
+            'elytraEnabled' => $cosmetics->get('isElytra') ?? false,
+            'maxResolution' => $cosmetics->get('maxResolution') ?? '128x128',
+            'allowAnimated' => $cosmetics->get('allowAnimated') ?? false,
+            'parts' => $cosmetics->get('parts') ?? [],
+        ]);
 
-        $user->save();
         return ["result" => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
     }
 

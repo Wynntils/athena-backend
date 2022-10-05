@@ -50,12 +50,14 @@ class UserController extends Controller
     {
         return response()->json([
             'user' => [
+                'uuid' => $user->id,
+                'username' => $user->username,
                 'accountType' => $user->accountType,
                 'cosmetics' => [
-                    'hasCape' => $user->cosmeticInfo->hasCape(),
-                    'hasElytra' => $user->cosmeticInfo->hasElytra(),
-                    'hasEars' => $user->cosmeticInfo->hasPart("ears"),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo->getFormattedTexture())
+                    'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
+                    'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
+                    'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '')
                 ]
             ]
         ]);
@@ -71,10 +73,10 @@ class UserController extends Controller
             'user' => [
                 'accountType' => $user->accountType,
                 'cosmetics' => [
-                    'hasCape' => $user->cosmeticInfo->hasCape(),
-                    'hasElytra' => $user->cosmeticInfo->hasElytra(),
-                    'hasEars' => $user->cosmeticInfo->hasPart("ears"),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo->getFormattedTexture())
+                    'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
+                    'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
+                    'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '')
                 ]
             ]
         ]);

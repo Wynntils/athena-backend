@@ -9,6 +9,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class PartInfo extends Model
 {
+    public $timestamps = false;
     /**
      * @var array<int, string>
      */
