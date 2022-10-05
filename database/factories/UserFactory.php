@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Http\Enums\AccountType;
 use App\Models\Casts\PartInfo;
 use App\Models\User;
+use Faker\Core\Uuid;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -15,6 +16,7 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
+            '_id' => $this->faker->uuid(),
             'username' => $this->faker->userName(),
             'authToken' => Str::random(10),
             'password' => bcrypt('password'),
