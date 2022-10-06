@@ -86,7 +86,7 @@ class Handler extends ExceptionHandler
             $usingArtemis = $versionString->contains('Artemis');
 
             if ($versionString->contains('/')) {
-                $versionString->replace('WynntilsClient v', '');
+                $versionString = $versionString->replace('WynntilsClient v', '');
                 [$version, $build] = $versionString->split('{/}');
             }
 
@@ -96,7 +96,7 @@ class Handler extends ExceptionHandler
              * Wynntils\1.12.1-2 (client)
              */
             if ($versionString->contains('\\')) {
-                $versionString->replace(['Wynntils', ' Artemis', '\\'], '');
+                $versionString = $versionString->replace(['Wynntils', ' Artemis', '\\'], '');
                 [$version, $versionInfo] = $versionString->split('{-}');
                 $versionInfo = str($versionInfo);
                 $versionInfoSplit = $versionInfo->split('{ }');
@@ -121,11 +121,12 @@ class Handler extends ExceptionHandler
                 sprintf("(%s) %s %s: %s", $request->userAgent(), $request->method(), $request->path(), $exception->getMessage()),
                 [
                     'user' => $user->username ?? null,
-                    'version' => $version ?? null,
-                    'usingArtemis' => $usingArtemis ?? null,
-                    'build' => $build ?? null,
-                    'client' => $client ?? null,
-                    'modloader' => $modloader ?? null,
+                    'version' => [
+                        'version' => $version ?? null,
+                        'build' => $build ?? null,
+                        'client' => $client ?? null,
+                        'modloader' => $modloader ?? null,
+                    ],
                     'input' => $request->post(),
                     'files' => collect($request->allFiles())
                         ->filter(function ($config) {
@@ -142,6 +143,23 @@ class Handler extends ExceptionHandler
                     'errors' => $exception->errors()
                 ]
             );
+
+            if ($usingArtemis) {
+                Notifications::log(
+                    content: "An exception occured while using Artemis ({$request->userAgent()})",
+                    title: "An exception occured",
+                    description: sprintf(
+                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
+                        $request->method(),
+                        $request->path(),
+                        $exception->getMessage(),
+                        json_encode($exception->errors(), JSON_PRETTY_PRINT)
+                    ),
+                    color: EmbedColor::RED
+                );
+            }
+
+            return response()->json(['message' => 'An error occured while validating your request.', 'errors' => $exception->errors()], 400);
         }
 
         if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
