@@ -99,7 +99,10 @@ class Handler extends ExceptionHandler
                 $versionString->replace(['Wynntils', ' Artemis', '\\'], '');
                 [$version, $versionInfo] = $versionString->split('{-}');
                 $versionInfo = str($versionInfo);
-                [$build, $client, $modloader] = $versionInfo->split('{ }');
+                $versionInfoSplit = $versionInfo->split('{ }');
+                $build = $versionInfoSplit->get(0);
+                $client = $versionInfoSplit->get(1);
+                $modloader = $versionInfoSplit->get(2);
             }
 
             if (!isset($version, $build) && !$versionString->contains('PHP')) {
