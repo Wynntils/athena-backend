@@ -16,6 +16,7 @@ class UserResource extends JsonResource
     {
         return [
             'uuid' => $this->id,
+            'username' => $this->username,
             'accountType' => $this->accountType,
             'authToken' => $this->authToken,
             'versions' => [
@@ -23,7 +24,7 @@ class UserResource extends JsonResource
                 'used' => $this->usedVersions,
             ],
             'discord' => [
-                'username' => $this->discordInfo->username,
+                'username' => $this->discordInfo?->username,
                 'id' => $this->discordInfo->id,
             ],
             'cosmetics' => [

@@ -16,7 +16,7 @@ class UserFactory extends Factory
         return [
             '_id' => $this->faker->uuid(),
             'username' => $this->faker->userName(),
-            'authToken' => Str::random(10),
+            'authToken' => $this->faker->uuid(),
             'password' => bcrypt('password'),
             'accountType' => $this->faker->randomElement(AccountType::cases()),
             'discordInfo' => [
