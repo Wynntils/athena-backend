@@ -87,7 +87,7 @@ class Handler extends ExceptionHandler
 
             if ($versionString->contains('/')) {
                 $versionString->replace('WynntilsClient v', '');
-                [$version, $build] = $versionString->split('/');
+                [$version, $build] = $versionString->split('{/}');
             }
 
             /*
@@ -97,9 +97,9 @@ class Handler extends ExceptionHandler
              */
             if ($versionString->contains('\\')) {
                 $versionString->replace(['Wynntils', ' Artemis', '\\'], '');
-                [$version, $versionInfo] = $versionString->split('-');
+                [$version, $versionInfo] = $versionString->split('{-}');
                 $versionInfo = str($versionInfo);
-                [$build, $client, $modloader] = $versionInfo->split(' ');
+                [$build, $client, $modloader] = $versionInfo->split('{ }');
             }
 
             if (!isset($version, $build) && !$versionString->contains('PHP')) {
