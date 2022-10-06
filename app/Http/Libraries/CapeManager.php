@@ -44,7 +44,10 @@ class CapeManager
 
     public function getCape($capeId): ?string
     {
-        return $this->isApproved($capeId) ? $this->approved->path($capeId) : ($this->isBanned($capeId) ? $this->approved->path('bannedCape') : $this->approved->path('defaultCape'));
+        return match (true) {
+            $this->isApproved($capeId) => $this->approved->path($capeId),
+            default => $this->special->path('defaultCape'),
+        };
     }
 
     public function deleteCape(string $capeId): bool
@@ -62,6 +65,10 @@ class CapeManager
 
     public function isApproved($capeId): bool
     {
+        if (empty($capeId)) {
+            return false;
+        }
+
         return $this->approved->exists($capeId);
     }
 
@@ -72,7 +79,7 @@ class CapeManager
 
     public function getSpecialCape(): string
     {
-        return $this->special->get($this->specialCapes[Carbon::now()->format('m-d')]) ?? $this->approved->get('defaultCape');
+        return $this->special->get($this->specialCapes[Carbon::now()->format('m-d')]) ?? $this->special->get('defaultCape');
     }
 
     public function getCapeAsBase64($capeId): ?string
@@ -81,7 +88,7 @@ class CapeManager
             return base64_encode($this->getSpecialCape());
         }
 
-        return base64_encode($this->approved->get($capeId) ?? $this->approved->get('defaultCape'));
+        return base64_encode($this->approved->get($capeId) ?? $this->special->get('defaultCape'));
     }
 
     public function listCapes(): array
