@@ -158,8 +158,6 @@ class Handler extends ExceptionHandler
                     color: EmbedColor::RED
                 );
             }
-
-            return response()->json(['message' => 'An error occured while validating your request.', 'errors' => $exception->errors()], 400);
         }
 
         if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
