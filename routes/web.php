@@ -23,6 +23,8 @@ if(config('app.debug') !== false) {
     });
 }
 
+Route::get('/version/latest/{stream}', [App\Http\Controllers\VersionController::class, 'latest'])->where('stream', 'ce|re');
+
 Route::fallback(static function () {
     return redirect('https://wynntils.com');
 });

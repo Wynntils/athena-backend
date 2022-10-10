@@ -13,6 +13,7 @@
         "ext-zlib": "*",
         "composer/semver": "^3.3",
         "darkaonline/l5-swagger": "^8.3",
+        "graham-campbell/github": "^11.0",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.7",
         "irazasyed/laravel-gamp": "^1.9",
