@@ -46,7 +46,8 @@ services:
             - "27017:27017"
         volumes:
             - 'mongodb-data:/data/db'
-
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
