@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\VersionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,7 +24,10 @@ if(config('app.debug') !== false) {
     });
 }
 
-Route::get('/version/latest/{stream}', [App\Http\Controllers\VersionController::class, 'latest'])->where('stream', 'ce|re');
+Route::prefix('version')->group(static function () {
+    Route::get('latest/{stream}', [VersionController::class, 'latest'])->where('stream', 're|ce');
+    Route::get('changelog/{version}', [VersionController::class, 'changelog']);
+});
 
 Route::fallback(static function () {
     return redirect('https://wynntils.com');
