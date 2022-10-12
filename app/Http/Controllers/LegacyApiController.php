@@ -82,10 +82,16 @@ class LegacyApiController extends Controller
             return ['result' => $user->getConfigFiles()];
         }
 
-        $result = [];
-        $result['message'] = "Successfully located user '$lookup' configuration.";
-        $result['result'] = json_decode($user->getConfig($lookup), true, 512, JSON_THROW_ON_ERROR);
-        return $result;
+        $config = $user->getConfig($lookup);
+
+        try {
+            $result = [];
+            $result['message'] = "Successfully located user '$lookup' configuration.";
+            $result['result'] = json_decode($config, true, 512, JSON_THROW_ON_ERROR);
+            return $result;
+        } catch (\JsonException $e) {
+            return ['message' => "Failed to parse user '$lookup' configuration.", $config];
+        }
     }
 
 
