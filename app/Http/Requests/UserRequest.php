@@ -8,7 +8,7 @@ class UserRequest extends BaseRequest
     {
         return [
             'config' => 'required|array|min:1',
-            'config.*' => 'required|file|max:5000',
+            'config.*' => 'required',
         ];
     }
 

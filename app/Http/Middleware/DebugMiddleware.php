@@ -2,9 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Libraries\Notifications;
 use Closure;
-use DiscordWebhook\EmbedColor;
 use Illuminate\Http\Request;
 
 class DebugMiddleware
@@ -45,21 +43,9 @@ class DebugMiddleware
         if ($prettyResponse === null) {
             $prettyResponse = $response->getContent();
         }
-        try {
-            Notifications::log(
-                title: "Debug Information Request",
-                description: substr("`Routes -> " . $method . " -> /" . $path . "`\n**Request:** ```json\n{$request->userAgent()}\n" . $param, 0, 3000) . (strlen($param) > 3000 ? '...' : '') . '```',
-                color: EmbedColor::AQUA
-            );
-            Notifications::log(
-                title: "Debug Information Response",
-                description: substr("`Routes -> $method -> /$path`\n**Response {$response->getStatusCode()}:**```json\n{$prettyResponse}",
-                    0, 3000) . (strlen($prettyResponse) > 3000 ? '...' : '') . "```",
-                color: EmbedColor::AQUA
-            );
-        } catch (Throwable $e) {
-            //
-        }
+
+        \Log::info(substr("`Routes -> " . $method . " -> /" . $path . "`\n**Request:** ```json\n{$request->userAgent()}\n" . $param, 0, 3000) . (strlen($param) > 3000 ? '...' : '') . '```',
+            ['response' => $prettyResponse]);
 
         return $response;
     }
