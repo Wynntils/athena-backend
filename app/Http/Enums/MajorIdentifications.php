@@ -28,6 +28,7 @@ enum MajorIdentifications
    case FISSION;
    case EXPLOSIVE_IMPACT;
    case GEOCENTRISM;
+   case GRAVITYWELL;
 
    public function displayName(): string
    {
@@ -56,6 +57,7 @@ enum MajorIdentifications
            self::FISSION => 'Fission',
            self::EXPLOSIVE_IMPACT => 'Explosive Impact',
            self::GEOCENTRISM => 'Geocentrism',
+           self::GRAVITYWELL => 'Gravity Well',
        };
    }
 
@@ -69,8 +71,8 @@ enum MajorIdentifications
            self::GUARDIAN => '20% of damage taken by nearby allies is redirected to you',
            self::ALTRUISM => 'Nearby players gain 35% of the health you naturally regenerate',
            self::HERO => 'While under 50% maximum health, nearby allies gain 30% bonus damage and defence',
-           self::ARCANES => '50% chance for spells to cost no mana when casted',
-           self::ENTROPY => 'Meteor has increased blast radius and pulls enemies instead',
+           self::ARCANES => '30% chance for spells to cost no mana when casted',
+           self::ENTROPY => 'Meteor falls three times faster',
            self::ROVINGASSASSIN => 'Vanish will no longer block mana and health regeneration',
            self::MAGNET => 'Pulls items dropped by mobs towards you',
            self::MADNESS => 'Casts a random spell of your class every 3 seconds',
@@ -86,6 +88,7 @@ enum MajorIdentifications
            self::FISSION => 'Explosions from your "Exploding" ID are twice as big and twice as strong',
            self::EXPLOSIVE_IMPACT => 'Your "Exploding" ID can trigger when hitting mobs with your Main Attack',
            self::GEOCENTRISM => 'Aura radiates from you instead of your Totem and can be cast any time',
+           self::GRAVITYWELL => 'Meteor has increased blast radius and pulls enemies instead',
        };
    }
 }
