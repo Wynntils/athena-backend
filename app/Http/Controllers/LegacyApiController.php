@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\UserNotFoundException;
 use App\Http\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
@@ -69,11 +68,10 @@ class LegacyApiController extends Controller
     public function getUserByPassword(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
-        if(!\Hash::check($request->validated('password'), $user->password)) {
-            return ['message' => 'Invalid password.'];
+        if (\Hash::check($request->validated('password'), $user->password)) {
+            return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
         }
-
-        return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
+        return ['message' => 'Invalid password.'];
     }
 
     public function getUserConfig(LegacyApiRequest $request)
