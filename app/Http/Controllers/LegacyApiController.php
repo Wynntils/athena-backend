@@ -84,6 +84,10 @@ class LegacyApiController extends Controller
 
         $config = $user->getConfig($lookup);
 
+        if ($config === null) {
+            return ['message' => 'Config not found.'];
+        }
+
         try {
             $result = [];
             $result['message'] = "Successfully located user '$lookup' configuration.";
