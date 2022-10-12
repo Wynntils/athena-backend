@@ -5,7 +5,7 @@ use App\Http\Controllers\UserController;
 Route::controller(UserController::class)->group(static function () {
     Route::middleware(['auth:token'])->group(static function () {
         Route::get('getConfigs', 'getConfigs');
-        Route::post('uploadConfigs', 'uploadConfigs')->middleware('debug');
+        Route::post('uploadConfigs', 'uploadConfigs');//->middleware('debug');
         Route::post('updateDiscord', 'updateDiscord');
     });
 //    Route::post('setUserPassword', 'setUserPassword');
