@@ -104,6 +104,9 @@ class User extends Model implements
 
     public function uploadConfig(UploadedFile $file): bool
     {
+        if (in_array($this->id, config('athena.debug.users'))) {
+            \Log::info('Uploading config for user ' . $this->id, ['file' => $file->getClientOriginalName()]);
+        }
         return Storage::disk('configs')->put($this->id.'/'.$file->getClientOriginalName(), zlib_encode(json_encode(json_decode(file_get_contents($file))), ZLIB_ENCODING_DEFLATE));
     }
 

@@ -17,7 +17,6 @@ class DebugMiddleware
             return $response;
         }
 
-
         $path = str_replace([
             config('athena.general.apiKey'),
             config('athena.capes.token')
