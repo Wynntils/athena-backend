@@ -62,5 +62,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'cape.token' => \App\Http\Middleware\CapeTokenMiddleware::class,
         'athena.token' => \App\Http\Middleware\AthenaTokenMiddleware::class,
+        'debug' => \App\Http\Middleware\DebugMiddleware::class,
     ];
 }
