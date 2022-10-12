@@ -46,8 +46,13 @@ class VersionController extends Controller
     {
         $isArtemis = str($request->userAgent())->contains('Artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
+        $stream = str($version)->contains('beta') ? 'ce' : 're';
 
-        $releases = $this->getReleases($client, str($version)->contains('beta') ? 'ce' : 're');
+        $releases = $this->getReleases($client, $version === 'latest' ? 'all' : $stream);
+        if ($version === 'latest') {
+            $version = $releases->first()['tag_name'];
+        }
+
         $release = $releases->firstWhere('tag_name', $version);
 
         if (!$release) {
@@ -67,7 +72,7 @@ class VersionController extends Controller
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
         return collect($this->github->repo()->releases()->all('Wynntils', $repo))->filter(function ($release) use ($stream) {
-            return $release['prerelease'] === ($stream === 'ce');
+            return $release['prerelease'] === ($stream === 'ce') || $stream === 'all';
         });
     }
 
