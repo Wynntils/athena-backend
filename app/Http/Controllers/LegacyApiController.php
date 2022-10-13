@@ -7,6 +7,7 @@ use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Guild;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LegacyApiController extends Controller
 {
@@ -99,6 +100,11 @@ class LegacyApiController extends Controller
     }
 
 
+    /**
+     * @param $user
+     * @return User
+     * @throws ModelNotFoundException
+     */
     private function getUser($user): User
     {
         return match (true) {
