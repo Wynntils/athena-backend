@@ -6,6 +6,13 @@ return [
         'apiKey' => env('MASTER_TOKEN')
     ],
 
+    'debug' => [
+        'users' => [
+            '879be29a-bcca-43d6-978a-321a4241c392', // Scyu
+            '4e84e744-53da-4fc4-a226-09011f372c37' // v8j
+        ]
+    ],
+
     'capes' => [
         'token' => env('CAPE_TOKEN')
     ],

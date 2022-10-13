@@ -42,10 +42,37 @@ class VersionController extends Controller
         ]);
     }
 
+    public function changelog(Request $request, $version)
+    {
+        $isArtemis = str($request->userAgent())->contains('Artemis');
+        $client = $isArtemis ? 'Artemis' : 'Wynntils';
+        $stream = str($version)->contains('beta') ? 'ce' : 're';
+
+        $releases = $this->getReleases($client, $version === 'latest' ? 'all' : $stream);
+        if ($version === 'latest') {
+            $version = $releases->first()['tag_name'];
+        }
+
+        $release = $releases->firstWhere('tag_name', $version);
+
+        if (!$release) {
+            return response()->json(['error' => 'No release found for this version'], 404);
+        }
+
+        // clean changelog body of markdown links and commit hashes
+        $changelog = str($release['body'])->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1');
+        $changelog = str($changelog)->replaceMatches('/\([0-9a-f]{7}\)/', '');
+
+        return response()->json([
+            'version' => $release['tag_name'],
+            'changelog' => $changelog,
+        ]);
+    }
+
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
         return collect($this->github->repo()->releases()->all('Wynntils', $repo))->filter(function ($release) use ($stream) {
-            return $release['prerelease'] === ($stream === 'ce');
+            return $release['prerelease'] === ($stream === 'ce') || $stream === 'all';
         });
     }
 

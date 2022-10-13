@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\UserNotFoundException;
 use App\Http\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Guild;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LegacyApiController extends Controller
 {
@@ -69,11 +69,10 @@ class LegacyApiController extends Controller
     public function getUserByPassword(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
-        if(!\Hash::check($request->validated('password'), $user->password)) {
-            return ['message' => 'Invalid password.'];
+        if (\Hash::check($request->validated('password'), $user->password)) {
+            return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
         }
-
-        return ["result" => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
+        return ['message' => 'Invalid password.'];
     }
 
     public function getUserConfig(LegacyApiRequest $request)
@@ -84,13 +83,28 @@ class LegacyApiController extends Controller
             return ['result' => $user->getConfigFiles()];
         }
 
-        $result = [];
-        $result['message'] = "Successfully located user '$lookup' configuration.";
-        $result['result'] = json_decode($user->getConfig($lookup), true, 512, JSON_THROW_ON_ERROR);
-        return $result;
+        $config = $user->getConfig($lookup);
+
+        if ($config === null) {
+            return ['message' => 'Config not found.'];
+        }
+
+        try {
+            $result = [];
+            $result['message'] = "Successfully located user '$lookup' configuration.";
+            $result['result'] = json_decode($config, true, 512, JSON_THROW_ON_ERROR);
+            return $result;
+        } catch (\JsonException $e) {
+            return ['message' => "Failed to parse user '$lookup' configuration.", $config];
+        }
     }
 
 
+    /**
+     * @param $user
+     * @return User
+     * @throws ModelNotFoundException
+     */
     private function getUser($user): User
     {
         return match (true) {
