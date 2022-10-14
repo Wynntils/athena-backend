@@ -20,12 +20,16 @@ class CapeController extends Controller
 
     public function getCape($capeId)
     {
-        return response()->file($this->manager->getCape($capeId));
+        return response()->file($this->manager->getCape($capeId), [
+            'Content-Type' => 'image/png',
+        ]);
     }
 
     public function getUserCape($uuid)
     {
-        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo?->getFormattedTexture() ?? ''));
+        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo?->getFormattedTexture() ?? ''), [
+            'Content-Type' => 'image/png',
+        ]);
     }
 
     public function list(): \Illuminate\Http\JsonResponse
@@ -43,7 +47,9 @@ class CapeController extends Controller
 
     public function queueGetCape($capeId)
     {
-        return response()->file($this->manager->getQueuedCape($capeId));
+        return response()->file($this->manager->getQueuedCape($capeId), [
+            'Content-Type' => 'image/png',
+        ]);
     }
 
     public function queueList(): \Illuminate\Http\JsonResponse
