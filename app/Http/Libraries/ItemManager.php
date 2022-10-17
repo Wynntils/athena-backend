@@ -376,7 +376,6 @@ class ItemManager
         if ($item === null) {
             $lookup = explode(':', $material);
             $item = $this->itemDB->get($lookup[0]);
-            $item->damage = $lookup[1];
         }
 
         if ($item === null) {
@@ -385,7 +384,7 @@ class ItemManager
 
         return [
             'name' => 'minecraft:' . $item?->name ?? 'unknown',
-            'damage' => $item?->damage ?? null,
+            'damage' => $lookup[1] ?? null,
         ];
     }
 
