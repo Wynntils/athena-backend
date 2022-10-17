@@ -13,6 +13,7 @@ class VersionController extends Controller
 
     public function latest(Request $request, $stream)
     {
+        // Cache this for 5 minutes
         $isArtemis = str($request->userAgent())->contains('Artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
 
@@ -71,7 +72,16 @@ class VersionController extends Controller
 
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
-        return collect($this->github->repo()->releases()->all('Wynntils', $repo))->filter(function ($release) use ($stream) {
+        // Cache this for 5 minutes
+        $cache = \Cache::remember('releases.'.$repo, 300, function () use ($repo) {
+            return collect($this->github->repo()->releases()->all('Wynntils', $repo));
+        });
+
+        if ($stream === 'all') {
+            return $cache;
+        }
+
+        return $cache->filter(function ($release) use ($stream) {
             return match ($stream) {
                 're' => $release['prerelease'] === false,
                 default => true,
