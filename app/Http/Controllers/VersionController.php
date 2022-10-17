@@ -72,7 +72,10 @@ class VersionController extends Controller
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
         return collect($this->github->repo()->releases()->all('Wynntils', $repo))->filter(function ($release) use ($stream) {
-            return $release['prerelease'] === ($stream === 'ce') || $stream === 'all';
+            return match ($stream) {
+                're' => $release['prerelease'] === false,
+                default => true,
+            };
         });
     }
 
