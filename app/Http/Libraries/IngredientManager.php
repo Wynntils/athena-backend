@@ -18,10 +18,8 @@ class IngredientManager
 
         $sprite = $input['sprite'];
         $result['material'] = $sprite['id'].':'.$sprite['damage'];
-        $newMaterial = ItemManager::instance()->convertMaterial($result['material']);
         $result['itemInfo'] = &$itemInfo;
-        $itemInfo['name'] = $newMaterial['name'];
-        $itemInfo['damage'] = $newMaterial['damage'];
+        ItemManager::enhanceWithNewMaterial($result['material'], $itemInfo);
 
         $result['professions'] = $input['skills'];
 

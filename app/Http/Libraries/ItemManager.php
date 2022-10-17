@@ -10,12 +10,12 @@ class ItemManager
 
     use Singleton;
 
-    private \Illuminate\Support\Collection $prismarineJSData;
+    private \Illuminate\Support\Collection $itemDB;
 
     public function __construct()
     {
-        $itemDB = \Storage::get('items.json');
-        $this->prismarineJSData = collect(json_decode($itemDB))->keyBy('id');
+        $itemDB = \Storage::get('item-data.json');
+        $this->itemDB = collect(json_decode($itemDB));
     }
 
 
@@ -89,9 +89,6 @@ class ItemManager
 
             if ($key === 'material' && $value !== null) {
                 $itemInfo['material'] = $value;
-                $newMaterial = self::instance()->convertMaterial($value);
-                $itemInfo['name'] = $newMaterial['name'];
-                $itemInfo['damage'] = $newMaterial['damage'];
                 continue;
             }
 
@@ -107,6 +104,11 @@ class ItemManager
             $status['type'] = getStatusType($translatedName);
             $status['isFixed'] = $isFixed($translatedName);
             $status['baseValue'] = $value;
+        }
+
+        // Enhance with new material IDs for Artemis
+        if (isset($itemInfo['material'])) {
+            self::enhanceWithNewMaterial($itemInfo['material'], $itemInfo);
         }
 
         $itemInfo = cleanNull($itemInfo);
@@ -352,56 +354,47 @@ class ItemManager
         };
     }
 
+    public static function enhanceWithNewMaterial($material, &$itemInfo) {
+        try {
+            $newMaterial = self::instance()->convertMaterial($material);
+            $itemInfo['name'] = $newMaterial['name'];
+            $itemInfo['damage'] = $newMaterial['damage'];
+        } catch (\Exception $e) {
+            $itemInfo['materialException'] = $e->getMessage();
+        }
+    }
+
     public function convertMaterial($material) {
-        $item = str($material);
-        if ($item->startsWith('minecraft:')) {
+        if (str($material)->startsWith('minecraft:')) {
             return [
-                'id' => $item,
-                'name' => $item
+                'name' => $material,
+                'damage' => null
             ];
         }
 
-        if ($item->contains(':')) {
-            [$id, $durability] = $item->explode(':');
-        } else {
-            $id = $material;
-            $durability = 0;
+        $item = $this->itemDB->get($material);
+        if ($item === null) {
+            $lookup = explode(':', $material);
+            $item = $this->itemDB->get($lookup[0]);
+            $item->damage = $lookup[1];
         }
 
-        $item = $this->prismarineJSData->get($id);
         if ($item === null) {
-            return null;
+            throw new \Exception('Unknown material: ' . $material);
         }
 
         return [
             'name' => 'minecraft:' . $item?->name ?? 'unknown',
-            'damage' => $durability,
+            'damage' => $item?->damage ?? null,
         ];
     }
 
     public function getItemTranslations($materials)
     {
-        $itemDB = $this->prismarineJSData;
-
         $materials = collect($materials)->flatten()->unique();
 
-        return $materials->mapWithKeys(function ($item, $key) use ($itemDB) {
-            $item = str($item);
-            if ($item->startsWith('minecraft:')) {
-                return [$item->toString() => [
-                    'name' => $item,
-                    'damage' => 0,
-                ]];
-            }
-
-            [$id, $durability] = $item->split('/:/');
-
-            $i = $itemDB->get($id);
-
-            return [$item->toString() => [
-                'name' => 'minecraft:' . $i?->name ?? 'unknown',
-                'damage' => $durability,
-            ]];
+        return $materials->mapWithKeys(function ($item, $key) {
+            return [$item => $this->convertMaterial($item)];
         });
     }
 }
