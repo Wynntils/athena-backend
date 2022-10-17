@@ -22,6 +22,10 @@ class CacheManager
             return null;
         }
 
+        if (app()->environment('local')) {
+            return $cache->generate();
+        }
+
         return Cache::remember($cacheName, $cache->refreshRate(), static function () use ($cacheName, $cache) {
             $data = $cache->generate();
             Cache::forever($cacheName.'.hash', md5(serialize($data)));

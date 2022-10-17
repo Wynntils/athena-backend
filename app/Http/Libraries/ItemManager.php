@@ -3,9 +3,21 @@
 namespace App\Http\Libraries;
 
 use App\Http\Enums\MajorIdentifications;
+use App\Http\Traits\Singleton;
 
 class ItemManager
 {
+
+    use Singleton;
+
+    private \Illuminate\Support\Collection $prismarineJSData;
+
+    public function __construct()
+    {
+        $itemDB = \Storage::get('items.json');
+        $this->prismarineJSData = collect(json_decode($itemDB))->keyBy('id');
+    }
+
 
     public static function convertItem(array $item): object
     {
@@ -77,6 +89,9 @@ class ItemManager
 
             if ($key === 'material' && $value !== null) {
                 $itemInfo['material'] = $value;
+                $newMaterial = self::instance()->convertMaterial($value);
+                $itemInfo['name'] = $newMaterial['name'];
+                $itemInfo['damage'] = $newMaterial['damage'];
                 continue;
             }
 
@@ -335,5 +350,58 @@ class ItemManager
             'reflection' => 'reflection',
             default => null,
         };
+    }
+
+    public function convertMaterial($material) {
+        $item = str($material);
+        if ($item->startsWith('minecraft:')) {
+            return [
+                'id' => $item,
+                'name' => $item
+            ];
+        }
+
+        if ($item->contains(':')) {
+            [$id, $durability] = $item->explode(':');
+        } else {
+            $id = $material;
+            $durability = 0;
+        }
+
+        $item = $this->prismarineJSData->get($id);
+        if ($item === null) {
+            return null;
+        }
+
+        return [
+            'name' => 'minecraft:' . $item?->name ?? 'unknown',
+            'damage' => $durability,
+        ];
+    }
+
+    public function getItemTranslations($materials)
+    {
+        $itemDB = $this->prismarineJSData;
+
+        $materials = collect($materials)->flatten()->unique();
+
+        return $materials->mapWithKeys(function ($item, $key) use ($itemDB) {
+            $item = str($item);
+            if ($item->startsWith('minecraft:')) {
+                return [$item->toString() => [
+                    'name' => $item,
+                    'damage' => 0,
+                ]];
+            }
+
+            [$id, $durability] = $item->split('/:/');
+
+            $i = $itemDB->get($id);
+
+            return [$item->toString() => [
+                'name' => 'minecraft:' . $i?->name ?? 'unknown',
+                'damage' => $durability,
+            ]];
+        });
     }
 }

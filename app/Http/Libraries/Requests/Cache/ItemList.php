@@ -17,8 +17,6 @@ class ItemList implements CacheContract
 
     public function generate(): array
     {
-        // TODO: itemsMap, converted, itemInfo, typeArray, material
-
         $responses = Http::wynn()->pool(fn (Pool $pool) => [
             $pool->as('wynnItems')->get(config('athena.api.wynn.items')),
             $pool->as('wynnBuilderIDs')->get(config('athena.api.wynn.builderIds'))

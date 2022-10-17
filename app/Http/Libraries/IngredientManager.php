@@ -9,7 +9,7 @@ class IngredientManager
     {
         $input = collect($items);
 
-        $result = $statuses = $itemModifiers = $ingredientModifiers = [];
+        $result = $statuses = $itemModifiers = $ingredientModifiers = $itemInfo = [];
 
         $result['name'] = $input['name'];
         $result['tier'] = $input['tier'];
@@ -18,6 +18,10 @@ class IngredientManager
 
         $sprite = $input['sprite'];
         $result['material'] = $sprite['id'].':'.$sprite['damage'];
+        $newMaterial = ItemManager::instance()->convertMaterial($result['material']);
+        $result['itemInfo'] = &$itemInfo;
+        $itemInfo['name'] = $newMaterial['name'];
+        $itemInfo['damage'] = $newMaterial['damage'];
 
         $result['professions'] = $input['skills'];
 
