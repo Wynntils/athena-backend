@@ -25,7 +25,7 @@ class UserResource extends JsonResource
             ],
             'discord' => [
                 'username' => $this->discordInfo?->username,
-                'id' => $this->discordInfo->id,
+                'id' => $this->discordInfo?->id,
             ],
             'cosmetics' => [
                 'texture' => $this->cosmeticInfo?->capeTexture ?? '',
