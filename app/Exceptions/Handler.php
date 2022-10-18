@@ -161,7 +161,10 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
-            return response()->json(['message' => 'Could not connect to the Wynncraft API.'], 500);
+            return response()->json([
+                'message' => 'Could not connect to External API Provider.',
+                'error' => $exception->getMessage()
+            ], 500);
         }
 
         return parent::render($request, $exception);

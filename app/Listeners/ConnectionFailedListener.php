@@ -15,10 +15,9 @@ class ConnectionFailedListener
     public function handle(ConnectionFailed $event)
     {
         Notifications::log(
-            content: '<@&980223126619176960>',
-            title: 'Connection Failed',
+            title: 'Outbound Connection Failed',
             description: sprintf(
-                "`Routes -> %s -> /%s",
+                "`Routes -> %s -> %s",
                 $event->request->method(),
                 $event->request->url()
             ),
