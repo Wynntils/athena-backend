@@ -25,8 +25,8 @@ if(config('app.debug') !== false) {
 }
 
 Route::prefix('version')->group(static function () {
-    Route::get('latest/{stream}', [VersionController::class, 'latest'])->where('stream', 're|ce');
-    Route::get('changelog/{version}', [VersionController::class, 'changelog']);
+    Route::get('latest/{stream}', [VersionController::class, 'latest'])->where('stream', 're|ce')->name('version.latest');
+    Route::get('changelog/{version}', [VersionController::class, 'changelog'])->name('version.changelog');
 });
 
 Route::fallback(static function () {

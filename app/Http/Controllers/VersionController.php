@@ -39,7 +39,7 @@ class VersionController extends Controller
             'version' => $latest['tag_name'],
             'url' => $latest['assets'][0]['browser_download_url'],
             'md5' => $cache[$stream][$client]['md5'],
-            'changelog' => $latest['body'],
+            'changelog' => route('version.changelog', [$latest['tag_name']]),
         ]);
     }
 
@@ -63,6 +63,8 @@ class VersionController extends Controller
         // clean changelog body of markdown links and commit hashes
         $changelog = str($release['body'])->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1');
         $changelog = str($changelog)->replaceMatches('/\([0-9a-f]{7}\)/', '');
+        // replace crlf with lf
+        $changelog = str($changelog)->replace("\r\n", "\n");
 
         return response()->json([
             'version' => $release['tag_name'],
