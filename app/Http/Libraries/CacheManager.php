@@ -26,9 +26,7 @@ class CacheManager
             return self::generate($cacheName, $cache);
         }
 
-        return Cache::remember($cacheName, $cache->refreshRate(), static function () use ($cacheName, $cache) {
-            self::generate($cacheName, $cache);
-        });
+        return Cache::remember($cacheName, $cache->refreshRate(), static fn() => self::generate($cacheName, $cache));
     }
 
     private static function generate($cacheName, CacheContract $cache) {
