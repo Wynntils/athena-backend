@@ -24,7 +24,7 @@ class ItemList implements CacheContract
 
         $wynnItems = $responses['wynnItems']->collect('items');
         if ($wynnItems === null) {
-            return [];
+            throw new \Exception('Failed to fetch items from Wynn API');
         }
 
         $result = $items = $materialTypes = $translatedReferences = [];
@@ -75,4 +75,3 @@ class ItemList implements CacheContract
         return $result;
     }
 }
-

@@ -18,7 +18,7 @@ class TerritoryList implements CacheContract
     {
         $wynnTerritories = Http::wynn()->get(config('athena.api.wynn.territories'))->collect('territories');
         if ($wynnTerritories === null) {
-            return [];
+            throw new \Exception('Failed to fetch territories from Wynn API');
         }
 
         return [
@@ -48,4 +48,3 @@ class TerritoryList implements CacheContract
         ];
     }
 }
-

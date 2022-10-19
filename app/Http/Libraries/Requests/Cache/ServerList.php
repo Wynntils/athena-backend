@@ -18,7 +18,7 @@ class ServerList implements CacheContract
     {
         $wynnOnlinePlayers = Http::wynn()->get(config('athena.api.wynn.onlinePlayers'))->collect()->forget('request');
         if ($wynnOnlinePlayers === null) {
-            return [];
+            throw new \Exception('Failed to fetch online players from Wynn API');
         }
 
         $result = [];
@@ -46,4 +46,3 @@ class ServerList implements CacheContract
         return $result;
     }
 }
-

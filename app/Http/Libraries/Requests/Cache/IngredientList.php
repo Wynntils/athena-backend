@@ -17,7 +17,7 @@ class IngredientList implements CacheContract
     {
         $wynnIngredients = Http::wynn()->get(config('athena.api.wynn.ingredients'))->collect('data');
         if ($wynnIngredients === null) {
-            return [];
+            throw new \Exception('Failed to fetch ingredients from Wynn API');
         }
 
         return [
@@ -28,4 +28,3 @@ class IngredientList implements CacheContract
         ];
     }
 }
-

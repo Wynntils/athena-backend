@@ -25,7 +25,7 @@ class MapLocations implements CacheContract
 
         $wynnMapLocations = $responses['wynnMapLocations']->collect();
         if ($wynnMapLocations === null) {
-            return [];
+            throw new \Exception('Failed to fetch map locations from Wynn API');
         }
         $wynnMapLocations->forget('request');
         $wynnMapLocations['locations'] = collect($wynnMapLocations['locations'])->filter(function ($location) {
@@ -34,14 +34,14 @@ class MapLocations implements CacheContract
 
         $wynnMapLabels = $responses['wynnMapLabels']->collect();
         if ($wynnMapLabels === null) {
-            return [];
+            throw new \Exception('Failed to fetch map labels from Data Storage');
         }
 
         $wynnMapLocations['labels'] = $wynnMapLabels['labels'];
 
         $npcLocations = $responses['npcLocations']->collect();
         if ($npcLocations === null) {
-            return [];
+            throw new \Exception('Failed to fetch NPC locations from Data Storage');
         }
 
         $wynnMapLocations['npc-locations'] = $npcLocations['npc-locations'];
@@ -49,4 +49,3 @@ class MapLocations implements CacheContract
         return $wynnMapLocations->toArray();
     }
 }
-
