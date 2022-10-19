@@ -9,7 +9,7 @@ class CacheController extends Controller
 {
     public function getCache($cacheName): \Illuminate\Http\JsonResponse
     {
-        $cache = CacheManager::getCacheObj($cacheName);
+        $cache = CacheManager::getCacheClass($cacheName);
         if (!$cache) {
             return response()->json(['message' => "There's not a cache with the provided name."], 404);
         }

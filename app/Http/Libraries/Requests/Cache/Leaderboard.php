@@ -29,6 +29,9 @@ class Leaderboard implements CacheContract
 
         foreach (self::getLeaderboards() as $leaderboard => $response) {
             $data = $response->json('data');
+            if (empty($data)) {
+                throw new \Exception('Data is empty for ' . $leaderboard);
+            }
             for ($x = 99; $x >= 91; $x--) {
                 $generateProfile($data[$x], $leaderboard);
             }
@@ -48,4 +51,3 @@ class Leaderboard implements CacheContract
         });
     }
 }
-

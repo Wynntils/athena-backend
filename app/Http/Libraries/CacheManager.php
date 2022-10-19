@@ -18,22 +18,33 @@ class CacheManager
     ];
 
     public static function generateCache($cacheName) {
-        if (!$cache = self::getCacheObj($cacheName)) {
+        if (!$cache = self::getCacheClass($cacheName)) {
             return null;
         }
 
         if (app()->environment('local')) {
-            return $cache->generate();
+            return self::generate($cacheName, $cache);
         }
 
         return Cache::remember($cacheName, $cache->refreshRate(), static function () use ($cacheName, $cache) {
-            $data = $cache->generate();
-            Cache::forever($cacheName.'.hash', md5(serialize($data)));
-            return $data;
+            self::generate($cacheName, $cache);
         });
     }
 
-    public static function getCacheObj($cache): ?CacheContract
+    private static function generate($cacheName, CacheContract $cache) {
+        try {
+            $data = $cache->generate();
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            // If the cache fails to generate, we want to return the old cache
+            return array_merge(Cache::get($cacheName.'.backup', []), ['message' => 'Failed to generate cache. Returning old cache.']);
+        }
+        Cache::forever($cacheName.'.hash', md5(serialize($data)));
+        Cache::forever($cacheName.'.backup', $data);
+        return $data;
+    }
+
+    public static function getCacheClass($cache): ?CacheContract
     {
         if (array_key_exists($cache, self::$cacheTable)) {
             return new self::$cacheTable[$cache];
