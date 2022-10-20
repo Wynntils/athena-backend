@@ -247,7 +247,7 @@ class PatreonController extends Controller
         $output .= "**Donators not tracked via Patreon:**\n";
         $output .= $currentDonators->map(function($item) {
             return sprintf("%-21s|%-25s|%-10s",
-                "<@" . $item->discordInfo->id . ">",
+                "<@" . $item->discordInfo?->id . ">",
                 "`" . $item->username . "`",
                 $item->accountType->value,
             );
