@@ -29,11 +29,6 @@ class UserController extends Controller
             $uploadResult[] = &$fileResult;
             $fileResult['name'] = $config->getClientOriginalName();
 
-            if($user->getConfigAmount() >= 80) {
-                $fileResult['message'] = 'User exceeded the configuration amount limit.';
-                continue;
-            }
-
             $user->uploadConfig($config);
             $fileResult['message'] = 'Configuration stored successfully';
         }
