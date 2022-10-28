@@ -1223,7 +1223,8 @@
                 "tags": [
                     "Version"
                 ],
-                "summary": "Get the latest version for a stream",
+                "summary": "Get latest version",
+                "description": "Get latest version for a stream",
                 "operationId": "getVersionLatest",
                 "parameters": [
                     {
@@ -1232,7 +1233,13 @@
                         "description": "The stream to get the latest version for",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "description": "The stream to get the latest version for",
+                            "type": "string",
+                            "enum": [
+                                "ce",
+                                "re"
+                            ],
+                            "example": "ce"
                         }
                     }
                 ],
@@ -1244,16 +1251,24 @@
                                 "schema": {
                                     "properties": {
                                         "version": {
-                                            "type": "string"
+                                            "description": "The latest version for the stream",
+                                            "type": "string",
+                                            "example": "v1.13.1"
                                         },
                                         "url": {
-                                            "type": "string"
+                                            "description": "The download URL for the latest version",
+                                            "type": "string",
+                                            "example": "https://github.com/Wynntils/Wynntils/releases/download/v1.13.1/Wynntils-MC1.12.2-v1.13.1.jar"
                                         },
                                         "md5": {
-                                            "type": "string"
+                                            "description": "The MD5 hash of the latest version",
+                                            "type": "string",
+                                            "example": "a535b6431f024e3dd49fed963f32655d"
                                         },
                                         "changelog": {
-                                            "type": "string"
+                                            "description": "The URL to the changelog for the latest version",
+                                            "type": "string",
+                                            "example": "https://athena.wynntils.com/version/changelog/v1.13.1"
                                         }
                                     },
                                     "type": "object"
@@ -1275,7 +1290,8 @@
                 "tags": [
                     "Version"
                 ],
-                "summary": "Get the changelog for a version",
+                "summary": "Get changelog",
+                "description": "Get the changelog for a version",
                 "operationId": "getVersionChangelog",
                 "parameters": [
                     {
@@ -1284,7 +1300,9 @@
                         "description": "The version to get the changelog for",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "description": "The version to get the changelog for",
+                            "type": "string",
+                            "example": "v1.13.0"
                         }
                     }
                 ],
@@ -1296,10 +1314,14 @@
                                 "schema": {
                                     "properties": {
                                         "version": {
-                                            "type": "string"
+                                            "description": "The version the changelog is for",
+                                            "type": "string",
+                                            "example": "v1.13.1"
                                         },
                                         "changelog": {
-                                            "type": "string"
+                                            "description": "The changelog for the version in markdown format",
+                                            "type": "string",
+                                            "example": "### Bug Fixes\\n\\n* Guild territory list occasionally causing NPE (#618) \\n* Missing Arrow Bomb cost modifiers (#617) \\n* Changelog and Updater bugfixing (#613) \\n"
                                         }
                                     },
                                     "type": "object"
