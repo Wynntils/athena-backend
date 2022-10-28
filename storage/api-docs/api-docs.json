@@ -5,7 +5,7 @@
         "description": "Athena Backend API",
         "license": {
             "name": "GNU Affero General Public License v3.0",
-            "url": "https://github.com/Wynntils/Athena/blob/master/LICENSE"
+            "url": "https://github.com/Wynntils/athena-backend/blob/main/LICENSE"
         },
         "version": "1.0.0"
     },
@@ -835,13 +835,6 @@
                                 "schema": {
                                     "type": "string",
                                     "format": "binary"
-                                },
-                                "examples": {
-                                    "CapeApproved": {
-                                        "summary": "Cape is already approved",
-                                        "value": "https://capes.mcpe.fun/capes/user/582915bd8c7bc8f12407cc2615be769fa288bdc4",
-                                        "externalValue": "https://capes.mcpe.fun/capes/user/582915bd8c7bc8f12407cc2615be769fa288bdc4"
-                                    }
                                 }
                             }
                         }
@@ -1223,6 +1216,104 @@
                         "AuthToken": []
                     }
                 ]
+            }
+        },
+        "/version/latest/{stream}": {
+            "get": {
+                "tags": [
+                    "Version"
+                ],
+                "summary": "Get the latest version for a stream",
+                "operationId": "getVersionLatest",
+                "parameters": [
+                    {
+                        "name": "stream",
+                        "in": "path",
+                        "description": "The stream to get the latest version for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "md5": {
+                                            "type": "string"
+                                        },
+                                        "changelog": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/version/changelog/{version}": {
+            "get": {
+                "tags": [
+                    "Version"
+                ],
+                "summary": "Get the changelog for a version",
+                "operationId": "getVersionChangelog",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "The version to get the changelog for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "changelog": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
             }
         }
     },
@@ -1753,13 +1844,25 @@
                     "rawJumpHeight": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "rawSpellDamage": {
+                    "rawThunderSpellDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "gatherXPBonus": {
+                    "rawFireSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawAirSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawEarthSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawWaterSpellDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "attackSpeed": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "gatherXpBonus": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "spellDamage": {
@@ -2137,6 +2240,9 @@
         },
         {
             "name": "User"
+        },
+        {
+            "name": "Version"
         }
     ]
 }

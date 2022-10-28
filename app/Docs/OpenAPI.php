@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
             title: "Athena-Backend",
             license: new OA\License(
                 name: "GNU Affero General Public License v3.0",
-                url: "https://github.com/Wynntils/Athena/blob/master/LICENSE"
+                url: "https://github.com/Wynntils/athena-backend/blob/main/LICENSE"
             )
         ),
         servers: [
@@ -32,6 +32,7 @@ use OpenApi\Attributes as OA;
             new OA\Tag(name: "Cape"),
             new OA\Tag(name: "Telemetry"),
             new OA\Tag(name: "User"),
+            new OA\Tag(name: "Version"),
         ],
     ),
     OA\SecurityScheme(
