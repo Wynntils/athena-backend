@@ -3,6 +3,7 @@
 namespace App\Docs\Controllers;
 
 use App\Docs\OpenAPI;
+use App\Http\Enums\MaskType;
 use OpenApi\Attributes as OA;
 
 #[
@@ -114,7 +115,7 @@ use OpenApi\Attributes as OA;
         ]
     ),
     OA\Get(
-        path: "/capes/queue/approve/{capeToken}/{capeID}",
+        path: "/capes/queue/approve/{capeToken}/{capeID}/{type}",
         operationId: "approveCape",
         summary: "Approve Cape",
         tags: ["Cape"],
@@ -132,6 +133,13 @@ use OpenApi\Attributes as OA;
                 in: "path",
                 required: true,
                 schema: new OA\Schema(type: "string")
+            ),
+            new OA\Parameter(
+                name: "type",
+                description: "The type of cape",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "string", enum: [MaskType::CAPE, MaskType::ELYTRA, MaskType::FULL])
             )
         ],
         responses: [

@@ -587,7 +587,7 @@
                 }
             }
         },
-        "/capes/queue/approve/{capeToken}/{capeID}": {
+        "/capes/queue/approve/{capeToken}/{capeID}/{type}": {
             "get": {
                 "tags": [
                     "Cape"
@@ -611,6 +611,20 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "The type of cape",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "cape",
+                                "elytra",
+                                "full"
+                            ]
                         }
                     }
                 ],
