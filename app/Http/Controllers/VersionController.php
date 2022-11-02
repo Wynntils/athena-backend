@@ -60,9 +60,10 @@ class VersionController extends Controller
 
     public function changelog(Request $request, $version)
     {
-        $isArtemis = str($request->userAgent())->contains('Artemis');
+        $userAgent = str($request->userAgent())->lower();
+        $isArtemis = $userAgent->contains('artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
-        $stream = str($version)->contains('beta') ? 'ce' : 're';
+        $stream = str($version)->contains(['alpha', 'beta']) ? 'ce' : 're';
 
         $releases = $this->getReleases($client, $stream);
         if ($version === 'latest') {
