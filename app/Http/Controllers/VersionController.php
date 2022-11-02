@@ -13,9 +13,15 @@ class VersionController extends Controller
 
     public function latest(Request $request, $stream)
     {
-        // Cache this for 5 minutes
-        $isArtemis = str($request->userAgent())->contains('Artemis');
+        $userAgent = str($request->userAgent())->lower();
+        $isArtemis = $userAgent->contains('artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
+        // Useragent example: Wynntils Artemis\1.1.0-513 (client) FABRIC
+        // Get the modloder from the useragent
+        // The modloader is the last word in the useragent
+        if ($isArtemis) {
+            $modloader = $userAgent->afterLast(' ');
+        }
 
         $releases = $this->getReleases($client, $stream);
 
@@ -26,19 +32,28 @@ class VersionController extends Controller
         }
 
         $cache = \Cache::get('version', []);
-        if (!isset($cache[$stream][$client])) {
+        if (
+            !isset($cache[$stream][$client])
+            || $cache[$stream][$client]['tag'] !== $latest['tag_name']
+            || !is_array($cache[$stream][$client]['md5'])
+        ) {
             $cache[$stream][$client] = [];
             $cache = $this->updateCache($cache, $stream, $client, $latest);
         }
 
-        if ($cache[$stream][$client]['tag'] !== $latest['tag_name']) {
-            $cache = $this->updateCache($cache, $stream, $client, $latest);
+        // We need to filter the asset list to only the current modloader if we're using Artemis
+        if ($isArtemis) {
+            $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
+                return str($asset['name'])->contains($modloader);
+            });
+        } else {
+            $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
         }
 
         return response()->json([
             'version' => $latest['tag_name'],
-            'url' => $latest['assets'][0]['browser_download_url'],
-            'md5' => $cache[$stream][$client]['md5'],
+            'url' => $asset['browser_download_url'],
+            'md5' => $cache[$stream][$client]['md5'][$asset['name']],
             'changelog' => route('version.changelog', [$latest['tag_name']]),
         ]);
     }
@@ -89,9 +104,15 @@ class VersionController extends Controller
 
     private function updateCache(mixed $cache, $stream, string $client, mixed $latest)
     {
+        $md5 = [];
+
+        foreach($latest['assets'] as $key => $asset) {
+            $md5[$asset['name']] = md5_file($asset['browser_download_url']);
+        }
+
         $cache[$stream][$client] = [
             'tag' => $latest['tag_name'],
-            'md5' => md5_file($latest['assets'][0]['browser_download_url']),
+            'md5' => $md5,
         ];
 
         \Cache::put('version', $cache);
