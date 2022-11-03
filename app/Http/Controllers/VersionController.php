@@ -88,6 +88,29 @@ class VersionController extends Controller
         ]);
     }
 
+    public function download($version, $stream, $modloader = 'fabric')
+    {
+        $client = $version === "legacy" ? 'Wynntils' : 'Artemis';
+        $isArtemis = $client === 'Artemis';
+        $releases = $this->getReleases($client, $stream);
+
+        $latest = $releases->first();
+
+        if (!$latest) {
+            return response()->json(['error' => 'No release found for this version'], 404);
+        }
+
+        if ($isArtemis) {
+            $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
+                return str($asset['name'])->contains($modloader);
+            });
+        } else {
+            $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
+        }
+
+        return response()->redirectTo($asset['browser_download_url']);
+    }
+
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
         // Cache this for 5 minutes
