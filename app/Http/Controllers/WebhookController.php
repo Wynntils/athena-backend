@@ -67,17 +67,20 @@ class WebhookController extends Controller
             $webhook = new Webhook($url);
             $webhook->setUsername('GitHub');
             $webhook->setAvatar('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png');
-            $webhook->addEmbed((new Embed())
+            $embed = (new Embed())
                 ->setTitle($repo['name'] . ' ' . $release['tag_name'])
                 ->setDescription($release['body'])
                 ->setUrl($release['html_url'])
                 ->setColor(EmbedColor::GREEN)
-                ->setTimestamp(new \DateTime($release['published_at']))
-                ->addField((new Embed\Field())
+                ->setTimestamp(new \DateTime($release['published_at']));
+
+            if (!empty($assets)) {
+                $embed->addField((new Embed\Field())
                     ->setName('Artifacts')
-                    ->setValue(implode("\n", array_map(fn($asset) => "[{$asset['name']}]({$asset['browser_download_url']})", $assets)))
-                ),
-            );
+                    ->setValue(implode("\n", array_map(fn($asset) => "[{$asset['name']}]({$asset['browser_download_url']})", $assets))));
+            }
+
+            $webhook->addEmbed($embed);
             $webhook->send();
         }
 
