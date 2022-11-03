@@ -41,6 +41,7 @@ return [
         'webhooks' => [
             'Wynntils/Wynntils' => env('GITHUB_WYNNTILS_WEBHOOKS'),
             'Wynntils/Artemis' => env('GITHUB_ARTEMIS_WEBHOOKS'),
+            'Wynntils/launchy' => env('GITHUB_LAUNCHY_WEBHOOKS'),
         ]
     ]
 
