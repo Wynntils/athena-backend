@@ -34,6 +34,14 @@ return [
         'webhook_secret' => env('PATREON_WEBHOOK_SECRET'),
         'discord_webhook' => env('PATREON_DISCORD_WEBHOOK'),
         'access_token' => env('PATREON_ACCESS_TOKEN')
+    ],
+
+    'github' => [
+        'webhook_secret' => env('GITHUB_WEBHOOK_SECRET'),
+        'webhooks' => [
+            'Wynntils/Wynntils' => env('GITHUB_WYNNTILS_WEBHOOKS'),
+            'Wynntils/Artemis' => env('GITHUB_ARTEMIS_WEBHOOKS'),
+        ]
     ]
 
 ];

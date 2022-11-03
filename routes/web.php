@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\VersionController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,10 @@ if(config('app.debug') !== false) {
 Route::prefix('version')->group(static function () {
     Route::get('latest/{stream}', [VersionController::class, 'latest'])->where('stream', 're|ce')->name('version.latest');
     Route::get('changelog/{version}', [VersionController::class, 'changelog'])->name('version.changelog');
+});
+
+Route::prefix('webhook')->group(static function () {
+    Route::post('github', [WebhookController::class, 'github'])->name('webhook.github');
 });
 
 Route::fallback(static function () {
