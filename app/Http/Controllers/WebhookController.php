@@ -47,7 +47,7 @@ class WebhookController extends Controller
     private function processReleaseEvent(Collection $data): bool
     {
         $action = $data->get('action');
-        if (!in_array($action, ['prereleased', 'releaseds'])) {
+        if (!in_array($action, ['prereleased', 'released'])) {
             return false;
         }
 
