@@ -48,7 +48,7 @@ class WebhookController extends Controller
     {
         $action = $data->get('action');
         if (!in_array($action, ['prereleased', 'released'])) {
-            return false;
+            return true; // We don't care about other actions
         }
 
         $release = $data->get('release');
