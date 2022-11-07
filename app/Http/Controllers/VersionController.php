@@ -114,15 +114,19 @@ class VersionController extends Controller
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
         // Cache this for 5 minutes
+        /** @var \Illuminate\Support\Collection $cache */
         $cache = \Cache::remember('releases.'.$repo, 300, function () use ($repo) {
             return collect($this->github->repo()->releases()->all('Wynntils', $repo));
         });
 
+        // filter then return in semver order
         return $cache->filter(function ($release) use ($stream) {
             return match ($stream) {
                 're', 'latest' => $release['prerelease'] === false,
                 default => true,
             };
+        })->sort(function ($a, $b) {
+            return version_compare($b['tag_name'], $a['tag_name']);
         });
     }
 
