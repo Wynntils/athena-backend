@@ -115,9 +115,14 @@ class VersionController extends Controller
     {
         // Cache this for 5 minutes
         /** @var \Illuminate\Support\Collection $cache */
-        $cache = \Cache::remember('releases.'.$repo, 300, function () use ($repo) {
-            return collect($this->github->repo()->releases()->all('Wynntils', $repo));
-        });
+        try {
+            $cache = \Cache::remember('releases.' . $repo, 300, function () use ($repo) {
+                return collect($this->github->repo()->releases()->all('Wynntils', $repo));
+            });
+            \Cache::put('releases.' . $repo . '.backup', $cache);
+        } catch (\Exception $e) {
+            return \Cache::get('releases.' . $repo . '.backup', collect());
+        }
 
         // filter then return in semver order
         return $cache->filter(function ($release) use ($stream) {
