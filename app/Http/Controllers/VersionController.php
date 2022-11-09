@@ -36,6 +36,7 @@ class VersionController extends Controller
             !isset($cache[$stream][$client])
             || $cache[$stream][$client]['tag'] !== $latest['tag_name']
             || !is_array($cache[$stream][$client]['md5'])
+            || empty($cache[$stream][$client]['md5'])
         ) {
             $cache[$stream][$client] = [];
             $cache = $this->updateCache($cache, $stream, $client, $latest);
