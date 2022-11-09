@@ -122,7 +122,7 @@ class VersionController extends Controller
             });
             \Cache::put('releases.' . $repo . '.backup', $cache);
         } catch (\Exception $e) {
-            return \Cache::get('releases.' . $repo . '.backup', collect());
+            $cache = \Cache::get('releases.' . $repo . '.backup', collect());
         }
 
         // filter then return in semver order
