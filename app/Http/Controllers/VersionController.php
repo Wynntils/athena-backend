@@ -25,7 +25,9 @@ class VersionController extends Controller
 
         $releases = $this->getReleases($client, $stream);
 
-        $latest = $releases->first();
+        $latest = $releases->first(function ($release) {
+            return !empty($release['assets']); // Filter out releases without assets
+        });
 
         if (!$latest) {
             return response()->json(['error' => 'No release found for this stream'], 404);
