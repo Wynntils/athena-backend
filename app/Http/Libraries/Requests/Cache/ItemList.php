@@ -3,6 +3,7 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use App\Http\Libraries\ItemManager;
+use GuzzleHttp\Exception\ConnectException;
 use Http;
 use Illuminate\Http\Client\Pool;
 
@@ -21,6 +22,11 @@ class ItemList implements CacheContract
             $pool->as('wynnItems')->get(config('athena.api.wynn.items')),
             $pool->as('wynnBuilderIDs')->get(config('athena.api.wynn.builderIds'))
         ]);
+
+        // Check if the pool failed to fetch any of the requests
+        if (array_filter($responses, static fn ($response) => $response instanceof ConnectException)) {
+            throw new \Exception('Failed to fetch items from Wynn API');
+        }
 
         $wynnItems = $responses['wynnItems']->collect('items');
         if ($wynnItems === null) {

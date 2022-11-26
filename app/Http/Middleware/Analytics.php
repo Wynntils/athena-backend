@@ -30,7 +30,11 @@ class Analytics
         // Otherwhise the servers IP would be sent.
         $gamp->setIpOverride($request->ip());
 
-        $gamp->sendPageview();
+        try {
+            $gamp->sendPageview();
+        } catch (\Exception $e) {
+            // ignore
+        }
 
         return $next($request);
     }
