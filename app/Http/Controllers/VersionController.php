@@ -129,7 +129,7 @@ class VersionController extends Controller
 
         // filter then return in semver order
         return $cache->filter(function ($release) use ($stream) {
-            return match ($stream) {
+            return $release['draft'] === false && match ($stream) {
                 're', 'latest' => $release['prerelease'] === false,
                 default => true,
             };
