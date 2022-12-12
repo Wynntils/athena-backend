@@ -89,6 +89,8 @@ enum MajorIdentifications
            self::EXPLOSIVE_IMPACT => 'Your "Exploding" ID can trigger when hitting mobs with your Main Attack',
            self::GEOCENTRISM => 'Aura radiates from you instead of your Totem and can be cast any time',
            self::GRAVITYWELL => 'Meteor has increased blast radius and pulls enemies instead',
+           self::DESC_SNOWYSTEPS => 'Leaves a trail of snow behind you',
+           self::DESC_FESTIVESPIRIT => 'Plays wintery tunes',
        };
    }
 }
