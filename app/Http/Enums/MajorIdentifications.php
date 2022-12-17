@@ -29,6 +29,8 @@ enum MajorIdentifications
    case EXPLOSIVE_IMPACT;
    case GEOCENTRISM;
    case GRAVITYWELL;
+   case DESC_SNOWYSTEPS;
+   case DESC_FESTIVESPIRIT;
 
    public function displayName(): string
    {
@@ -58,6 +60,8 @@ enum MajorIdentifications
            self::EXPLOSIVE_IMPACT => 'Explosive Impact',
            self::GEOCENTRISM => 'Geocentrism',
            self::GRAVITYWELL => 'Gravity Well',
+           self::DESC_SNOWYSTEPS => 'Snowy Steps',
+           self::DESC_FESTIVESPIRIT => 'Festive Spirit',
        };
    }
 
