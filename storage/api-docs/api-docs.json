@@ -1880,6 +1880,15 @@
                     "rawJumpHeight": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
+                    "elementalSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawNeutralSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawElementalSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
                     "rawThunderSpellDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
