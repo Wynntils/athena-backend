@@ -27,14 +27,7 @@ class CapeController extends Controller
 
     public function getUserCape($uuid)
     {
-        $user = User::findOrFail($uuid);
-        if (!$user->cosmeticInfo?->hasCape() && !$user->cosmeticInfo?->hasElytra()) {
-            return response()->json([
-                'error' => 'User does not have a cape',
-            ], 404);
-        }
-
-        return response()->file($this->manager->getCape($user->cosmeticInfo?->getFormattedTexture()), [
+        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo?->getFormattedTexture() ?? ''), [
             'Content-Type' => 'image/png',
         ]);
     }
