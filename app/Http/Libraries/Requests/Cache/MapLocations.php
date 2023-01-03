@@ -29,7 +29,7 @@ class MapLocations implements CacheContract
         }
         $wynnMapLocations->forget('request');
         $wynnMapLocations['locations'] = collect($wynnMapLocations['locations'])->filter(function ($location) {
-            return $location['icon'] !== "Content_Raid.png";
+            return $location['icon'] !== "Content_Raid.png" && $location['icon'] !== "Special_SeaskipperFastTravel.png" && $location['icon'] !== "Special_HousingAirBalloon.png";
         })->values()->toArray();
 
         $wynnMapLabels = $responses['wynnMapLabels']->collect();
