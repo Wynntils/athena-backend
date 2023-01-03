@@ -29,6 +29,8 @@ enum MajorIdentifications
    case EXPLOSIVE_IMPACT;
    case GEOCENTRISM;
    case GRAVITYWELL;
+   case DESC_SNOWYSTEPS;
+   case DESC_FESTIVESPIRIT;
 
    public function displayName(): string
    {
@@ -58,6 +60,8 @@ enum MajorIdentifications
            self::EXPLOSIVE_IMPACT => 'Explosive Impact',
            self::GEOCENTRISM => 'Geocentrism',
            self::GRAVITYWELL => 'Gravity Well',
+           self::DESC_SNOWYSTEPS => 'Snowy Steps',
+           self::DESC_FESTIVESPIRIT => 'Festive Spirit',
        };
    }
 
@@ -89,6 +93,8 @@ enum MajorIdentifications
            self::EXPLOSIVE_IMPACT => 'Your "Exploding" ID can trigger when hitting mobs with your Main Attack',
            self::GEOCENTRISM => 'Aura radiates from you instead of your Totem and can be cast any time',
            self::GRAVITYWELL => 'Meteor has increased blast radius and pulls enemies instead',
+           self::DESC_SNOWYSTEPS => 'Leaves a trail of snow behind you',
+           self::DESC_FESTIVESPIRIT => 'Plays wintery tunes',
        };
    }
 }
