@@ -137,6 +137,9 @@ class ItemManager
             'rawSpellDamage',
             'rawSpellDamage',
             'spellDamage',
+            'elementalSpellDamage',
+            'rawElementalSpellDamage',
+            'rawNeutralSpellDamage',
             'rawThunderSpellDamage',
             'rawFireSpellDamage',
             'rawAirSpellDamage',
@@ -274,6 +277,9 @@ class ItemManager
         $result['SPELLWATERDAMAGEBONUSRAW'] = 'rawWaterSpellDamage';
         $result['SPELLAIRDAMAGEBONUSRAW'] = 'rawAirSpellDamage';
         $result['SPELLEARTHDAMAGEBONUSRAW'] = 'rawEarthSpellDamage';
+        $result['SPELLELEMENTALDAMAGEBONUS'] = 'elementalSpellDamage';
+        $result['SPELLNEUTRALDAMAGEBONUSRAW'] = 'rawNeutralSpellDamage';
+        $result['SPELLELEMENTALDAMAGEBONUSRAW'] = 'rawElementalSpellDamage';
 
         return $result;
     }
@@ -302,7 +308,7 @@ class ItemManager
             'spellCostRaw2' => 'raw2ndSpellCost',
             'spellCostRaw3' => 'raw3rdSpellCost',
             'spellCostRaw4' => 'raw4thSpellCost',
-            'spellDamageBonusRaw', 'spellElementalDamageBonusRaw' => 'rawSpellDamage',
+            'spellDamageBonusRaw' => 'rawSpellDamage',
             'mainAttackDamageBonusRaw' => 'rawMainAttackDamage',
             'mainAttackDamageBonus' => 'mainAttackDamage',
             'healthRegenRaw' => 'rawHealthRegen',
@@ -326,6 +332,9 @@ class ItemManager
             'bonusFireDefense', 'fireDefenseBonus' => 'fireDefence',
             'bonusAirDefense', 'airDefenseBonus' => 'airDefence',
             'jumpHeight' => 'rawJumpHeight',
+            'spellElementalDamageBonus' => 'elementalSpellDamage',
+            'spellNeutralDamageBonusRaw' => 'rawNeutralSpellDamage',
+            'spellElementalDamageBonusRaw' => 'rawElementalSpellDamage',
             'spellThunderDamageBonusRaw' => 'rawThunderSpellDamage',
             'spellFireDamageBonusRaw' => 'rawFireSpellDamage',
             'spellAirDamageBonusRaw' => 'rawAirSpellDamage',
