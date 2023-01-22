@@ -29,6 +29,8 @@ Route::prefix('version')->group(static function () {
     Route::get('latest/{stream}', [VersionController::class, 'latest'])->where('stream', 're|ce')->name('version.latest');
     Route::get('changelog/{version}', [VersionController::class, 'changelog'])->name('version.changelog');
     Route::get('download/{version}/{stream}/{modloader?}', [VersionController::class, 'download'])->where('stream', 're|ce')->name('version.download');
+    // Route to get the changelogs between two versions
+    Route::get('changelog/{version1}/{version2}', [VersionController::class, 'changelogBetween'])->name('version.changelogBetween');
 });
 
 Route::prefix('webhook')->group(static function () {

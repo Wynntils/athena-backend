@@ -114,6 +114,49 @@ class VersionController extends Controller
         return response()->redirectTo($asset['browser_download_url']);
     }
 
+    public function changelogBetween(Request $request, $from, $to)
+    {
+        $userAgent = str($request->userAgent())->lower();
+        $isArtemis = $userAgent->contains('artemis');
+        $client = $isArtemis ? 'Artemis' : 'Wynntils';
+        $stream = str($from)->contains(['alpha', 'beta']) ? 'ce' : 're';
+
+        $releases = $this->getReleases($client, $stream);
+
+        $from = $releases->firstWhere('tag_name', $from);
+        $to = $releases->firstWhere('tag_name', $to);
+
+        if (!$from || !$to) {
+            return response()->json(['error' => 'No release found for this version'], 404);
+        }
+
+        // Reverse the releases so we can iterate from the oldest to the newest
+        $releases = $releases->reverse();
+
+        $changelog = '';
+        foreach ($releases as $release) {
+            if (version_compare($release['tag_name'], $from['tag_name'], '<=')) {
+                continue;
+            }
+
+            // clean changelog body of markdown links and commit hashes
+            $changelog .= str($release['body'])->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1');
+
+            if ($release['tag_name'] === $to['tag_name']) {
+                break;
+            }
+        }
+        $changelog = str($changelog)->replaceMatches('/\([0-9a-f]{7}\)/', '');
+        // replace crlf with lf
+        $changelog = str($changelog)->replace("\r\n", "\n");
+
+        return response()->json([
+            'from' => $from['tag_name'],
+            'to' => $to['tag_name'],
+            'changelog' => $changelog,
+        ]);
+    }
+
     private function getReleases($repo, $stream): \Illuminate\Support\Collection
     {
         // Cache this for 5 minutes
