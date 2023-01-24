@@ -144,20 +144,20 @@ class Handler extends ExceptionHandler
                 ]
             );
 
-            if ($usingArtemis) {
-                Notifications::log(
-                    content: "An exception occured while using Artemis ({$request->userAgent()})",
-                    title: "An exception occured",
-                    description: sprintf(
-                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
-                        $request->method(),
-                        $request->path(),
-                        $exception->getMessage(),
-                        json_encode($exception->errors(), JSON_PRETTY_PRINT)
-                    ),
-                    color: EmbedColor::RED
-                );
-            }
+//            if ($usingArtemis) {
+//                Notifications::log(
+//                    content: "An exception occured while using Artemis ({$request->userAgent()})",
+//                    title: "An exception occured",
+//                    description: sprintf(
+//                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
+//                        $request->method(),
+//                        $request->path(),
+//                        $exception->getMessage(),
+//                        json_encode($exception->errors(), JSON_PRETTY_PRINT)
+//                    ),
+//                    color: EmbedColor::RED
+//                );
+//            }
         }
 
         if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
