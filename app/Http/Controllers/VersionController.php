@@ -202,9 +202,28 @@ class VersionController extends Controller
         }
 
         // Join the changelog headings and their bodies into a single string
-        $changelog = collect($changelog)->map(function ($body, $header) {
-            return "### $header \n" . implode("\n", $body);
-        })->implode("\n\n");
+        //  - Headings should be in a specific order
+        $changelog = collect($changelog)->sortKeysUsing(function ($a, $b) {
+                $order = [
+                    'New Features',
+                    'Bug Fixes',
+                    'Performance Improvements',
+                    'Reverts',
+                    'Documentation',
+                    'Styles',
+                    'Miscellaneous Chores',
+                    'Code Refactoring',
+                    'Tests',
+                    'Build System',
+                    'Continuous Integration',
+                ];
+                $aIndex = array_search($a, $order);
+                $bIndex = array_search($b, $order);
+
+                return $aIndex <=> $bIndex;
+            })->map(function ($body, $header) {
+                return "### $header \n" . implode("\n", $body);
+            })->implode("\n\n");
 
         // Add the version range to the top of the changelog
         $changelog = "## Changelog from $from[tag_name] to $to[tag_name] \n\n" . $changelog;
