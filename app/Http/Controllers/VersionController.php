@@ -114,20 +114,41 @@ class VersionController extends Controller
         return response()->redirectTo($asset['browser_download_url']);
     }
 
-    public function changelogBetween(Request $request, $from, $to)
+    public function changelogBetween(Request $request, $fromQuery, $toQuery)
     {
         $userAgent = str($request->userAgent())->lower();
         $isArtemis = $userAgent->contains('artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
-        $stream = str($from)->contains(['alpha', 'beta']) ? 'ce' : 're';
+        $stream = str($fromQuery)->contains(['alpha', 'beta']) ? 'ce' : 're';
 
         $releases = $this->getReleases($client, $stream);
 
-        $from = $releases->firstWhere('tag_name', $from);
-        $to = $releases->firstWhere('tag_name', $to);
+        $from = $releases->firstWhere('tag_name', $fromQuery);
+        $to = $releases->firstWhere('tag_name', $toQuery);
 
         if (!$from || !$to) {
-            return response()->json(['error' => 'No release found for this version'], 404);
+            $page = 1;
+            // Check the next page of releases if we didn't find the release
+            do {
+                $search = $this->getReleases($client, $stream, ++$page);
+                if (!$from) {
+                    $from = $search->firstWhere('tag_name', $fromQuery);
+                }
+                if (!$to) {
+                    $to = $search->firstWhere('tag_name', $toQuery);
+                }
+                $releases = $releases->merge($search);
+            } while ((!$from || !$to) && $search->count() > 0);
+
+            if (!$from || !$to) {
+                match (true) {
+                    !$from && !$to => $error = 'No releases found for these versions',
+                    !$from => $error = 'No release found for the from version',
+                    !$to => $error = 'No release found for the to version',
+                };
+
+                return response()->json(['error' => $error], 404);
+            }
         }
 
         // Reverse the releases so we can iterate from the oldest to the newest
@@ -195,13 +216,16 @@ class VersionController extends Controller
         ]);
     }
 
-    private function getReleases($repo, $stream): \Illuminate\Support\Collection
+    private function getReleases($repo, $stream, $page = 1): \Illuminate\Support\Collection
     {
         // Cache this for 5 minutes
         /** @var \Illuminate\Support\Collection $cache */
         try {
-            $cache = \Cache::remember('releases.' . $repo, 300, function () use ($repo) {
-                return collect($this->github->repo()->releases()->all('Wynntils', $repo));
+            $cache = \Cache::remember('releases.' . $repo . '-' . $page, 300, function () use ($page, $repo) {
+                return collect($this->github->repo()->releases()->all('Wynntils', $repo, [
+                    'per_page' => 100, // 100 is the maximum
+                    'page' => $page,
+                ]));
             });
             \Cache::put('releases.' . $repo . '.backup', $cache);
         } catch (\Exception $e) {
