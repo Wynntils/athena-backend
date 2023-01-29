@@ -198,14 +198,14 @@ class ItemManager
         $groups = &$result['groups'];
 
         $groups[] = '1-5';
-        $groups[] = '6-11';
-        $groups[] = '12-17';
-        $groups[] = '18-22';
-        $groups[] = '23-27';
-        $groups[] = '28-31';
-        $groups[] = '32-35';
-        $groups[] = '36-42';
-        $groups[] = '43-50';
+        $groups[] = '6-19';
+        $groups[] = '20-25';
+        $groups[] = '26-30';
+        $groups[] = '31-35';
+        $groups[] = '36-39';
+        $groups[] = '40-43';
+        $groups[] = '44-50';
+        $groups[] = '51-58';
 
         $inverted = &$result['inverted'];
 
