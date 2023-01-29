@@ -133,22 +133,60 @@ class VersionController extends Controller
         // Reverse the releases so we can iterate from the oldest to the newest
         $releases = $releases->reverse();
 
-        $changelog = '';
+        // We want to collate all the changelog headings and their bodies
+        $changelog = [];
+        $header = null;
+
         foreach ($releases as $release) {
             if (version_compare($release['tag_name'], $from['tag_name'], '<=')) {
                 continue;
             }
 
             // clean changelog body of markdown links and commit hashes
-            $changelog .= str($release['body'])->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1');
+            $release['body'] = str($release['body'])->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1');
+            $release['body'] = str($release['body'])->replaceMatches('/\([0-9a-f]{7}\)/', '');
+            // replace crlf with lf
+            $release['body'] = str($release['body'])->replace("\r\n", "\n");
+
+            // Split the changelog into lines
+            $lines = explode("\n", $release['body']);
+
+            // Iterate over the lines and collate the headings and their bodies
+            // Headers start with ### and are followed by a space
+            foreach ($lines as $line) {
+                $line = str($line)->trim();
+                if ($line->isEmpty()) {
+                    continue;
+                }
+                if ($line->startsWith('## ')) {
+                    continue;
+                }
+                if ($line->startsWith('### ')) {
+                    $header = str($line)->replace('### ', '')->value();
+                    if (!isset($changelog[$header])) {
+                        $changelog[$header] = [];
+                    }
+                } else {
+                    $line = $line->value();
+                    // check if value is already in array
+                    if (!in_array($line, $changelog[$header])) {
+                        $changelog[$header][] = $line;
+                    }
+                }
+            }
 
             if ($release['tag_name'] === $to['tag_name']) {
                 break;
             }
         }
-        $changelog = str($changelog)->replaceMatches('/\([0-9a-f]{7}\)/', '');
-        // replace crlf with lf
-        $changelog = str($changelog)->replace("\r\n", "\n");
+
+        // Join the changelog headings and their bodies into a single string
+        $changelog = collect($changelog)->map(function ($body, $header) {
+            return "### $header \n" . implode("\n", $body);
+        })->implode("\n\n");
+
+        // Add the version range to the top of the changelog
+        $changelog = "## Changelog from $from[tag_name] to $to[tag_name] \n\n" . $changelog;
 
         return response()->json([
             'from' => $from['tag_name'],
