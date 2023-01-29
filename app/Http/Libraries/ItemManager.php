@@ -124,6 +124,12 @@ class ItemManager
     {
         $result = [];
 
+        // IMPORTANT! This order is used for the "chat encoding" protocol where an description
+        // of an item is sent through the chat. This ordering must stay the same between
+        // Athena (Legacy) and Artemis, or this chat encoding protocol will break between
+        // the two mod versions.
+        //
+        // TL;DR: Changes in this list must be coordinated with Artemis.
         $result['order'] = collect([
             'rawStrength',
             'rawDexterity',
@@ -134,17 +140,36 @@ class ItemManager
             'attackSpeed',
             'rawMainAttackDamage',
             'mainAttackDamage',
-            'rawSpellDamage',
+            'rawNeutralMainAttackDamage',
+            'neutralMainAttackDamage',
+            'rawElementalMainAttackDamage',
+            'elementalMainAttackDamage',
+            'rawEarthMainAttackDamage',
+            'earthMainAttackDamage',
+            'rawThunderMainAttackDamage',
+            'thunderMainAttackDamage',
+            'rawWaterMainAttackDamage',
+            'waterMainAttackDamage',
+            'rawFireMainAttackDamage',
+            'fireMainAttackDamage',
+            'rawAirMainAttackDamage',
+            'airMainAttackDamage',
             'rawSpellDamage',
             'spellDamage',
-            'elementalSpellDamage',
-            'rawElementalSpellDamage',
             'rawNeutralSpellDamage',
-            'rawThunderSpellDamage',
-            'rawFireSpellDamage',
-            'rawAirSpellDamage',
+            'neutralSpellDamage',
+            'rawElementalSpellDamage',
+            'elementalSpellDamage',
             'rawEarthSpellDamage',
+            'earthSpellDamage',
+            'rawThunderSpellDamage',
+            'thunderSpellDamage',
             'rawWaterSpellDamage',
+            'waterSpellDamage',
+            'rawFireSpellDamage',
+            'fireSpellDamage',
+            'rawAirSpellDamage',
+            'airSpellDamage',
             //third group {health/mana stuff}
             'rawHealth',
             'rawHealthRegen',
@@ -153,10 +178,21 @@ class ItemManager
             'manaRegen',
             'manaSteal',
             //fourth group {damage stuff}
+            'rawDamage'
+            'damage'
+            'rawNeutralDamage',
+            'neutralDamage',
+            'rawElementalDamage',
+            'elementalDamage',
+            'rawEarthDamage',
             'earthDamage',
+            'rawThunderDamage',
             'thunderDamage',
+            'rawWaterDamage',
             'waterDamage',
+            'rawFireDamage',
             'fireDamage',
+            'rawAirDamage',
             'airDamage',
             //fifth group {defence stuff}
             'earthDefence',
