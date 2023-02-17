@@ -23,15 +23,15 @@ class TerritoryList implements CacheContract
 
         return [
             'territories' => $wynnTerritories->map(static function ($item) {
-                $guild = Guild::gather($item['guild']);
+                $guild = Guild::gather($item);
 
                 $territory = [];
                 $territory['territory'] = $item['territory'];
-                $territory['guild'] = $guild->id;
-                $territory['guildPrefix'] = $guild->prefix;
+                $territory['guild'] = $item['guild'];
+                $territory['guildPrefix'] = $item['guildPrefix'];
                 $territory['guildColor'] = empty($guild->color) ? "" : $guild->color;
                 $territory['acquired'] = $item['acquired'];
-                $territory['attacker'] = $item['attacker'];
+                $territory['attacker'] = ""; // not used
                 $territory['level'] = 1; // not used
 
                 if (array_key_exists('location', $item)) {

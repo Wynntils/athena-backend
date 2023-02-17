@@ -23,26 +23,15 @@ class Guild extends Model
         'color'
     ];
 
-    public static function gather(?string $name): Guild
+    public static function gather(array $guild): static
     {
-        if ($name === null) {
+        if (empty($guild['guild'])) {
             return new Guild(['_id' => 'None', 'prefix' => 'NONE', 'color' => '#ffffff']);
         }
 
-        $guild = Guild::find($name);
-
-        if ($guild !== null) {
-            return $guild;
-        }
-
-        $request = \Http::wynn()->get(config('athena.api.wynn.guildInfo').$name)->json();
-        if (array_key_exists('error', $request)) {
-            return new Guild(['_id' => 'None', 'prefix' => 'ERROR', 'color' => '#ff0000']);
-        }
-
-        return Guild::firstOrCreate(
-            ['_id' => $name],
-            ['prefix' => $request['prefix']]
+        return Guild::updateOrCreate(
+            ['_id' => $guild['guild']],
+            ['prefix' => $guild['guildPrefix']]
         );
     }
 
