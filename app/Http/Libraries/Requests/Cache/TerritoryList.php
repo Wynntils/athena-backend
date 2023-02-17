@@ -23,7 +23,7 @@ class TerritoryList implements CacheContract
 
         return [
             'territories' => $wynnTerritories->map(static function ($item) {
-                $guild = Guild::gather($item['guild']);
+                $guild = Guild::gather($item);
 
                 $territory = [];
                 $territory['territory'] = $item['territory'];
