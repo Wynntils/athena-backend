@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CrashReportController;
 use App\Http\Controllers\VersionController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,12 @@ Route::prefix('version')->group(static function () {
     Route::get('download/{version}/{stream}/{modloader?}', [VersionController::class, 'download'])->where('stream', 're|ce')->name('version.download');
     // Route to get the changelogs between two versions
     Route::get('changelog/{version1}/{version2}', [VersionController::class, 'changelogBetween'])->name('version.changelogBetween');
+});
+
+Route::prefix('crash')->group(static function () {
+    Route::post('report', [CrashReportController::class, 'report'])->name('crash.report');
+    Route::get('view/{hash}', [CrashReportController::class, 'view'])->name('crash.view');
+    Route::get('/', [CrashReportController::class, 'index'])->name('crash.index');
 });
 
 Route::prefix('webhook')->group(static function () {

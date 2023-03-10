@@ -1,0 +1,9 @@
+@import '~bootstrap/dist/css/bootstrap.css';
+
+pre {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    color: #c7254e;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+}

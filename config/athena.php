@@ -22,6 +22,7 @@ return [
             'webhook' => [
                 'log' => env('DISCORD_LOG_WEBHOOK'),
                 'capes' => env('DISCORD_CAPE_WEBHOOK'),
+                'crash' => env('DISCORD_CRASH_WEBHOOK'),
             ],
             'username' => env('DISCORD_USERNAME', 'Athena'),
             'avatar' => env('DISCORD_AVATAR', 'https://cdn.wynntils.com/athena_logo_1600x1600.png')
