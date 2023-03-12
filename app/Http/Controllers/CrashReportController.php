@@ -69,29 +69,45 @@ class CrashReportController extends Controller
         return response()->json(['message' => 'Crash report logged successfully.', 'hash' => $crashReport->trace_hash]);
     }
 
-    public function view(Request $request, $hash)
+    public function setHandled(Request $request, CrashReport $crashReport)
     {
-        $crashReport = CrashReport::where('trace_hash', $hash)->firstOrFail();
+        $crashReport->handled = $request->input('handled') === 'true';
+        $crashReport->save();
 
-        return view('crash.view', [
-            'crashReport' => $crashReport,
-        ]);
+        return response()->json(['success' => true]);
     }
 
-    public function delete(Request $request, $hash)
-    {
-        $crashReport = CrashReport::where('trace_hash', $hash)->firstOrFail();
-        $crashReport->delete();
 
-        return redirect()->route('crash.index');
+    public function view(Request $request, CrashReport $crashReport)
+    {
+        return response()
+            ->view('crash.view', [
+                'crashReport' => $crashReport,
+            ])
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function index(Request $request)
     {
-        $crashReports = CrashReport::orderBy('created_at', 'desc')->paginate(10);
+        $showHandled = $request->get('showHandled') === 'on';
 
-        return view('crash.index', [
-            'crashReports' => $crashReports,
-        ]);
+        if ($showHandled) {
+            $crashReports = CrashReport::orderByDesc('updated_at');
+        } else {
+            $crashReports = CrashReport::where('handled', false)->orWhere('handled', 'exists', false);
+        }
+
+        $crashReports = $crashReports->orderByDesc('updated_at')->paginate(10);
+
+        return response()
+            ->view('crash.index', [
+                'crashReports' => $crashReports,
+                'showHandled' => $showHandled,
+            ])
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 }

@@ -11,6 +11,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $trace
  * @property array $occurrences
  * @property int $count
+ * @property bool $handled
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  *
@@ -41,5 +42,10 @@ class CrashReport extends Model
         $occurrence = $this->occurrences[count($this->occurrences) - 1];
 
         return Carbon::parse($occurrence->time);
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'trace_hash';
     }
 }

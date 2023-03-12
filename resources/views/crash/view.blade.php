@@ -9,9 +9,23 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="mb-0">Crash Report - {{ $crashReport->trace_hash }}</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            Crash Report {{ $crashReport->trace_hash }}
+                            @if($crashReport->handled)
+                                <span class="badge rounded-pill bg-success text-white">Handled</span>
+                            @else
+                                <span class="badge rounded-pill bg-danger text-white">Unhandled</span>
+                            @endif
+                        </h3>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="handledSwitch" {{ $crashReport->handled ? 'checked' : '' }}>
+                            <label class="form-check-label" for="handledSwitch">Handled</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
+
                     <div class="row">
                         <div class="col-md-12">
                             <pre><code>{{ $crashReport->trace }}</code></pre>
@@ -63,3 +77,40 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        const handledSwitch = document.querySelector('#handledSwitch');
+        handledSwitch.addEventListener('change', function() {
+            const url = "{{ route('crash.handled', ['crashReport' => $crashReport->trace_hash]) }}";
+            const data = {
+                handled: handledSwitch.checked.toString()
+            };
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // update the badge
+                        const badge = document.querySelector('.card-title .badge');
+                        if (handledSwitch.checked) {
+                            badge.classList.remove('bg-danger');
+                            badge.classList.add('bg-success');
+                            badge.innerText = 'Handled';
+                        } else {
+                            badge.classList.remove('bg-success');
+                            badge.classList.add('bg-danger');
+                            badge.innerText = 'Unhandled';
+                        }
+                    }
+                })
+                .catch(error => console.log(error));
+        });
+    </script>
+@endpush

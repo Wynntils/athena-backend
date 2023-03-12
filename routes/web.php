@@ -36,8 +36,9 @@ Route::prefix('version')->group(static function () {
 
 Route::prefix('crash')->group(static function () {
     Route::post('report', [CrashReportController::class, 'report'])->name('crash.report');
-    Route::get('view/{hash}', [CrashReportController::class, 'view'])->name('crash.view');
+    Route::get('view/{crashReport}', [CrashReportController::class, 'view'])->name('crash.view');
     Route::get('/', [CrashReportController::class, 'index'])->name('crash.index');
+    Route::put('/{crashReport}/handled', [CrashReportController::class, 'setHandled'])->name('crash.handled');
 });
 
 Route::prefix('webhook')->group(static function () {
