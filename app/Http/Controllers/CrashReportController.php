@@ -57,18 +57,20 @@ class CrashReportController extends Controller
             ]);
             $crashReport->save();
         } else {
-            // If the error report was just created, log it
-            Notifications::crash(
-                title: "A new crash report was logged",
-                description: sprintf(
-                    "**[%s](%s)**\n ```%s```",
-                    $crashReport->trace_hash,
-                    route('crash.view', $crashReport->trace_hash),
-                    // limit the length of the trace to 500 characters
-                    str($crashReport->trace)->limit(500)->toString()
-                ),
-                color: EmbedColor::RED
-            );
+            if (app()->environment('production')) {
+                // If the error report was just created, log it
+                Notifications::crash(
+                    title: "A new crash report was logged",
+                    description: sprintf(
+                        "**[%s](%s)**\n ```%s```",
+                        $crashReport->trace_hash,
+                        route('crash.view', $crashReport->trace_hash),
+                        // limit the length of the trace to 500 characters
+                        str($crashReport->trace)->limit(500)->toString()
+                    ),
+                    color: EmbedColor::RED
+                );
+            }
         }
 
         return response()->json(['message' => 'Crash report logged successfully.', 'hash' => $crashReport->trace_hash]);
