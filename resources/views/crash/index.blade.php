@@ -1,7 +1,6 @@
 {{-- If in dev environment --}}
 @if(app()->environment('local'))
     @php
-//        if get parameter
         if(request()->get('purge', false)) {
             \App\Models\CrashReport::truncate();
         }
@@ -19,7 +18,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-md-flex justify-content-between align-items-center">
                         <h3 class="mb-0">Crash Reports</h3>
                         <form class="form-inline">
                             <div class="form-check mr-3 d-inline-block">
@@ -27,9 +26,13 @@
                                        id="showHandled" {{ $showHandled ? 'checked' : '' }}>
                                 <label class="form-check-label" for="showHandled">Show Handled Reports</label>
                             </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search" name="search" id="search" value="{{ request('search') }}">
+                            </div>
                         </form>
                     </div>
                 </div>
+
                 <div class="card-body">
                     @if($crashReports->isEmpty())
                         <div class="alert alert-info mb-0">
@@ -91,6 +94,15 @@
     <script>
         document.getElementById('showHandled').addEventListener('change', function () {
             this.closest('form').submit();
+        });
+
+        // Submit the form when the user presses enter in the search box / stops typing
+        let searchTimeout = null;
+        document.getElementById('search').addEventListener('keyup', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.closest('form').submit();
+            }, 500);
         });
     </script>
 @endpush

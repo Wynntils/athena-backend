@@ -25,7 +25,11 @@ class CrashReportController extends Controller
             $version = $versionString->toString();
         }
 
-        $traceHash = md5($trace);
+        $traceStringToMd5 = str($trace)->replace(['\\', '/', ' '], '');
+        // replace java mixin generated class names with a placeholder
+        $traceStringToMd5 = $traceStringToMd5->replaceRegex('/\\(.*?\\)/', '(?)');
+
+        $traceHash = md5($traceStringToMd5->toString());
 
         // Find or create the error report with the same hash
         $crashReport = CrashReport::firstOrCreate([
@@ -100,13 +104,17 @@ class CrashReportController extends Controller
             $crashReports = CrashReport::where('handled', false)->orWhere('handled', 'exists', false);
         }
 
+        if ($search = $request->input('search')) {
+            $crashReports = $crashReports->where('trace', 'like', "%$search%")
+                ->orWhere('trace_hash', 'like', "%$search%");
+        }
+
         $crashReports = $crashReports->orderByDesc('updated_at')->paginate(10);
 
         return response()
             ->view('crash.index', [
                 'crashReports' => $crashReports,
                 'showHandled' => $showHandled,
-                'currentPage' => $crashReports->currentPage(),
             ])
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
