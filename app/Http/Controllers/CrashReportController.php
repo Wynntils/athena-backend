@@ -100,12 +100,13 @@ class CrashReportController extends Controller
             $crashReports = CrashReport::where('handled', false)->orWhere('handled', 'exists', false);
         }
 
-        $crashReports = $crashReports->orderByDesc('updated_at')->paginate(10)->appends('showHandled', $showHandled);
+        $crashReports = $crashReports->orderByDesc('updated_at')->paginate(10);
 
         return response()
             ->view('crash.index', [
                 'crashReports' => $crashReports,
                 'showHandled' => $showHandled,
+                'currentPage' => $crashReports->currentPage(),
             ])
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')

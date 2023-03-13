@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 use Jenssegers\Mongodb\Eloquent\Model;
 
@@ -19,6 +20,8 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class CrashReport extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'trace_hash',
         'trace',
