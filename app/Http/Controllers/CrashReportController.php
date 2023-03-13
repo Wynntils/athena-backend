@@ -25,11 +25,12 @@ class CrashReportController extends Controller
             $version = $versionString->toString();
         }
 
-        $traceStringToMd5 = str($trace)->replace(['\\', '/', ' '], '');
-        // replace java mixin generated class names with a placeholder
-        $traceStringToMd5 = $traceStringToMd5->replaceRegex('/\\(.*?\\)/', '(?)');
+        // Replace mixin names with a generic name for the hash
+        $replacementPattern = '/\$[a-z]{3}\d+\$[A-z]+/';
 
-        $traceHash = md5($traceStringToMd5->toString());
+        $traceStringToMd5 = str($trace)->replaceMatches($replacementPattern, 'MIXIN')->toString();
+
+        $traceHash = md5($traceStringToMd5);
 
         // Find or create the error report with the same hash
         $crashReport = CrashReport::firstOrCreate([
