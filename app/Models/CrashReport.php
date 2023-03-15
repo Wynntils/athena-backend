@@ -11,6 +11,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $trace_hash
  * @property string $trace
  * @property array $occurrences
+ * @property array $comments
  * @property int $count
  * @property bool $handled
  * @property \Illuminate\Support\Carbon $created_at
@@ -31,6 +32,7 @@ class CrashReport extends Model
 
     protected $casts = [
         'occurrences' => 'object',
+        'comments' => 'object',
     ];
 
     public function getEarliestOccurrenceDate(): Carbon

@@ -84,6 +84,58 @@ class CrashReportController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function addComment(Request $request, CrashReport $crashReport)
+    {
+        $this->validate($request, [
+            'comment' => 'required|string',
+        ]);
+
+        // Comment is going to be html, so we need to sanitize it, remove any javascript
+        $request->merge(['comment' => strip_tags($request->input('comment'), ['b', 'i', 'u', 's', 'a', 'br', 'p', 'ul', 'ol', 'li', 'img', 'pre', 'code', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'])]);
+
+        // remove any on handler attributes
+        $request->merge(['comment' => str($request->input('comment'))->replaceMatches('/on[A-z]+="[^"]+"/', '')]);
+
+        if (!isset($crashReport->comments)) {
+            $crashReport->comments = [];
+        }
+
+        $now = now();
+
+        $newComment = [
+            'id' => $now->timestamp,
+            'user' => $request->user()->username,
+            'user_id' => $request->user()->id,
+            'time' => $now,
+            'comment' => $request->input('comment'),
+        ];
+
+        $crashReport->comments = array_merge($crashReport->comments, [$newComment]);
+        $crashReport->save();
+
+        return response()->json(['success' => true, 'comment' => array_merge($newComment, ['time' => $now->toDateTimeString()])]);
+    }
+
+    public function deleteComment(Request $request, CrashReport $crashReport)
+    {
+        $this->validate($request, [
+            'commentId' => 'required|integer',
+        ]);
+
+        $commentId = $request->input('commentId');
+
+        if (!isset($crashReport->comments)) {
+            $crashReport->comments = [];
+        }
+
+        $crashReport->comments = array_values(array_filter($crashReport->comments, static function ($comment) use ($commentId) {
+            return (string) $comment->id !== $commentId;
+        }));
+
+        $crashReport->save();
+
+        return response()->json(['success' => true, 'comments' => $crashReport->comments]);
+    }
 
     public function view(Request $request, CrashReport $crashReport)
     {

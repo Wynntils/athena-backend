@@ -35,6 +35,8 @@ Route::prefix('crash')->group(static function () {
         Route::get('view/{crashReport}', [CrashReportController::class, 'view'])->name('crash.view');
         Route::get('/', [CrashReportController::class, 'index'])->name('crash.index');
         Route::put('/{crashReport}/handled', [CrashReportController::class, 'setHandled'])->name('crash.handled');
+        Route::put('/{crashReport}/comment', [CrashReportController::class, 'addComment'])->name('crash.comment');
+        Route::delete('/{crashReport}/comment', [CrashReportController::class, 'deleteComment'])->name('crash.comment.delete');
     });
 });
 
