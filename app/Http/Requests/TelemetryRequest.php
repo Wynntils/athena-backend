@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Enums\GatheringMaterial;
-use App\Http\Enums\ProfessionType;
+use App\Enums\GatheringMaterial;
+use App\Enums\ProfessionType;
 
 class TelemetryRequest extends BaseRequest
 {

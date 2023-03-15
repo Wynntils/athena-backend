@@ -2,7 +2,7 @@
 
 namespace App\Http\Libraries;
 
-use App\Http\Enums\MajorIdentifications;
+use App\Enums\MajorIdentifications;
 use App\Http\Traits\Singleton;
 
 class ItemManager

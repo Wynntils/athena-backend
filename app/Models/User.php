@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Http\Enums\AccountType;
+use App\Enums\AccountType;
 use App\Models\Embedded\CosmeticInfo;
 use App\Models\Embedded\DiscordInfo;
 use ArrayObject;

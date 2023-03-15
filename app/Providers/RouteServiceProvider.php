@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const HOME = '/crash';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -29,33 +29,22 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::prefix('api')
-                ->middleware('api')
-                ->group(base_path('routes/api.php'));
-
-            Route::prefix('auth')
-                ->middleware('api')
-                ->group(base_path('routes/auth.php'));
-
-            Route::prefix('user')
-                ->middleware('api')
-                ->group(base_path('routes/user.php'));
-
-            Route::prefix('cache')
-                ->middleware('api')
-                ->group(base_path('routes/cache.php'));
-
-            Route::prefix('capes')
-                ->middleware('api')
-                ->group(base_path('routes/cape.php'));
-
-            Route::prefix('telemetry')
-                ->middleware('api')
-                ->group(base_path('routes/telemetry.php'));
-
-            Route::prefix('patreon')
-                ->middleware('api')
-                ->group(base_path('routes/patreon.php'));
+            Route::middleware('api')->group(function () {
+                foreach (glob(base_path('routes/api/*.php')) as $file) {
+                    // prefix based on file name
+                    Route::prefix(basename($file, '.php'))
+                        ->name(basename($file, '.php') . '.')
+                        ->group($file);
+                }
+            });
+//            Route::prefix('api')->group(base_path('routes/api.php'));
+//            Route::prefix('auth')->group(base_path('routes/auth.php'));
+//            Route::prefix('version')->name('version.')->group(base_path('routes/version.php'));
+//            Route::prefix('user')->group(base_path('routes/user.php'));
+//            Route::prefix('cache')->group(base_path('routes/cache.php'));
+//            Route::prefix('capes')->group(base_path('routes/cape.php'));
+//            Route::prefix('telemetry')->group(base_path('routes/telemetry.php'));
+//            Route::prefix('patreon')->group(base_path('routes/patreon.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));

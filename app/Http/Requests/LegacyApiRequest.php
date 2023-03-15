@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Enums\AccountType;
+use App\Enums\AccountType;
 
 class LegacyApiRequest extends BaseRequest
 {

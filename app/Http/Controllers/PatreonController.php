@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\AccountType;
+use App\Enums\AccountType;
 use App\Models\User;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;

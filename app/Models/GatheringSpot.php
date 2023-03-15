@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Http\Enums\GatheringMaterial;
-use App\Http\Enums\ProfessionType;
+use App\Enums\GatheringMaterial;
+use App\Enums\ProfessionType;
 use Illuminate\Database\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 

@@ -43,6 +43,22 @@ return [
             'Wynntils/Artemis' => env('GITHUB_ARTEMIS_WEBHOOKS'),
             'Wynntils/launchy' => env('GITHUB_LAUNCHY_WEBHOOKS'),
         ]
-    ]
+    ],
+
+    'minecraft' => [
+        'client_id' => env('MINECRAFT_CLIENT_ID'),
+        'client_secret' => env('MINECRAFT_CLIENT_SECRET'),
+        'redirect' => env('MINECRAFT_REDIRECT_URI')
+    ],
+
+    'discord' => [
+        'client_id' => env('DISCORD_CLIENT_ID'),
+        'client_secret' => env('DISCORD_CLIENT_SECRET'),
+        'redirect' => env('DISCORD_REDIRECT_URI'),
+
+        // optional
+        'allow_gif_avatars' => (bool)env('DISCORD_AVATAR_GIF', true),
+        'avatar_default_extension' => env('DISCORD_EXTENSION_DEFAULT', 'jpg'), // only pick from jpg, png, webp
+    ],
 
 ];

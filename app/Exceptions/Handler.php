@@ -39,6 +39,10 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
+            // check if using console
+            if (app()->runningInConsole()) {
+                return;
+            }
             $request = \Request::instance();
             $path = $request->route()?->uri() ?? '';
             $method = $request->method();

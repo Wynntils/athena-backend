@@ -2,7 +2,7 @@
 
 namespace App\Http\Libraries;
 
-use App\Http\Enums\MaskType;
+use App\Enums\MaskType;
 use App\Http\Traits\Singleton;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
@@ -139,9 +139,9 @@ class CapeManager
             Notifications::cape(
                 title: "A new cape needs approval!",
                 description: sprintf("➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
-                    route('cape.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
-                    route('cape.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
-                    route('cape.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'elytra']),
+                    route('cape.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
+                    route('cape.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
+                    route('cape.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'elytra']),
                     route('cape.ban', ['token' => $this->token, 'sha' => $capeId]),
                     $capeId),
                 color: EmbedColor::GOLD,
