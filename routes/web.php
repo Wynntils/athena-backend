@@ -54,10 +54,6 @@ Route::prefix('auth')->name('auth.')->group(static function () {
     });
 });
 
-Route::prefix('webhook')->group(static function () {
-    Route::post('github', [WebhookController::class, 'github'])->name('webhook.github');
-});
-
 Route::fallback(static function () {
     return redirect('https://wynntils.com');
 });
