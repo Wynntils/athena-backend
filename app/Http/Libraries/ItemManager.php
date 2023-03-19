@@ -120,7 +120,7 @@ class ItemManager
     }
 
 
-    public static function getIdentificationorder(): array
+    public static function getIdentificationOrder(): array
     {
         $result = [];
 
