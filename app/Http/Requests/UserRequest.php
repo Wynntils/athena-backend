@@ -20,7 +20,7 @@ class UserRequest extends BaseRequest
         ];
     }
 
-    public function getInfoLegacy(): array
+    public function getInfoPost(): array
     {
         return [
             'uuid' => 'required|uuid',

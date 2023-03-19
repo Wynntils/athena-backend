@@ -32,6 +32,13 @@ use OpenApi\Attributes as OA;
         path: "/user/getInfo",
         operationId: "postUserInfo",
         summary: "Get user info",
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "uuid", type: "string", example: "123e4567-e89b-12d3-a456-426655440000"),
+                ]
+            )
+        ),
         tags: ["User"],
         responses: [
             new OA\Response(
@@ -46,7 +53,6 @@ use OpenApi\Attributes as OA;
             new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
             new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ],
-        deprecated: true
     ),
     OA\Get(
         path: "/user/getInfo/{user}",

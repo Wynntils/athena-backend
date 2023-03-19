@@ -17,9 +17,10 @@ class ConnectionFailedListener
         Notifications::log(
             title: 'Outbound Connection Failed',
             description: sprintf(
-                "`Routes -> %s -> %s",
+                "`%s %s` ```%s```",
                 $event->request->method(),
-                $event->request->url()
+                $event->request->url(),
+                $event->request->body()
             ),
             color: EmbedColor::RED
         );

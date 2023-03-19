@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\AccountType;
+use App\Enums\AccountType;
 use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Http\Requests\AuthRequest;

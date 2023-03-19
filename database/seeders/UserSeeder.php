@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Http\Enums\AccountType;
+use App\Enums\AccountType;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
 

@@ -39,12 +39,16 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
+            // check if using console
+            if (app()->runningInConsole()) {
+                return;
+            }
             $request = \Request::instance();
             $path = $request->route()?->uri() ?? '';
             $method = $request->method();
             try {
                 Notifications::log(
-                    title: "An exception occured",
+                    title: "An exception occured" . (app()->environment('production') ? '' : sprintf(" (%s)", app()->environment())),
                     description: sprintf(
                         "`Routes -> %s -> /%s`\n**%s** ```%s```",
                         $method,

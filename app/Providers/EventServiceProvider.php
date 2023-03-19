@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Listeners\ConnectionFailedListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Http\Client\Events\ConnectionFailed;
+use SocialiteProviders\Discord\DiscordExtendSocialite;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Minecraft\MinecraftExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,6 +19,11 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         ConnectionFailed::class => [
             ConnectionFailedListener::class,
+        ],
+        SocialiteWasCalled::class => [
+            // add your listeners (aka providers) here
+            MinecraftExtendSocialite::class,
+            DiscordExtendSocialite::class,
         ],
     ];
 

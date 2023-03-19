@@ -2,7 +2,7 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-use App\Http\Enums\ProfessionType;
+use App\Enums\ProfessionType;
 use Http;
 use Illuminate\Http\Client\Pool;
 

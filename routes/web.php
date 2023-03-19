@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\VersionController;
+use App\Http\Controllers\CrashReportController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\WynntilsOAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,22 +20,38 @@ Route::get('/', static function () {
     return ['Laravel' => app()->version()];
 });
 
-if(config('app.debug') !== false) {
+if (config('app.debug') !== false) {
     Route::get('/phpinfo', static function () {
         return phpinfo();
     });
 }
 
-Route::prefix('version')->group(static function () {
-    Route::get('latest/{stream}', [VersionController::class, 'latest'])->where('stream', 're|ce')->name('version.latest');
-    Route::get('changelog/{version}', [VersionController::class, 'changelog'])->name('version.changelog');
-    Route::get('download/{version}/{stream}/{modloader?}', [VersionController::class, 'download'])->where('stream', 're|ce')->name('version.download');
-    // Route to get the changelogs between two versions
-    Route::get('changelog/{version1}/{version2}', [VersionController::class, 'changelogBetween'])->name('version.changelogBetween');
+Route::get('oauth/{provider}', [WynntilsOAuthController::class, 'redirectToProvider'])->name('oauth.redirect');
+Route::get('oauth/{provider}/callback', [WynntilsOAuthController::class, 'handleProviderCallback'])->name('oauth.callback');
+
+Route::prefix('crash')->group(static function () {
+    Route::post('report', [CrashReportController::class, 'report'])->name('crash.report');
+    Route::middleware(['auth', 'staff'])->group(static function () {
+        Route::get('view/{crashReport}', [CrashReportController::class, 'view'])->name('crash.view');
+        Route::get('/', [CrashReportController::class, 'index'])->name('crash.index');
+        Route::put('/{crashReport}/handled', [CrashReportController::class, 'setHandled'])->name('crash.handled');
+        Route::put('/{crashReport}/comment', [CrashReportController::class, 'addComment'])->name('crash.comment');
+        Route::delete('/{crashReport}/comment', [CrashReportController::class, 'deleteComment'])->name('crash.comment.delete');
+    });
 });
 
-Route::prefix('webhook')->group(static function () {
-    Route::post('github', [WebhookController::class, 'github'])->name('webhook.github');
+Route::prefix('auth')->name('auth.')->group(static function () {
+    Route::middleware('guest')->group(function () {
+        Route::view('login', 'auth.login')->name('login');
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::post('logout', static function () {
+            auth()->logout();
+
+            return redirect()->route('auth.login');
+        })->name('logout');
+    });
 });
 
 Route::fallback(static function () {

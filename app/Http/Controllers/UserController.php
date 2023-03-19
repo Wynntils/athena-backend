@@ -58,10 +58,7 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @deprecated
-     */
-    public function getInfoLegacy(UserRequest $request): \Illuminate\Http\JsonResponse
+    public function getInfoPost(UserRequest $request): \Illuminate\Http\JsonResponse
     {
         $user = User::findOrFail($request->validated('uuid'));
         return response()->json([

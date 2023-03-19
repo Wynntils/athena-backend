@@ -31,6 +31,25 @@ class Notifications
         );
     }
 
+    public static function crash(
+        $content = null,
+        $title = null,
+        $description = null,
+        EmbedColor $color = null,
+        $imageUrl = null,
+        $footer = null
+    ): void {
+        self::sendNotification(
+            url: config('athena.webhook.discord.webhook.crash'),
+            content: $content,
+            title: $title,
+            description: $description,
+            color: $color,
+            imageUrl: $imageUrl,
+            footer: $footer
+        );
+    }
+
     private static function sendNotification(
         $url,
         $content = null,

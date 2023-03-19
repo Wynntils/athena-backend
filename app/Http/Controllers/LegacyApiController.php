@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\AccountType;
+use App\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Guild;
