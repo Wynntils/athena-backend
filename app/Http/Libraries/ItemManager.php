@@ -178,8 +178,8 @@ class ItemManager
             'manaRegen',
             'manaSteal',
             //fourth group {damage stuff}
-            'rawDamage'
-            'damage'
+            'rawDamage',
+            'damage',
             'rawNeutralDamage',
             'neutralDamage',
             'rawEarthDamage',
