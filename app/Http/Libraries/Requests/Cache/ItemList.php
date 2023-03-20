@@ -74,7 +74,7 @@ class ItemList implements CacheContract
         $result['materialTypes'] = $materialTypes;
         $result['translatedReferences'] = $translatedReferences;
 
-        $result['identificationOrder'] = ItemManager::getIdentificationorder();
+        $result['identificationOrder'] = ItemManager::getIdentificationOrder();
         $result['internalIdentifications'] = ItemManager::getInternalIdentifications();
         $result['majorIdentifications'] = ItemManager::getMajorIdentifications();
 

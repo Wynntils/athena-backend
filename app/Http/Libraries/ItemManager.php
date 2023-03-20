@@ -120,10 +120,16 @@ class ItemManager
     }
 
 
-    public static function getIdentificationorder(): array
+    public static function getIdentificationOrder(): array
     {
         $result = [];
 
+        // IMPORTANT! This order is used for the "chat encoding" protocol where an description
+        // of an item is sent through the chat. This ordering must stay the same between
+        // Athena (Legacy) and Artemis, or this chat encoding protocol will break between
+        // the two mod versions.
+        //
+        // TL;DR: Changes in this list must be coordinated with Artemis.
         $result['order'] = collect([
             'rawStrength',
             'rawDexterity',
@@ -134,17 +140,36 @@ class ItemManager
             'attackSpeed',
             'rawMainAttackDamage',
             'mainAttackDamage',
-            'rawSpellDamage',
+            'rawNeutralMainAttackDamage',
+            'neutralMainAttackDamage',
+            'rawEarthMainAttackDamage',
+            'earthMainAttackDamage',
+            'rawThunderMainAttackDamage',
+            'thunderMainAttackDamage',
+            'rawWaterMainAttackDamage',
+            'waterMainAttackDamage',
+            'rawFireMainAttackDamage',
+            'fireMainAttackDamage',
+            'rawAirMainAttackDamage',
+            'airMainAttackDamage',
+            'rawElementalMainAttackDamage',
+            'elementalMainAttackDamage',
             'rawSpellDamage',
             'spellDamage',
-            'elementalSpellDamage',
-            'rawElementalSpellDamage',
             'rawNeutralSpellDamage',
-            'rawThunderSpellDamage',
-            'rawFireSpellDamage',
-            'rawAirSpellDamage',
+            'neutralSpellDamage',
             'rawEarthSpellDamage',
+            'earthSpellDamage',
+            'rawThunderSpellDamage',
+            'thunderSpellDamage',
             'rawWaterSpellDamage',
+            'waterSpellDamage',
+            'rawFireSpellDamage',
+            'fireSpellDamage',
+            'rawAirSpellDamage',
+            'airSpellDamage',
+            'rawElementalSpellDamage',
+            'elementalSpellDamage',
             //third group {health/mana stuff}
             'rawHealth',
             'rawHealthRegen',
@@ -153,11 +178,22 @@ class ItemManager
             'manaRegen',
             'manaSteal',
             //fourth group {damage stuff}
+            'rawDamage',
+            'damage',
+            'rawNeutralDamage',
+            'neutralDamage',
+            'rawEarthDamage',
             'earthDamage',
+            'rawThunderDamage',
             'thunderDamage',
+            'rawWaterDamage',
             'waterDamage',
+            'rawFireDamage',
             'fireDamage',
+            'rawAirDamage',
             'airDamage',
+            'rawElementalDamage',
+            'elementalDamage',
             //fifth group {defence stuff}
             'earthDefence',
             'thunderDefence',
@@ -198,14 +234,14 @@ class ItemManager
         $groups = &$result['groups'];
 
         $groups[] = '1-5';
-        $groups[] = '6-19';
-        $groups[] = '20-25';
-        $groups[] = '26-30';
-        $groups[] = '31-35';
-        $groups[] = '36-39';
-        $groups[] = '40-43';
-        $groups[] = '44-50';
-        $groups[] = '51-58';
+        $groups[] = '6-38';
+        $groups[] = '39-44';
+        $groups[] = '45-60';
+        $groups[] = '61-65';
+        $groups[] = '66-69';
+        $groups[] = '70-73';
+        $groups[] = '74-80';
+        $groups[] = '81-88';
 
         $inverted = &$result['inverted'];
 
@@ -231,55 +267,97 @@ class ItemManager
         $result['INTELLIGENCEPOINTS'] = 'rawIntelligence';
         $result['DEFENSEPOINTS'] = 'rawDefence';
         $result['AGILITYPOINTS'] = 'rawAgility';
-        $result['DAMAGEBONUS'] = 'mainAttackDamage';
+        // second group {attack stuff}
+        $result['ATTACKSPEED'] = 'attackSpeed';
         $result['DAMAGEBONUSRAW'] = 'rawMainAttackDamage';
-        $result['SPELLDAMAGE'] = 'spellDamage';
+        $result['DAMAGEBONUS'] = 'mainAttackDamage';
+        $result['MAIN_ATTACK_NEUTRAL_DAMAGE_BONUS_RAW'] = 'rawNeutralMainAttackDamage';
+        $result['MAIN_ATTACK_NEUTRAL_DAMAGE_BONUS'] = 'neutralMainAttackDamage';
+        $result['MAIN_ATTACK_EARTH_DAMAGE_BONUS_RAW'] = 'rawEarthMainAttackDamage';
+        $result['MAIN_ATTACK_EARTH_DAMAGE_BONUS'] = 'earthMainAttackDamage';
+        $result['MAIN_ATTACK_THUNDER_DAMAGE_BONUS_RAW'] = 'rawThunderMainAttackDamage';
+        $result['MAIN_ATTACK_THUNDER_DAMAGE_BONUS'] = 'thunderMainAttackDamage';
+        $result['MAIN_ATTACK_WATER_DAMAGE_BONUS_RAW'] = 'rawWaterMainAttackDamage';
+        $result['MAIN_ATTACK_WATER_DAMAGE_BONUS'] = 'waterMainAttackDamage';
+        $result['MAIN_ATTACK_FIRE_DAMAGE_BONUS_RAW'] = 'rawFireMainAttackDamage';
+        $result['MAIN_ATTACK_FIRE_DAMAGE_BONUS'] = 'fireMainAttackDamage';
+        $result['MAIN_ATTACK_AIR_DAMAGE_BONUS_RAW'] = 'rawAirMainAttackDamage';
+        $result['MAIN_ATTACK_AIR_DAMAGE_BONUS'] = 'airMainAttackDamage';
+        $result['MAIN_ATTACK_ELEMENTAL_DAMAGE_BONUS_RAW'] = 'rawElementalMainAttackDamage';
+        $result['MAIN_ATTACK_ELEMENTAL_DAMAGE_BONUS'] = 'elementalMainAttackDamage';
         $result['SPELLDAMAGERAW'] = 'rawSpellDamage';
-        $result['HEALTHREGEN'] = 'healthRegen';
-        $result['HEALTHREGENRAW'] = 'rawHealthRegen';
+        $result['SPELLDAMAGE'] = 'spellDamage';
+        $result['SPELL_NEUTRAL_DAMAGE_BONUS_RAW'] = 'rawNeutralSpellDamage';
+        $result['SPELL_NEUTRAL_DAMAGE_BONUS'] = 'neutralSpellDamage';
+        $result['SPELL_EARTH_DAMAGE_BONUS_RAW'] = 'rawEarthSpellDamage';
+        $result['SPELL_EARTH_DAMAGE_BONUS'] = 'earthSpellDamage';
+        $result['SPELL_THUNDER_DAMAGE_BONUS_RAW'] = 'rawThunderSpellDamage';
+        $result['SPELL_THUNDER_DAMAGE_BONUS'] = 'thunderSpellDamage';
+        $result['SPELL_WATER_DAMAGE_BONUS_RAW'] = 'rawWaterSpellDamage';
+        $result['SPELL_WATER_DAMAGE_BONUS'] = 'waterSpellDamage';
+        $result['SPELL_FIRE_DAMAGE_BONUS_RAW'] = 'rawFireSpellDamage';
+        $result['SPELL_FIRE_DAMAGE_BONUS'] = 'fireSpellDamage';
+        $result['SPELL_AIR_DAMAGE_BONUS_RAW'] = 'rawAirSpellDamage';
+        $result['SPELL_AIR_DAMAGE_BONUS'] = 'airSpellDamage';
+        $result['RAINBOWSPELLDAMAGERAW'] = 'rawElementalSpellDamage';
+        $result['SPELL_ELEMENTAL_DAMAGE_BONUS'] = 'elementalSpellDamage';
+        // third group {health/mana stuff}
         $result['HEALTHBONUS'] = 'rawHealth';
-        $result['POISON'] = 'poison';
+        $result['HEALTHREGENRAW'] = 'rawHealthRegen';
+        $result['HEALTHREGEN'] = 'healthRegen';
         $result['LIFESTEAL'] = 'lifeSteal';
         $result['MANAREGEN'] = 'manaRegen';
         $result['MANASTEAL'] = 'manaSteal';
-        $result['SPELL_COST_PCT_1'] = '1stSpellCost';
-        $result['SPELL_COST_RAW_1'] = 'raw1stSpellCost';
-        $result['SPELL_COST_PCT_2'] = '2ndSpellCost';
-        $result['SPELL_COST_RAW_2'] = 'raw2ndSpellCost';
-        $result['SPELL_COST_PCT_3'] = '3rdSpellCost';
-        $result['SPELL_COST_RAW_3'] = 'raw3rdSpellCost';
-        $result['SPELL_COST_PCT_4'] = '4thSpellCost';
-        $result['SPELL_COST_RAW_4'] = 'raw4thSpellCost';
-        $result['THORNS'] = 'thorns';
-        $result['REFLECTION'] = 'reflection';
-        $result['ATTACKSPEED'] = 'attackSpeed';
-        $result['SPEED'] = 'walkSpeed';
-        $result['EXPLODING'] = 'exploding';
-        $result['SOULPOINTS'] = 'soulPointRegen';
-        $result['STAMINA'] = 'sprint';
-        $result['STAMINA_REGEN'] = 'sprintRegen';
-        $result['JUMP_HEIGHT'] = 'rawJumpHeight';
-        $result['XPBONUS'] = 'xpBonus';
-        $result['LOOTBONUS'] = 'lootBonus';
-        $result['EMERALDSTEALING'] = 'stealing';
+        // fourth group {damage stuff}
+        $result['DAMAGE_BONUS_RAW'] = 'rawDamage';
+        $result['DAMAGE_BONUS'] = 'damage';
+        $result['NEUTRAL_DAMAGE_BONUS_RAW'] = 'rawNeutralDamage';
+        $result['NEUTRAL_DAMAGE_BONUS'] = 'neutralDamage';
+        $result['EARTH_DAMAGE_BONUS_RAW'] = 'rawEarthDamage';
         $result['EARTHDAMAGEBONUS'] = 'earthDamage';
+        $result['THUNDER_DAMAGE_BONUS_RAW'] = 'rawThunderDamage';
         $result['THUNDERDAMAGEBONUS'] = 'thunderDamage';
+        $result['WATER_DAMAGE_BONUS_RAW'] = 'rawWaterDamage';
         $result['WATERDAMAGEBONUS'] = 'waterDamage';
+        $result['FIRE_DAMAGE_BONUS_RAW'] = 'rawFireDamage';
         $result['FIREDAMAGEBONUS'] = 'fireDamage';
+        $result['AIR_DAMAGE_BONUS_RAW'] = 'rawAirDamage';
         $result['AIRDAMAGEBONUS'] = 'airDamage';
+        $result['ELEMENTAL_DAMAGE_BONUS_RAW'] = 'rawElementalDamage';
+        $result['ELEMENTAL_DAMAGE_BONUS'] = 'elementalDamage';
+        // fifth group {defence stuff}
         $result['EARTHDEFENSE'] = 'earthDefence';
         $result['THUNDERDEFENSE'] = 'thunderDefence';
         $result['WATERDEFENSE'] = 'waterDefence';
         $result['FIREDEFENSE'] = 'fireDefence';
         $result['AIRDEFENSE'] = 'airDefence';
-        $result['SPELLTHUNDERDAMAGEBONUSRAW'] = 'rawThunderSpellDamage';
-        $result['SPELLFIREDAMAGEBONUSRAW'] = 'rawFireSpellDamage';
-        $result['SPELLWATERDAMAGEBONUSRAW'] = 'rawWaterSpellDamage';
-        $result['SPELLAIRDAMAGEBONUSRAW'] = 'rawAirSpellDamage';
-        $result['SPELLEARTHDAMAGEBONUSRAW'] = 'rawEarthSpellDamage';
-        $result['SPELLELEMENTALDAMAGEBONUS'] = 'elementalSpellDamage';
-        $result['SPELLNEUTRALDAMAGEBONUSRAW'] = 'rawNeutralSpellDamage';
-        $result['SPELLELEMENTALDAMAGEBONUSRAW'] = 'rawElementalSpellDamage';
+        // sixth group {passive damage}
+        $result['EXPLODING'] = 'exploding';
+        $result['POISON'] = 'poison';
+        $result['THORNS'] = 'thorns';
+        $result['REFLECTION'] = 'reflection';
+        // seventh group {movement stuff}
+        $result['SPEED'] = 'walkSpeed';
+        $result['STAMINA'] = 'sprint';
+        $result['STAMINA_REGEN'] = 'sprintRegen';
+        $result['JUMP_HEIGHT'] = 'rawJumpHeight';
+        // eighth group {xp/gathering stuff}
+        $result['SOULPOINTS'] = 'soulPointRegen';
+        $result['LOOTBONUS'] = 'lootBonus';
+          // lootQuality is not here because it only exists on crafted items
+        $result['EMERALDSTEALING'] = 'stealing';
+        $result['XPBONUS'] = 'xpBonus';
+          // gatherXpBonus is not here because it only exists on crafted items
+          // gatherSpeed is not here because it only exists on crafted items
+        // ninth group {spell stuff}
+        $result['SPELL_COST_RAW_1'] = 'raw1stSpellCost';
+        $result['SPELL_COST_PCT_1'] = '1stSpellCost';
+        $result['SPELL_COST_RAW_2'] = 'raw2ndSpellCost';
+        $result['SPELL_COST_PCT_2'] = '2ndSpellCost';
+        $result['SPELL_COST_RAW_3'] = 'raw3rdSpellCost';
+        $result['SPELL_COST_PCT_3'] = '3rdSpellCost';
+        $result['SPELL_COST_RAW_4'] = 'raw4thSpellCost';
+        $result['SPELL_COST_PCT_4'] = '4thSpellCost';
 
         return $result;
     }
@@ -300,64 +378,103 @@ class ItemManager
     private static function translateStatusName(string $raw): ?string
     {
         return match ($raw) {
-            'spellCostPct1', 'spellCost1Pct' => '1stSpellCost',
-            'spellCostPct2', 'spellCost2Pct' => '2ndSpellCost',
-            'spellCostPct3', 'spellCost3Pct' => '3rdSpellCost',
-            'spellCostPct4', 'spellCost4Pct' => '4thSpellCost',
-            'spellCostRaw1' => 'raw1stSpellCost',
-            'spellCostRaw2' => 'raw2ndSpellCost',
-            'spellCostRaw3' => 'raw3rdSpellCost',
-            'spellCostRaw4' => 'raw4thSpellCost',
-            'spellDamageBonusRaw' => 'rawSpellDamage',
-            'mainAttackDamageBonusRaw' => 'rawMainAttackDamage',
-            'mainAttackDamageBonus' => 'mainAttackDamage',
-            'healthRegenRaw' => 'rawHealthRegen',
-            'healthBonus' => 'rawHealth',
-            'speed' => 'walkSpeed',
-            'soulPoints' => 'soulPointRegen',
-            'emeraldStealing' => 'stealing',
             'strengthPoints' => 'rawStrength',
             'dexterityPoints' => 'rawDexterity',
             'intelligencePoints' => 'rawIntelligence',
             'defensePoints' => 'rawDefence',
             'agilityPoints' => 'rawAgility',
-            'bonusEarthDamage', 'earthDamageBonus' => 'earthDamage',
-            'bonusThunderDamage', 'thunderDamageBonus' => 'thunderDamage',
-            'bonusWaterDamage', 'waterDamageBonus' => 'waterDamage',
-            'bonusFireDamage', 'fireDamageBonus' => 'fireDamage',
-            'bonusAirDamage', 'airDamageBonus' => 'airDamage',
+            // second group {attack stuff}
+            'attackSpeedBonus' => 'attackSpeed',
+            'mainAttackDamageBonusRaw' => 'rawMainAttackDamage',
+            'mainAttackDamageBonus' => 'mainAttackDamage',
+            'mainAttackNeutralDamageBonusRaw' => 'rawMainAttackNeutralDamage',
+            'mainAttackNeutralDamageBonus' => 'mainAttackNeutralDamage',
+            'mainAttackEarthDamageBonusRaw' => 'rawMainAttackEarthDamage',
+            'mainAttackEarthDamageBonus' => 'mainAttackEarthDamage',
+            'mainAttackThunderDamageBonusRaw' => 'rawMainAttackThunderDamage',
+            'mainAttackThunderDamageBonus' => 'mainAttackThunderDamage',
+            'mainAttackWaterDamageBonusRaw' => 'rawMainAttackWaterDamage',
+            'mainAttackWaterDamageBonus' => 'mainAttackWaterDamage',
+            'mainAttackFireDamageBonusRaw' => 'rawMainAttackFireDamage',
+            'mainAttackFireDamageBonus' => 'mainAttackFireDamage',
+            'mainAttackAirDamageBonusRaw' => 'rawMainAttackAirDamage',
+            'mainAttackAirDamageBonus' => 'mainAttackAirDamage',
+            'mainAttackElementalDamageBonusRaw' => 'rawMainAttackElementalDamage',
+            'mainAttackElementalDamageBonus' => 'mainAttackElementalDamage',
+            'spellDamageBonusRaw' => 'rawSpellDamage',
+            'spellDamageBonus' => 'spellDamage',
+            'spellNeutralDamageBonusRaw' => 'rawSpellNeutralDamage',
+            'spellNeutralDamageBonus' => 'spellNeutralDamage',
+            'spellEarthDamageBonusRaw' => 'rawSpellEarthDamage',
+            'spellEarthDamageBonus' => 'spellEarthDamage',
+            'spellThunderDamageBonusRaw' => 'rawSpellThunderDamage',
+            'spellThunderDamageBonus' => 'spellThunderDamage',
+            'spellWaterDamageBonusRaw' => 'rawSpellWaterDamage',
+            'spellWaterDamageBonus' => 'spellWaterDamage',
+            'spellFireDamageBonusRaw' => 'rawSpellFireDamage',
+            'spellFireDamageBonus' => 'spellFireDamage',
+            'spellAirDamageBonusRaw' => 'rawSpellAirDamage',
+            'spellAirDamageBonus' => 'spellAirDamage',
+            'spellElementalDamageBonusRaw' => 'rawSpellElementalDamage',
+            'spellElementalDamageBonus' => 'spellElementalDamage',
+            // third group {health/mana stuff}
+            'healthBonus' => 'rawHealth',
+            'healthRegenRaw' => 'rawHealthRegen',
+            'healthRegen' => 'healthRegen',
+            'lifeSteal' => 'lifeSteal',
+            'manaRegen' => 'manaRegen',
+            'manaSteal' => 'manaSteal',
+            // fourth group {damage stuff}
+            'damageBonusRaw' => 'rawDamage',
+            'damageBonus' => 'damage',
+            'neutralDamageBonusRaw' => 'rawNeutralDamage',
+            'neutralDamageBonus' => 'neutralDamage',
+            'earthDamageBonusRaw' => 'rawEarthDamage',
+            'earthDamageBonus' => 'earthDamage',
+            'thunderDamageBonusRaw' => 'rawThunderDamage',
+            'thunderDamageBonus' => 'thunderDamage',
+            'waterDamageBonusRaw' => 'rawWaterDamage',
+            'waterDamageBonus' => 'waterDamage',
+            'fireDamageBonusRaw' => 'rawFireDamage',
+            'fireDamageBonus' => 'fireDamage',
+            'airDamageBonusRaw' => 'rawAirDamage',
+            'airDamageBonus' => 'airDamage',
+            'elementalDamageBonusRaw' => 'rawElementalDamage',
+            'elementalDamageBonus' => 'elementalDamage',
+            // fifth group {defence stuff}
             'bonusEarthDefense', 'earthDefenseBonus' => 'earthDefence',
             'bonusThunderDefense', 'thunderDefenseBonus' => 'thunderDefence',
             'bonusWaterDefense', 'waterDefenseBonus' => 'waterDefence',
             'bonusFireDefense', 'fireDefenseBonus' => 'fireDefence',
             'bonusAirDefense', 'airDefenseBonus' => 'airDefence',
-            'jumpHeight' => 'rawJumpHeight',
-            'spellElementalDamageBonus' => 'elementalSpellDamage',
-            'spellNeutralDamageBonusRaw' => 'rawNeutralSpellDamage',
-            'spellElementalDamageBonusRaw' => 'rawElementalSpellDamage',
-            'spellThunderDamageBonusRaw' => 'rawThunderSpellDamage',
-            'spellFireDamageBonusRaw' => 'rawFireSpellDamage',
-            'spellAirDamageBonusRaw' => 'rawAirSpellDamage',
-            'spellEarthDamageBonusRaw' => 'rawEarthSpellDamage',
-            'spellWaterDamageBonusRaw' => 'rawWaterSpellDamage',
-            'attackSpeedBonus' => 'attackSpeed',
-            //same ones
-            'gatherXpBonus' => 'gatherXpBonus',
-            'spellDamageBonus' => 'spellDamage',
-            'healthRegen' => 'healthRegen',
-            'poison' => 'poison',
-            'lifeSteal' => 'lifeSteal',
-            'manaRegen' => 'manaRegen',
+            // sixth group {passive damage}
             'exploding' => 'exploding',
-            'sprint' => 'sprint',
-            'sprintRegen' => 'sprintRegen',
-            'lootBonus' => 'lootBonus',
-            'lootQuality' => 'lootQuality',
-            'gatherSpeed' => 'gatherSpeed',
-            'xpBonus' => 'xpBonus',
-            'manaSteal' => 'manaSteal',
+            'poison' => 'poison',
             'thorns' => 'thorns',
             'reflection' => 'reflection',
+            // seventh group {movement stuff}
+            'speed' => 'walkSpeed',
+            'sprint' => 'sprint',
+            'sprintRegen' => 'sprintRegen',
+            'jumpHeight' => 'rawJumpHeight',
+            // eighth group {xp/gathering stuff}
+            'soulPoints' => 'soulPointRegen',
+            'lootBonus' => 'lootBonus',
+            'lootQuality' => 'lootQuality',
+            'emeraldStealing' => 'stealing',
+            'xpBonus' => 'xpBonus',
+            'gatherXpBonus' => 'gatherXpBonus',
+            'gatherSpeed' => 'gatherSpeed',
+            // ninth group {spell stuff}
+            'spellCostRaw1' => 'raw1stSpellCost',
+            'spellCostPct1', 'spellCost1Pct' => '1stSpellCost',
+            'spellCostRaw2' => 'raw2ndSpellCost',
+            'spellCostPct2', 'spellCost2Pct' => '2ndSpellCost',
+            'spellCostRaw3' => 'raw3rdSpellCost',
+            'spellCostPct3', 'spellCost3Pct' => '3rdSpellCost',
+            'spellCostRaw4' => 'raw4thSpellCost',
+            'spellCostPct4', 'spellCost4Pct' => '4thSpellCost',
+
             default => null,
         };
     }
