@@ -1784,54 +1784,6 @@
             "Statuses": {
                 "title": "Statuses",
                 "properties": {
-                    "1stSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "2ndSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "3rdSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "4thSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "raw1stSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "raw2ndSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "raw3rdSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "raw4thSpellCost": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawMainAttackDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "mainAttackDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawHealthRegen": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawHealth": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "walkSpeed": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "soulPointRegen": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "stealing": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
                     "rawStrength": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
@@ -1847,19 +1799,172 @@
                     "rawAgility": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
+                    "attackSpeed": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "mainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawNeutralMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "neutralMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawEarthMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "earthMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawThunderMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "thunderMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawWaterMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "waterMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawFireMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "fireMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawAirMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "airMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawElementalMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "elementalMainAttackDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "spellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawNeutralSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "neutralSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawEarthSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "earthSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawThunderSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "thunderSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawWaterSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "waterSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawFireSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "fireSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawAirSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "airSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawElementalSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "elementalSpellDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawHealth": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "health": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawHealthRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "healthRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "lifeSteal": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "manaRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "manaSteal": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "damage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawNeutralDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "neutralDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawEarthDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
                     "earthDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawThunderDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "thunderDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
+                    "rawWaterDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
                     "waterDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawFireDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "fireDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
+                    "rawAirDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
                     "airDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "rawElementalDamage": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "elementalDamage": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "earthDefence": {
@@ -1877,55 +1982,19 @@
                     "airDefence": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "rawJumpHeight": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "elementalSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawNeutralSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawElementalSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawThunderSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawFireSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawAirSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawEarthSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "rawWaterSpellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "attackSpeed": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "gatherXpBonus": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "spellDamage": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "healthRegen": {
+                    "exploding": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "poison": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "lifeSteal": {
+                    "thorns": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "manaRegen": {
+                    "reflection": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "exploding": {
+                    "walkSpeed": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "sprint": {
@@ -1934,25 +2003,52 @@
                     "sprintRegen": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
+                    "rawJumpHeight": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "soulPointRegen": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
                     "lootBonus": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "lootQuality": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "gatherSpeed": {
+                    "stealing": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "xpBonus": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "manaSteal": {
+                    "gatherXpBonus": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "thorns": {
+                    "gatherSpeed": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
-                    "reflection": {
+                    "raw1stSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "1stSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw2ndSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "2ndSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw3rdSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "3rdSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "raw4thSpellCost": {
+                        "$ref": "#/components/schemas/ItemStatus"
+                    },
+                    "4thSpellCost": {
                         "$ref": "#/components/schemas/ItemStatus"
                     }
                 },
