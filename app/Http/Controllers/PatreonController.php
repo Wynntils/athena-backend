@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountType;
+use App\Models\PatreonAPI;
 use App\Models\User;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Patreon\{API};
 
 class PatreonController extends Controller
 {
@@ -142,7 +142,7 @@ class PatreonController extends Controller
 
     public function list(Request $request)
     {
-        $api_client = new API(config('services.patreon.access_token'));
+        $api_client = PatreonAPI::getApi();
         $campaign_id = '2422432';
 
         $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get();

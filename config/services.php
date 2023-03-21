@@ -31,9 +31,12 @@ return [
     ],
 
     'patreon' => [
+        'client_id' => env('PATREON_CLIENT_ID'),
+        'client_secret' => env('PATREON_CLIENT_SECRET'),
+        'refresh_token' => env('PATREON_REFRESH_TOKEN'),
+
         'webhook_secret' => env('PATREON_WEBHOOK_SECRET'),
         'discord_webhook' => env('PATREON_DISCORD_WEBHOOK'),
-        'access_token' => env('PATREON_ACCESS_TOKEN')
     ],
 
     'github' => [

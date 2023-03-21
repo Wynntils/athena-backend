@@ -3,22 +3,24 @@
 namespace App\Models;
 
 use App\Enums\AccountType;
+use App\Enums\DonatorType;
 use App\Models\Embedded\CosmeticInfo;
 use App\Models\Embedded\DiscordInfo;
 use ArrayObject;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Jenssegers\Mongodb\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
  * @property string $username
  * @property string $authToken
  * @property AccountType $accountType
+ * @property DonatorType $donatorType
  * @property DiscordInfo|null $discordInfo
  * @property CosmeticInfo|null $cosmeticInfo
  *
@@ -39,6 +41,7 @@ class User extends Model implements
     protected $fillable = [
         '_id',
         'accountType',
+        'donatorType',
         'username',
         'password',
     ];
@@ -55,6 +58,7 @@ class User extends Model implements
 
     protected $casts = [
         'accountType' => AccountType::class,
+        'donatorType' => DonatorType::class,
     ];
 
     public function discordInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
