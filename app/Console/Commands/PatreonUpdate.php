@@ -5,6 +5,9 @@ namespace App\Console\Commands;
 use App\Enums\AccountType;
 use App\Enums\DonatorType;
 use App\Models\User;
+use DiscordWebhook\Embed;
+use DiscordWebhook\EmbedColor;
+use DiscordWebhook\Webhook;
 use Illuminate\Console\Command;
 
 class PatreonUpdate extends Command
@@ -45,7 +48,8 @@ class PatreonUpdate extends Command
         $tierData = $this->getTiers();
         // Get all members
         $patreonMembers = $this->getMembers();
-        $this->info(sprintf('Found %d active patrons', $patreonMembers->count()));
+        $totalDonators = $patreonMembers->count();
+        $this->info(sprintf('Found %d active patrons', $totalDonators));
         $patreonMembers = $patreonMembers->where('social_connections.discord.user_id', '!=', null);
         $this->info(sprintf('Found %d active patrons with a discord account', $patreonMembers->count()));
 
@@ -92,21 +96,31 @@ class PatreonUpdate extends Command
             }
         });
 
+        $newDonators = $unhandledDonators = [];
+
         $this->info(sprintf('Found %d new donators', $patreonMembers->count()));
 
         // find each new donator in the database and update their account type
-        $patreonMembers->each(function ($item) use ($tierData, $patreonMembers) {
+        $patreonMembers->each(function ($item) use ($tierData, $patreonMembers, &$newDonators, &$unhandledDonators) {
             $discordId = $item['social_connections']['discord']['user_id'];
 
             $users = User::where('discordInfo.id', $discordId);
 
             if ($users->count() > 1) {
                 $this->error(sprintf('Patreon Donator %s (%s) discord id has multiple Wynntils Users', $item['attributes']['full_name'], $discordId));
+                $unhandledDonators[] = [
+                    'member' => $item,
+                    'reason' => 'Multiple Wynntils Users found',
+                ];
                 return;
             }
 
             if ($users->count() === 0) {
                 $this->error(sprintf('Patreon Donator %s (%s) discord id has no Wynntils Users', $item['attributes']['full_name'], $discordId));
+                $unhandledDonators[] = [
+                    'member' => $item,
+                    'reason' => 'No Wynntils Users found',
+                ];
                 return;
             }
 
@@ -114,8 +128,14 @@ class PatreonUpdate extends Command
 
             if (!$user) {
                 $this->error(sprintf('Donator %s (%s) is not found in the database', $item['attributes']['full_name'], $discordId));
+                $unhandledDonators[] = [
+                    'member' => $item,
+                    'reason' => 'User not found in database',
+                ];
                 return;
             }
+
+            $newDonators[] = $user;
 
             $user->accountType = AccountType::DONATOR;
             $user->donatorType = DonatorType::fromPatreonLevel($tierData[$item['tier_id']]['title']);
@@ -126,12 +146,45 @@ class PatreonUpdate extends Command
 
         $this->info('Done updating Patreon data');
 
-        $patreonMembers->each(function ($item) {
-            $discordId = $item['social_connections']['discord']['user_id'];
-            $this->error(sprintf('Patreon Donator %s (%s) is not handled', $item['attributes']['full_name'], $discordId));
-        });
+        if (count($newDonators) > 0 || count($unhandledDonators) > 0) {
+            $this->sendDiscordMessage($newDonators, $unhandledDonators, $totalDonators);
+        }
 
         return Command::SUCCESS;
+    }
+
+    private function sendDiscordMessage(array $newDonators, array $unhandledDonators, int $totalDonators): void
+    {
+        $message = sprintf('Found %d new donators with %d unhandled donators (total donators: %d)', count($newDonators), count($unhandledDonators), $totalDonators);
+
+        $wh = new Webhook(config('services.patreon.discord_webhook'));
+        $wh->setUsername(config('athena.webhook.discord.username'))
+            ->setAvatar(config('athena.webhook.discord.avatar'));
+
+        $embed = new Embed();
+        $embed->setColor(EmbedColor::AQUA)->setDescription($message);
+
+        if (count($newDonators) > 0) {
+            $embed->addField(
+                (new Embed\Field())
+                    ->setName('New Donators')
+                    ->setValue(implode("\n", array_map(function ($item) {
+                        return sprintf('%s <@%s>', $item['attributes']['full_name'], $item['social_connections']['discord']['user_id']);
+                    }, $newDonators)))
+            );
+        }
+
+        if (count($unhandledDonators) > 0) {
+            $embed->addField(
+                (new Embed\Field())
+                    ->setName('Unhandled Donators')
+                    ->setValue(implode("\n", array_map(function ($item) {
+                        return sprintf('%s <@%s> (%s)', $item['member']['attributes']['full_name'], $item['member']['social_connections']['discord']['user_id'], $item['reason']);
+                    }, $unhandledDonators)))
+            );
+        }
+
+        $wh->addEmbed($embed)->send();
     }
 
     public function getTiers(): \Illuminate\Support\Collection|int
