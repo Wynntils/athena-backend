@@ -139,13 +139,13 @@ class CapeManager
             Notifications::cape(
                 title: "A new cape needs approval!",
                 description: sprintf("➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
-                    route('cape.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
-                    route('cape.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
-                    route('cape.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'elytra']),
-                    route('cape.ban', ['token' => $this->token, 'sha' => $capeId]),
+                    route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
+                    route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
+                    route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'elytra']),
+                    route('capes.ban', ['token' => $this->token, 'sha' => $capeId]),
                     $capeId),
                 color: EmbedColor::GOLD,
-                imageUrl: url("capes/queue/get/$capeId")
+                imageUrl: route('capes.queue.get', ['sha' => $capeId])
             );
         }
 
