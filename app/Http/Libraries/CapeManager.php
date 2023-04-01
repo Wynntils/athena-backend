@@ -16,7 +16,8 @@ class CapeManager
     // array for special occasions on specific dates
     private array $specialCapes = [
         '01-01' => 'newYears',
-        '04-01' => 'aprilFools',
+        // TODO: New April fools cape (Having 2000 animated capes lags clients)
+        //'04-01' => 'aprilFools',
         '07-04' => 'independenceDay',
         '10-31' => 'halloween',
         '12-24' => 'christmasEve',
