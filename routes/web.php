@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CrashReportController;
-use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\WynntilsOAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,15 +28,12 @@ if (config('app.debug') !== false) {
 Route::get('oauth/{provider}', [WynntilsOAuthController::class, 'redirectToProvider'])->name('oauth.redirect');
 Route::get('oauth/{provider}/callback', [WynntilsOAuthController::class, 'handleProviderCallback'])->name('oauth.callback');
 
-Route::prefix('crash')->group(static function () {
-    Route::post('report', [CrashReportController::class, 'report'])->name('crash.report');
-    Route::middleware(['auth', 'staff'])->group(static function () {
-        Route::get('view/{crashReport}', [CrashReportController::class, 'view'])->name('crash.view');
-        Route::get('/', [CrashReportController::class, 'index'])->name('crash.index');
-        Route::put('/{crashReport}/handled', [CrashReportController::class, 'setHandled'])->name('crash.handled');
-        Route::put('/{crashReport}/comment', [CrashReportController::class, 'addComment'])->name('crash.comment');
-        Route::delete('/{crashReport}/comment', [CrashReportController::class, 'deleteComment'])->name('crash.comment.delete');
-    });
+Route::prefix('crash')->middleware(['auth', 'staff'])->group(static function () {
+    Route::get('view/{crashReport}', [CrashReportController::class, 'view'])->name('crash.view');
+    Route::get('/', [CrashReportController::class, 'index'])->name('crash.index');
+    Route::put('/{crashReport}/handled', [CrashReportController::class, 'setHandled'])->name('crash.handled');
+    Route::put('/{crashReport}/comment', [CrashReportController::class, 'addComment'])->name('crash.comment');
+    Route::delete('/{crashReport}/comment', [CrashReportController::class, 'deleteComment'])->name('crash.comment.delete');
 });
 
 Route::prefix('auth')->name('auth.')->group(static function () {
