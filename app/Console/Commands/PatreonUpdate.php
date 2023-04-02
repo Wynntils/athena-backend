@@ -33,6 +33,7 @@ class PatreonUpdate extends Command
         parent::__construct();
 
         $this->api = \App\Models\PatreonAPI::getApi();
+        $this->tierData = $this->getTiers();
     }
 
     /**
@@ -44,20 +45,43 @@ class PatreonUpdate extends Command
     {
         $this->info('Updating Patreon data');
 
-        // Get all tiers
-        $tierData = $this->getTiers();
+        $newDonators = $unhandledDonators = $removedDonators = $errorDonators = [];
+
+        $tierData = $this->tierData;
+
         // Get all members
         $patreonMembers = $this->getMembers();
         $totalDonators = $patreonMembers->count();
         $this->info(sprintf('Found %d active patrons', $totalDonators));
+        // For members without a discord account, add them to the unhandled list
+        $unhandledDonators = $patreonMembers->where('social_connections.discord.user_id', null)->map(function ($item) {
+            return [
+                'member' => $item,
+                'reason' => 'No discord account',
+            ];
+        })->toArray();
+
+        // Filter out members that don't have a discord account
         $patreonMembers = $patreonMembers->where('social_connections.discord.user_id', '!=', null);
         $this->info(sprintf('Found %d active patrons with a discord account', $patreonMembers->count()));
+
+        // Check for any patreon members that don't include a tier_id
+        $patreonMembers->each(function ($item) use ($patreonMembers, &$errorDonators) {
+            if (empty($item['tier_id'])) {
+                $this->error(sprintf('Donator %s (%s) has no tier id', $item['attributes']['full_name'], $item['social_connections']['discord']['user_id']));
+                $this->error(json_encode($item));
+                $errorDonators[] = [
+                    'member' => $item,
+                    'reason' => 'No tier id',
+                ];
+            }
+        });
 
         // Get all current donators
         $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get(['_id', 'username', 'discordInfo']);
 
         // Loop through all current donators, and check if they are still donators
-        $currentDonators->each(function ($item) use ($tierData, $patreonMembers, $currentDonators) {
+        $currentDonators->each(function ($item) use ($tierData, $patreonMembers, $currentDonators, &$removedDonators, &$errorDonators) {
             if ($item->donatorType === DonatorType::SPECIAL->value) {
                 // Skip special donators (they are not patreon donators)
                 return;
@@ -65,6 +89,7 @@ class PatreonUpdate extends Command
             if (!isset($item->discordInfo['id'])) {
                 $this->error(sprintf('Donator %s has no discord id', $item->username));
                 $item->accountType = AccountType::NORMAL;
+                $item->donatorType = DonatorType::NONE;
                 $currentDonators->forget($item->id);
             } else {
                 $discordId = $item->discordInfo['id'];
@@ -73,30 +98,48 @@ class PatreonUpdate extends Command
 
                 if ($donator) {
                     $this->info(sprintf('Donator %s (%s) is still a donator', $item->username, $discordId));
-                    // Update the donator type if needed
-                    $donatorTier = $tierData[$donator['tier_id']];
-                    $item->donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
+                    if (!empty($donator['tier_id'])) {
+                        // Update the donator type if needed
+                        $donatorTier = $tierData[$donator['tier_id']];
+                        $item->donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
+                    }
+                    $item->accountType = AccountType::DONATOR;
                 } else {
                     $this->warn(sprintf('Donator %s (%s) is not a patreon donator', $item->username, $discordId));
                     $item->accountType = AccountType::NORMAL;
+                    $item->donatorType = DonatorType::NONE;
                     $currentDonators->forget($item->id);
+                    $removedDonators[] = [
+                        'user' => $item,
+                        'reason' => 'Not a patreon donator',
+                    ];
                 }
             }
             $item->save();
         });
 
         // Loop through all patreon members, and check if they are already marked as donators
-        $patreonMembers->each(function ($item) use ($patreonMembers, $currentDonators) {
+        $patreonMembers->each(function ($item) use ($tierData, $patreonMembers, $currentDonators) {
             $discordId = $item['social_connections']['discord']['user_id'];
 
             $user = $currentDonators->where('discordInfo.id', $discordId)->first();
 
             if ($user) {
+                if (!empty($item['tier_id'])) {
+                    // check if the donator type is correct
+                    $donatorTier = $tierData[$item['tier_id']];
+                    $donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
+                    if ($user->donatorType !== $donatorType) {
+                        $this->warn(sprintf('Donator %s (%s) has the wrong donator type', $user->username, $discordId));
+                        $user->donatorType = $donatorType;
+                        $user->save();
+                    } else {
+                        $this->info(sprintf('Donator %s (%s) is already a donator', $user->username, $discordId));
+                    }
+                }
                 $patreonMembers->forget($item['id']);
             }
         });
-
-        $newDonators = $unhandledDonators = [];
 
         $this->info(sprintf('Found %d new donators', $patreonMembers->count()));
 
@@ -135,10 +178,16 @@ class PatreonUpdate extends Command
                 return;
             }
 
-            $newDonators[] = $user;
+            $newDonators[] = [
+                'user' => $user,
+                'member' => $item,
+            ];
 
             $user->accountType = AccountType::DONATOR;
-            $user->donatorType = DonatorType::fromPatreonLevel($tierData[$item['tier_id']]['title']);
+            if (!empty($item['tier_id'])) {
+                $donatorTier = $tierData[$item['tier_id']];
+                $user->donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
+            }
             $user->save();
             $this->info(sprintf('Donator %s (%s) is now marked as donator', $user->username, $discordId));
             $patreonMembers->forget($item['id']);
@@ -146,15 +195,17 @@ class PatreonUpdate extends Command
 
         $this->info('Done updating Patreon data');
 
-        if (count($newDonators) > 0 || count($unhandledDonators) > 0) {
-            $this->sendDiscordMessage($newDonators, $unhandledDonators, $totalDonators);
+        if (count($newDonators) > 0 || count($unhandledDonators) > 0 || count($removedDonators) > 0 || count($errorDonators) > 0) {
+            $this->sendDiscordMessage($newDonators, $unhandledDonators, $totalDonators, $removedDonators, $errorDonators);
         }
 
         return Command::SUCCESS;
     }
 
-    private function sendDiscordMessage(array $newDonators, array $unhandledDonators, int $totalDonators): void
+    private function sendDiscordMessage(array $newDonators, array $unhandledDonators, int $totalDonators, array $removedDonators, array $errorDonators): void
     {
+        $tierData = $this->tierData;
+
         $message = sprintf('Found %d new donators with %d unhandled donators (total donators: %d)', count($newDonators), count($unhandledDonators), $totalDonators);
 
         $wh = new Webhook(config('services.patreon.discord_webhook'));
@@ -168,8 +219,8 @@ class PatreonUpdate extends Command
             $embed->addField(
                 (new Embed\Field())
                     ->setName('New Donators')
-                    ->setValue(implode("\n", array_map(function ($item) {
-                        return sprintf('%s <@%s>', $item['attributes']['full_name'], $item['social_connections']['discord']['user_id']);
+                    ->setValue(implode("\n", array_map(function ($item) use ($tierData) {
+                        return sprintf('%s <@%s> %s', $item['user']['username'], $item['user']['discordInfo']['id'], $item['member']['tier_id'] ? sprintf('(%s)', $tierData[$item['member']['tier_id']]['title']) : '');
                     }, $newDonators)))
             );
         }
@@ -179,8 +230,28 @@ class PatreonUpdate extends Command
                 (new Embed\Field())
                     ->setName('Unhandled Donators')
                     ->setValue(implode("\n", array_map(function ($item) {
-                        return sprintf('%s <@%s> (%s)', $item['member']['attributes']['full_name'], $item['member']['social_connections']['discord']['user_id'], $item['reason']);
+                        return sprintf('%s %s (%s)', $item['member']['attributes']['full_name'], isset($item['member']['social_connections']['discord']) ? sprintf('<@%s>', $item['member']['social_connections']['discord']['user_id']) : '', $item['reason']);
                     }, $unhandledDonators)))
+            );
+        }
+
+        if (count($removedDonators) > 0) {
+            $embed->addField(
+                (new Embed\Field())
+                    ->setName('Removed Donators')
+                    ->setValue(implode("\n", array_map(function ($item) {
+                        return sprintf('%s <@%s> (%s)', $item['user']['username'], $item['user']['discordInfo']['id'], $item['reason']);
+                    }, $removedDonators)))
+            );
+        }
+
+        if (count($errorDonators) > 0) {
+            $embed->addField(
+                (new Embed\Field())
+                    ->setName('Error Donators')
+                    ->setValue(implode("\n", array_map(function ($item) {
+                        return sprintf('%s <@%s> (%s)', $item['member']['attributes']['full_name'], $item['member']['social_connections']['discord']['user_id'], $item['reason']);
+                    }, $errorDonators)))
             );
         }
 
