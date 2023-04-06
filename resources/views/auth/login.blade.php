@@ -20,7 +20,15 @@
 
                     <a href="{{ route('oauth.redirect', ['discord']) }}">
                         <button class="btn btn-success" style="background-color: #5865F2">
-                            <i class="fab fa-discord"></i> Login with Discord
+                            Login with Discord
+                        </button>
+                    </a>
+
+                    <hr class="mt-4 mb-4" style="width: 50%;">
+
+                    <a href="{{ route('oauth.redirect', ['minecraft']) }}">
+                        <button class="btn btn-success" style="background-color: #00A8FF">
+                           Login with Microsoft
                         </button>
                     </a>
 
