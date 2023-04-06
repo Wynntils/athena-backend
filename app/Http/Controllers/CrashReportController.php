@@ -26,7 +26,7 @@ class CrashReportController extends Controller
         }
 
         // Replace mixin names with a generic name for the hash
-        $replacementPattern = '/\$[a-z]{3}\d+\$[A-z]+/';
+        $replacementPattern = '/\$[a-z]{3}\d+(\$wynntils)?\$[A-z]+/';
 
         $traceStringToMd5 = str($trace)->replaceMatches($replacementPattern, 'MIXIN')->toString();
 
