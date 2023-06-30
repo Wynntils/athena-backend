@@ -16,14 +16,17 @@ class VersionController extends Controller
         $userAgent = str($request->userAgent())->lower();
         $isArtemis = $userAgent->contains('artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
-        // Useragent example: Wynntils Artemis\1.1.0-513 (client) FABRIC
+        // Useragent example: Wynntils Artemis\0.0.3-pre-alpha.103+MC-1.19.4 (client) FABRIC
         // Get the modloder from the useragent
         // The modloader is the last word in the useragent
         if ($isArtemis) {
             $modloader = $userAgent->afterLast(' ');
+            if ($userAgent->contains('+')) {
+                $mcVersion = $userAgent->upper()->after('+MC-')->before(' ');
+            }
         }
 
-        $releases = $this->getReleases($client, $stream);
+        $releases = $this->getReleases($client, $stream, 1, $mcVersion ?? null);
 
         $latest = $releases->first(function ($release) {
             return !empty($release['assets']); // Filter out releases without assets
@@ -53,12 +56,22 @@ class VersionController extends Controller
             $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
         }
 
-        return response()->json([
-            'version' => $latest['tag_name'],
+        $latestTag = str($latest['tag_name']);
+
+        $response = [
+            'version' => $latestTag,
             'url' => $asset['browser_download_url'],
             'md5' => $cache[$stream][$client]['md5'][$asset['name']],
             'changelog' => route('version.changelog', [$latest['tag_name']]),
-        ]);
+        ];
+
+
+        if ($isArtemis && $latestTag->contains('+MC-')) {
+            $tagMcVersion = $latestTag->after('+MC-');
+            $response['supportedMcVersion'] = $tagMcVersion;
+        }
+
+        return response()->json($response);
     }
 
     public function changelog(Request $request, $version)
@@ -235,8 +248,15 @@ class VersionController extends Controller
         ]);
     }
 
-    private function getReleases($repo, $stream, $page = 1): \Illuminate\Support\Collection
+    private function getReleases($repo, $stream, $page = 1, $mcVersion = null): \Illuminate\Support\Collection
     {
+        if (!in_array($stream, [
+            're', 'latest', 'ce', // legacy versioning
+            'pre-alpha', 'alpha', 'beta', 'rc', 'release' // semver versioning
+        ])) {
+            throw new \InvalidArgumentException('Invalid stream');
+        }
+
         // Cache this for 5 minutes
         /** @var \Illuminate\Support\Collection $cache */
         try {
@@ -252,11 +272,19 @@ class VersionController extends Controller
         }
 
         // filter then return in semver order
-        return $cache->filter(function ($release) use ($stream) {
+        return $cache->filter(function ($release) use ($mcVersion, $stream) {
+            // filter out releases that don't match the mcVersion
+            if ($mcVersion && !str($release['tag_name'])->upper()->contains('+MC-' . $mcVersion)) {
+                return false;
+            }
             return $release['draft'] === false && match ($stream) {
-                're', 'latest' => $release['prerelease'] === false,
+                'release', 're', 'latest' => $release['prerelease'] === false,
+                'pre-alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'pre-alpha'),
+                'alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'alpha'),
+                'beta' => $release['prerelease'] === true && str_contains($release['tag_name'], 'beta'),
+                'rc' => $release['prerelease'] === true && str_contains($release['tag_name'], 'rc'),
                 default => true,
-            };
+            } && !str($release['tag_name'])->upper()->contains('+MC-');
         })->sort(function ($a, $b) {
             return version_compare($b['tag_name'], $a['tag_name']);
         });
