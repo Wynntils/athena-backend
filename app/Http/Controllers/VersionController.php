@@ -13,6 +13,10 @@ class VersionController extends Controller
 
     public function latest(Request $request, $stream)
     {
+        if (str_starts_with($stream, 'v')) {
+            $stream = str_replace('v', '', $stream);
+        }
+
         $userAgent = str($request->userAgent())->lower();
         $isArtemis = $userAgent->contains('artemis');
         $client = $isArtemis ? 'Artemis' : 'Wynntils';
@@ -66,8 +70,8 @@ class VersionController extends Controller
         ];
 
 
-        if ($isArtemis && $latestTag->contains('+MC-')) {
-            $tagMcVersion = $latestTag->after('+MC-');
+        if ($isArtemis && str($asset['name'])->contains('+MC-')) {
+            $tagMcVersion = str($asset['name'])->after('+MC-')->before('.jar');
             $response['supportedMcVersion'] = $tagMcVersion;
         }
 
@@ -252,7 +256,7 @@ class VersionController extends Controller
     {
         if (!in_array($stream, [
             're', 'latest', 'ce', // legacy versioning
-            'pre-alpha', 'alpha', 'beta', 'rc', 'release' // semver versioning
+            'pre-alpha', 'alpha', 'beta', 'rc', 'release', // semver versioning
         ])) {
             throw new \InvalidArgumentException('Invalid stream');
         }
@@ -274,8 +278,15 @@ class VersionController extends Controller
         // filter then return in semver order
         return $cache->filter(function ($release) use ($mcVersion, $stream) {
             // filter out releases that don't match the mcVersion
-            if ($mcVersion && !str($release['tag_name'])->upper()->contains('+MC-' . $mcVersion)) {
-                return false;
+            // the +MC- prefix is used to indicate that the release is for a specific mcVersion
+            // this prefix is found in the assets name
+            if ($mcVersion) {
+                $assets = collect($release['assets'])->filter(function ($asset) use ($mcVersion) {
+                    return str_contains($asset['name'], '+MC-') && str_contains($asset['name'], $mcVersion);
+                });
+                if ($assets->isEmpty()) {
+                    return false;
+                }
             }
             return $release['draft'] === false && match ($stream) {
                 'release', 're', 'latest' => $release['prerelease'] === false,
