@@ -291,7 +291,7 @@ class VersionController extends Controller
             return $release['draft'] === false && match ($stream) {
                 'release', 're', 'latest' => $release['prerelease'] === false,
                 'pre-alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'pre-alpha'),
-                'alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'alpha'),
+                'alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'alpha') && !str_contains($release['tag_name'], 'pre-alpha'),
                 'beta' => $release['prerelease'] === true && str_contains($release['tag_name'], 'beta'),
                 'rc' => $release['prerelease'] === true && str_contains($release['tag_name'], 'rc'),
                 default => true,
