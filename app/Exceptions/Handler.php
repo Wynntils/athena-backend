@@ -171,6 +171,13 @@ class Handler extends ExceptionHandler
             ], 500);
         }
 
+        if ($exception instanceof \InvalidArgumentException) {
+            return response()->json([
+                'message' => 'Invalid argument provided.',
+                'error' => $exception->getMessage()
+            ], 400);
+        }
+
         return parent::render($request, $exception);
     }
 }
