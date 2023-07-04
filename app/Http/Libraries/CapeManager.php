@@ -13,16 +13,16 @@ use Intervention\Image\Image;
 
 class CapeManager
 {
+    // TODO: If special cape doesn't exist, fallback on the users cape, also a setting to toggle this on the website.
     // array for special occasions on specific dates
     private array $specialCapes = [
-        '01-01' => 'newYears',
-        // TODO: New April fools cape (Having 2000 animated capes lags clients)
+        //'01-01' => 'newYears',
         //'04-01' => 'aprilFools',
-        '07-04' => 'independenceDay',
+        //'07-04' => 'independenceDay',
         '10-31' => 'halloween',
-        '12-24' => 'christmasEve',
+        //'12-24' => 'christmasEve',
         '12-25' => 'christmas',
-        '12-31' => 'newYearsEve',
+        //'12-31' => 'newYearsEve',
     ];
 
     use Singleton;
