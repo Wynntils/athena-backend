@@ -7,8 +7,12 @@ use Illuminate\Http\Request;
 class GuildController extends Controller {
 
 
-    public function list() {
-        return Guild::all()->toArray();
+    public function list($filter) {
+        if($filter === "all") {
+            return Guild::all()->toArray();
+        } else {
+            return Guild::where('color', '!=', '')->get()->toArray();
+        }
     }
     public function setColor(Request $request)
     {
