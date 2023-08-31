@@ -29,7 +29,7 @@ class TerritoryList implements CacheContract
                 $territory['territory'] = $item['territory'];
                 $territory['guild'] = $item['guild'];
                 $territory['guildPrefix'] = $item['guildPrefix'];
-                $territory['guildColor'] = empty($guild->color) ? "" : $guild->color;
+                $territory['guildColor'] = empty($guild->color) ? self::generateColorAndUpdate($guild) : $guild->color;
                 $territory['acquired'] = $item['acquired'];
                 $territory['attacker'] = ""; // not used
                 $territory['level'] = 1; // not used
@@ -46,5 +46,26 @@ class TerritoryList implements CacheContract
                 return $territory;
             })->toArray()
         ];
+    }
+
+    private static function generateColorAndUpdate(Guild $guild): string
+    {
+        $crc32Value = crc32(time());
+        $random = random_int(1, $crc32Value);
+        $minS = 0.5;
+        $minV = 0.75;
+
+        $rgbaColor = hsvToRgb(
+            $random / mt_getrandmax(),
+            $minS + (1 - $minS) * ($random / mt_getrandmax()),
+            $minV + (1 - $minV) * ($random / mt_getrandmax()),
+            1
+        );
+
+        $hex = rgbFloatsToHex($rgbaColor);
+
+        $guild->update(['color' => $hex]);
+
+        return $hex;
     }
 }
