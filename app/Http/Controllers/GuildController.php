@@ -15,7 +15,7 @@ class GuildController extends Controller {
 
         if($filter === "") {
             return Guild::all()->filter(function($guild) {
-                return $guild->color !== null;
+                return $guild->color !== null && $guild->color !== '';
             })->toArray();
         }
     }
