@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 use App\Models\Guild;
+use http\Env\Response;
 use Illuminate\Http\Request;
 
 class GuildController extends Controller {
 
 
-    public function list($filter) {
+    public function list($filter = "") {
         if($filter === "all") {
             return Guild::all()->toArray();
         }
 
-        return Guild::where('color', '!=', '')->get()->toArray();
+        if($filter === "") {
+            return Guild::where('color', '!=', '')->get()->toArray();
+        }
     }
     public function setColor(Request $request)
     {
