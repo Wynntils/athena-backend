@@ -15,6 +15,8 @@ class CacheManager
         'mapLocations' => \App\Http\Libraries\Requests\Cache\MapLocations::class,
         'serverList' => \App\Http\Libraries\Requests\Cache\ServerList::class,
         'territoryList' => \App\Http\Libraries\Requests\Cache\TerritoryList::class,
+        'guildList' => \App\Http\Libraries\Requests\Cache\GuildList::class, // All guilds
+        'guildListWithColors' => \App\Http\Libraries\Requests\Cache\GuildListWithColors::class, // Only guilds with color set
     ];
 
     public static function generateCache($cacheName) {

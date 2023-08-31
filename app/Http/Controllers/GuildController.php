@@ -6,19 +6,6 @@ use http\Env\Response;
 use Illuminate\Http\Request;
 
 class GuildController extends Controller {
-
-
-    public function list($filter = "") {
-        if($filter === "all") {
-            return Guild::all()->toArray();
-        }
-
-        if($filter === "") {
-            return Guild::all()->filter(function($guild) {
-                return $guild->color !== null && $guild->color !== '';
-            })->toArray();
-        }
-    }
     public function setColor(Request $request)
     {
         $guild = Guild::findOrFail($request->validated('guild'));
