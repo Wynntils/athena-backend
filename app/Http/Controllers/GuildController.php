@@ -10,9 +10,9 @@ class GuildController extends Controller {
     public function list($filter) {
         if($filter === "all") {
             return Guild::all()->toArray();
-        } else {
-            return Guild::where('color', '!=', '')->get()->toArray();
         }
+
+        return Guild::where('color', '!=', '')->get()->toArray();
     }
     public function setColor(Request $request)
     {
