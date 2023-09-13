@@ -60,6 +60,10 @@ class VersionController extends Controller
             $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
         }
 
+        if (!$asset) {
+            return response()->json(['error' => 'No release found for this stream'], 404);
+        }
+
         $latestTag = str($latest['tag_name']);
 
         $response = [
