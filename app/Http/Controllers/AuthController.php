@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountType;
+use App\Events\LoginEvent;
+use App\Events\SignUpEvent;
 use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Http\Requests\AuthRequest;
@@ -40,7 +42,20 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 
-        $user = User::firstOrCreate(['_id' => Uuid::fromString($profile['id'])->toString()], ['accountType' => AccountType::NORMAL]);
+        $user = User::where('_id', Uuid::fromString($profile['id'])->toString())->first();
+
+        if ($user === null) {
+            $user = User::create([
+                '_id' => Uuid::fromString($profile['id'])->toString(),
+                'accountType' => AccountType::NORMAL
+            ]);
+
+            // Fire SignUp Event
+            SignUpEvent::dispatch($user, 'Minecraft');
+        } else {
+            // Fire Login Event
+            LoginEvent::dispatch($user, 'Minecraft');
+        }
 
         $user->updateAccount($profile['name'], $request->validated('version'));
 

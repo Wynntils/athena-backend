@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\LoginEvent;
+use App\Events\SignUpEvent;
 use App\Listeners\ConnectionFailedListener;
+use App\Listeners\LoginEventListener;
+use App\Listeners\SignUpEventListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use SocialiteProviders\Discord\DiscordExtendSocialite;
@@ -24,6 +28,12 @@ class EventServiceProvider extends ServiceProvider
             // add your listeners (aka providers) here
             MinecraftExtendSocialite::class,
             DiscordExtendSocialite::class,
+        ],
+        LoginEvent::class => [
+            LoginEventListener::class,
+        ],
+        SignUpEvent::class => [
+            SignUpEventListener::class,
         ],
     ];
 
