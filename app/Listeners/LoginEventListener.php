@@ -3,6 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\LoginEvent;
+use Br33f\Ga4\MeasurementProtocol\Dto\Common\UserProperties;
+use Br33f\Ga4\MeasurementProtocol\Dto\Common\UserProperty;
 use Br33f\Ga4\MeasurementProtocol\Dto\Event\LoginEvent as GALoginEvent;
 use Br33f\Ga4\MeasurementProtocol\Dto\Request\BaseRequest;
 use Br33f\Ga4\MeasurementProtocol\Service;
@@ -18,6 +20,10 @@ class LoginEventListener
         // Create base request
         $baseRequest = new BaseRequest();
         $baseRequest->setClientId($event->user->id);
+        $baseRequest->setUserId($event->user->id);
+        $baseRequest->setUserProperties(new UserProperties([
+            new UserProperty('version', $event->user->latestVersion),
+        ]));
 
         // Create event
         $loginEvent = new GALoginEvent();
