@@ -15,7 +15,7 @@ class IngredientList implements CacheContract
 
     public function generate(): array
     {
-        $wynnIngredients = Http::wynn()->get(config('athena.api.wynn.ingredients'))->collect('data');
+        $wynnIngredients = Http::wynn()->get(config('athena.api.wynn.v2.ingredients'))->collect('data');
         if ($wynnIngredients === null) {
             throw new \Exception('Failed to fetch ingredients from Wynn API');
         }
