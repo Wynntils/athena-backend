@@ -32,14 +32,9 @@ return [
     'api' => [
         'wynn' => [
             'apiKey' => env('WYNN_APIKEY'),
-            'territories' => 'https://api.wynncraft.com/public_api.php?action=territoryList',
-            'mapLocations' => 'https://api.wynncraft.com/public_api.php?action=mapLocations',
-            'guildInfo' => 'https://api.wynncraft.com/public_api.php?action=guildStats&command=',
-            'onlinePlayers' => 'https://api.wynncraft.com/public_api.php?action=onlinePlayers',
 
             'mapLabels' => 'https://raw.githubusercontent.com/Wynntils/Data-Storage/master/map-labels.json',
             'npcLocations' => 'https://raw.githubusercontent.com/Wynntils/Data-Storage/master/npc-locations.json',
-            'items' => 'https://api.wynncraft.com/public_api.php?action=itemDB&category=all',
             'builderIds' => 'https://wynnbuilder.github.io/compress.json',
 
             'v2' => [
