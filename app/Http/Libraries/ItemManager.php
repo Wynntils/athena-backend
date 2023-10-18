@@ -39,45 +39,60 @@ class ItemManager
         $result['displayName'] = $input->get('displayName', str_replace('֎', '', $input['name']));
         $result['tier'] = strtoupper($input['tier']);
         $result['identified'] = $input->get('identified', false);
-        $result['powderAmount'] = $input['sockets'];
-        $result['attackSpeed'] = $input->get('attackSpeed');
+        $result['powderAmount'] = $input->get('powderSlots');
+        $result['attackSpeed'] = !empty($input->get('attackSpeed')) ? strtoupper($input->get('attackSpeed')) : null;
 
         $result['itemInfo'] = &$itemInfo;
         $itemInfo['type'] = strtoupper($input->get('type', $input->get('accessoryType')));
-        $itemInfo['set'] = $input['set'];
-        $itemInfo['dropType'] = strtoupper($input['dropType']);
+        // if tier is 'set' then get the set name from the item name
+        $itemInfo['set'] = $input->get('tier') === 'set' ? explode(' ', $input['name'])[0] : null;
+        $itemInfo['dropType'] = strtoupper($input->get('dropRestriction'));
         $itemInfo['armorColor'] = $input->get('armorColor') === '160,101,64' ? null : $input->get('armorColor');
 
         $result['requirements'] = &$requirements;
-        $requirements['quest'] = $input->get('quest');
-        $requirements['classType'] = !empty($input->get('classRequirement')) ? strtoupper($input->get('classRequirement')) : null;
-        $requirements['level'] = $input->get('level');
-        $requirements['strength'] = $input->get('strength');
-        $requirements['dexterity'] = $input->get('dexterity');
-        $requirements['intelligence'] = $input->get('intelligence');
-        $requirements['defense'] = $input->get('defense');
-        $requirements['agility'] = $input->get('agility');
+        $itemReqs = collect($input->get('requirements'));
+        $requirements['quest'] = $itemReqs->get('quest');
+        $requirements['classType'] = !empty($itemReqs->get('classRequirement')) ? strtoupper($itemReqs->get('classRequirement')) : null;
+        $requirements['level'] = $itemReqs->get('level', 0);
+        $requirements['strength'] = $itemReqs->get('strength', 0);
+        $requirements['dexterity'] = $itemReqs->get('dexterity', 0);
+        $requirements['intelligence'] = $itemReqs->get('intelligence', 0);
+        $requirements['defense'] = $itemReqs->get('defense', 0);
+        $requirements['agility'] = $itemReqs->get('agility', 0);
 
         $result['damageTypes'] = &$damageTypes;
-        $damageTypes['neutral'] = ignoreZero($input->get('damage'));
-        $damageTypes['earth'] = ignoreZero($input->get('earthDamage'));
-        $damageTypes['thunder'] = ignoreZero($input->get('thunderDamage'));
-        $damageTypes['water'] = ignoreZero($input->get('waterDamage'));
-        $damageTypes['fire'] = ignoreZero($input->get('fireDamage'));
-        $damageTypes['air'] = ignoreZero($input->get('airDamage'));
+        $itemIds = collect($input->get('base'));
+        $damageTypes['neutral'] = ignoreZero($itemIds->get('damage'));
+        $damageTypes['earth'] = ignoreZero($itemIds->get('earthDamage'));
+        $damageTypes['thunder'] = ignoreZero($itemIds->get('thunderDamage'));
+        $damageTypes['water'] = ignoreZero($itemIds->get('waterDamage'));
+        $damageTypes['fire'] = ignoreZero($itemIds->get('fireDamage'));
+        $damageTypes['air'] = ignoreZero($itemIds->get('airDamage'));
 
         $result['defenseTypes'] = &$defenseTypes;
-        $defenseTypes['health'] = ignoreZero($input->get('health'));
-        $defenseTypes['earth'] = ignoreZero($input->get('earthDefense'));
-        $defenseTypes['thunder'] = ignoreZero($input->get('thunderDefense'));
-        $defenseTypes['water'] = ignoreZero($input->get('waterDefense'));
-        $defenseTypes['fire'] = ignoreZero($input->get('fireDefense'));
-        $defenseTypes['air'] = ignoreZero($input->get('airDefense'));
+        $defenseTypes['health'] = ignoreZero($itemIds->get('health'));
+        $defenseTypes['earth'] = ignoreZero($itemIds->get('earthDefence'));
+        $defenseTypes['thunder'] = ignoreZero($itemIds->get('thunderDefence'));
+        $defenseTypes['water'] = ignoreZero($itemIds->get('waterDefence'));
+        $defenseTypes['fire'] = ignoreZero($itemIds->get('fireDefence'));
+        $defenseTypes['air'] = ignoreZero($itemIds->get('airDefence'));
 
         $result['statuses'] = &$statuses;
 
+        $itemIdentifications = collect($input->get('identifications'));
+        foreach($itemIdentifications as $key => $value) {
+            $translatedName = self::translateStatusName($key);
+            if ($translatedName === null) {
+                $translatedName = $key; // v3 fix
+            }
+            $status = &$statuses[$translatedName];
+            $status['type'] = getStatusType($translatedName);
+            $status['isFixed'] = $isFixed($translatedName);
+            $status['baseValue'] = rangeToAverage($value);
+        }
+
         $result['majorIds'] = $input->get('majorIds');
-        $result['restriction'] = $input->get('restrictions');
+        $result['restriction'] = !empty($input->get('restrictions')) ? ucfirst($input->get('restrictions')) : null;
         $result['lore'] = $input->get('addedLore');
 
         foreach ($item as $key => $value) {
@@ -87,23 +102,9 @@ class ItemManager
                 continue;
             }
 
-            if ($key === 'material' && $value !== null) {
+            if ($key === 'material' && $value !== null && !is_array($value)) {
                 $itemInfo['material'] = $value;
-                continue;
             }
-
-            if (!is_numeric($value) || $value === 0) {
-                continue;
-            }
-
-            $translatedName = self::translateStatusName($key);
-            if ($translatedName === null) {
-                continue;
-            }
-            $status = &$statuses[$translatedName];
-            $status['type'] = getStatusType($translatedName);
-            $status['isFixed'] = $isFixed($translatedName);
-            $status['baseValue'] = $value;
         }
 
         // Enhance with new material IDs for Artemis
@@ -480,6 +481,10 @@ class ItemManager
     }
 
     public static function enhanceWithNewMaterial($material, &$itemInfo) {
+        if (is_array($material)) {
+            // Weird bug in v3 API
+            return;
+        }
         try {
             $newMaterial = self::instance()->convertMaterial($material);
             $itemInfo['name'] = $newMaterial['name'];

@@ -35,6 +35,9 @@ class CacheManager
         try {
             $data = $cache->generate();
         } catch (\Exception $e) {
+            if (app()->environment('local')) {
+                throw $e;
+            }
             \Log::error($e->getMessage());
             // If the cache fails to generate, we want to return the old cache
             return array_merge(Cache::get($cacheName.'.backup', []), ['message' => 'Failed to generate cache. Returning old cache.']);
