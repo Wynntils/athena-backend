@@ -16,7 +16,8 @@ class ServerList implements CacheContract
 
     public function generate(): array
     {
-        $wynnOnlinePlayers = Http::wynn()->get(config('athena.api.wynn.onlinePlayers'))->collect()->forget('request');
+        $wynnOnlinePlayers = Http::wynn()->get(config('athena.api.wynn.v3.onlinePlayers'))
+            ->collect('players');
         if ($wynnOnlinePlayers === null) {
             throw new \Exception('Failed to fetch online players from Wynn API');
         }
@@ -25,8 +26,8 @@ class ServerList implements CacheContract
 
         // generating server data
         $validServers = [];
-        foreach ($wynnOnlinePlayers as $key => $onlinePlayer) {
-            $server = [];
+        foreach ($wynnOnlinePlayers as $onlinePlayer => $key) {
+            $server = $result['servers'][$key] ?? [];
 
             $validServers[] = $key;
 
@@ -35,7 +36,7 @@ class ServerList implements CacheContract
                 ['firstSeen' => currentTimeMillis()]
             )->firstSeen;
 
-            $server['players'] = $onlinePlayer;
+            $server['players'][] = $onlinePlayer;
 
             $result['servers'][$key] = $server;
         }

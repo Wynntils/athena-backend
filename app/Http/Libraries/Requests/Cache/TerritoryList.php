@@ -16,34 +16,35 @@ class TerritoryList implements CacheContract
 
     public function generate(): array
     {
-        $wynnTerritories = Http::wynn()->get(config('athena.api.wynn.territories'))->collect('territories');
+        $wynnTerritories = Http::wynn()->get(config('athena.api.wynn.v3.territories'))->collect();
         if ($wynnTerritories === null) {
             throw new \Exception('Failed to fetch territories from Wynn API');
         }
 
         return [
-            'territories' => $wynnTerritories->map(static function ($item) {
+            'territories' => $wynnTerritories->mapWithKeys(static function ($item, $key) {
+                $item['territory'] = $key; // v3 api
                 $guild = Guild::gather($item);
 
                 $territory = [];
                 $territory['territory'] = $item['territory'];
-                $territory['guild'] = $item['guild'];
-                $territory['guildPrefix'] = $item['guildPrefix'];
+                $territory['guild'] = $item['guild']['name'];
+                $territory['guildPrefix'] = $item['guild']['prefix'];
                 $territory['guildColor'] = empty($guild->color) ? self::generateColorAndUpdate($guild) : $guild->color;
                 $territory['acquired'] = $item['acquired'];
-                $territory['attacker'] = ""; // not used
-                $territory['level'] = 1; // not used
+                $territory['attacker'] = ""; // TODO: REMOVE
+                $territory['level'] = 1; // TODO: REMOVE
 
                 if (array_key_exists('location', $item)) {
                     $location = [];
-                    $location['startX'] = $item['location']['startX'];
-                    $location['startZ'] = $item['location']['startY'];
-                    $location['endX'] = $item['location']['endX'];
-                    $location['endZ'] = $item['location']['endY'];
+                    $location['startX'] = $item['location']['start'][0];
+                    $location['startZ'] = $item['location']['start'][1];
+                    $location['endX'] = $item['location']['end'][0];
+                    $location['endZ'] = $item['location']['end'][1];
                     $territory['location'] = $location;
                 }
 
-                return $territory;
+                return [$key => $territory];
             })->toArray()
         ];
     }

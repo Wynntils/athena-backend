@@ -45,7 +45,7 @@ class Leaderboard implements CacheContract
         return Http::wynn()->pool(static function (Pool $pool) {
             $requests = [];
             foreach (ProfessionType::cases() as $profession) {
-                $requests[] = $pool->as($profession->name)->get(config('athena.api.wynn.leaderboards').$profession->leaderboard());
+                $requests[] = $pool->as($profession->name)->get(config('athena.api.wynn.v2.leaderboards').$profession->leaderboard());
             }
             return $requests;
         });

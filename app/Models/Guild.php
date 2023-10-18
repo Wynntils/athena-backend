@@ -30,8 +30,8 @@ class Guild extends Model
         }
 
         return Guild::updateOrCreate(
-            ['_id' => $guild['guild']],
-            ['prefix' => $guild['guildPrefix']]
+            ['_id' => $guild['guild']['name']],
+            ['prefix' => $guild['guild']['prefix']]
         );
     }
 

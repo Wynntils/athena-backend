@@ -18,8 +18,9 @@ class ItemList implements CacheContract
 
     public function generate(): array
     {
+        /** @var \Illuminate\Http\Client\Response[] $responses */
         $responses = Http::wynn()->pool(fn (Pool $pool) => [
-            $pool->as('wynnItems')->get(config('athena.api.wynn.items')),
+            $pool->as('wynnItems')->get(config('athena.api.wynn.v3.items')),
             $pool->as('wynnBuilderIDs')->get(config('athena.api.wynn.builderIds'))
         ]);
 
@@ -28,14 +29,16 @@ class ItemList implements CacheContract
             throw new \Exception('Failed to fetch items from Wynn API');
         }
 
-        $wynnItems = $responses['wynnItems']->collect('items');
+        $wynnItems = $responses['wynnItems']->json();
         if ($wynnItems === null) {
             throw new \Exception('Failed to fetch items from Wynn API');
         }
 
         $result = $items = $materialTypes = $translatedReferences = [];
 
-        foreach ($wynnItems as $item) {
+        foreach ($wynnItems as $itemName => $item) {
+            // Quick fix for v3 api
+            $item['name'] = $itemName;
             $converted = ItemManager::convertItem($item);
             if ($converted->itemInfo !== null) {
                 $itemInfo = $converted->itemInfo;

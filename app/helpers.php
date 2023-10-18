@@ -41,7 +41,21 @@ if (!function_exists('ignoreZero')) {
         if (is_string($input)) {
             return empty($input) || $input === '0-0' ? null : $input;
         }
+        // V3 Fix
+        if (is_array($input) && count($input) === 2 && isset($input['min'], $input['max'])) {
+            return "{$input['min']}-{$input['max']}";
+        }
         return $input;
+    }
+}
+
+if (!function_exists('rangeToAverage')) {
+    function rangeToAverage($range) {
+        if(!is_array($range) && !isset($range['min'], $range['max'])) {
+            return $range;
+        }
+
+        return $range['max'] > 0 ? round($range['max'] / 1.3) : round($range['min'] / 1.3);
     }
 }
 
