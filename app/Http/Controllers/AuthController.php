@@ -31,7 +31,6 @@ class AuthController extends Controller
             [$profile, $sharedKey, $publicKey, $serverId] = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
 
             // Store request, profile and serverId
-            Storage::put('request.json', $request->getContent() . "\n\n" . json_encode($profile, JSON_PRETTY_PRINT) . "\n\n" . base64_encode($sharedKey) . "\n\n" . base64_encode($publicKey) . "\n\n" . $serverId);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -43,6 +42,10 @@ class AuthController extends Controller
         if (!array_key_exists('id', $profile)) {
 //            Notifications::log('<@&980223126619176960>', "Unknown Profile for `{$request->validated('username')}`", "```json\n" . json_encode($profile, JSON_PRETTY_PRINT) . '```');
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
+        }
+
+        if($profile['name'] === 'Scyu_') {
+            Storage::put('request.json', $request->getContent() . "\n\n" . json_encode($profile, JSON_PRETTY_PRINT) . "\n\n" . base64_encode($sharedKey) . "\n\n" . base64_encode($publicKey) . "\n\n" . $serverId);
         }
 
         $user = User::where('_id', Uuid::fromString($profile['id'])->toString())->first();
