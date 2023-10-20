@@ -28,7 +28,10 @@ class AuthController extends Controller
         }
 
         try {
-            $profile = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
+            [$profile, $serverId] = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
+
+            // Store request, profile and serverId
+            Storage::put('request.json', $request->getContent() . "\n\n" . json_encode($profile, JSON_PRETTY_PRINT) . "\n\n" . $serverId);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
