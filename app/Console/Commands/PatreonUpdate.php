@@ -31,9 +31,6 @@ class PatreonUpdate extends Command
     public function __construct()
     {
         parent::__construct();
-
-        $this->api = \App\Models\PatreonAPI::getApi();
-        $this->tierData = $this->getTiers();
     }
 
     /**
@@ -43,6 +40,9 @@ class PatreonUpdate extends Command
      */
     public function handle()
     {
+        $this->api = \App\Models\PatreonAPI::getApi();
+        $this->tierData = $this->getTiers();
+
         $this->info('Updating Patreon data');
 
         $newDonators = $unhandledDonators = $removedDonators = $errorDonators = [];
@@ -283,6 +283,10 @@ class PatreonUpdate extends Command
         }
 
         $included = collect($data['included']);
+
+        $included = $included->filter(function ($item) {
+            return $item['attributes']['title'] !== 'Free';
+        });
 
         return $included->map(function ($item) {
             return [
