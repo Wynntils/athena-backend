@@ -210,6 +210,9 @@ class VersionController extends Controller
                     }
                 } else {
                     $line = $line->value();
+                    if(empty($header)){
+                        continue;
+                    }
                     // check if value is already in array
                     if (!in_array($line, $changelog[$header])) {
                         $changelog[$header][] = $line;
