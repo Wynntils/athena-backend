@@ -11,24 +11,47 @@ class VersionController extends Controller
     {
     }
 
+    private function userAgentDetails(Request $request) {
+        // Legacy User Agent: Wynntils\\1.15.1-10 (client)
+        // Semver User Agent: Wynntils Artemis\\v0.0.4-beta.71+MC-1.20.2 (client) FABRIC
+        // DEV User Agent: Wynntils Artemis\\v0.0.4-SNAPSHOT+MC-1.20.2 (dev) FABRIC
+        $userAgent = str($request->userAgent())->lower();
+
+        $isLegacy = $userAgent->startsWith('wynntils\\');
+        $client = $isLegacy ? 'Wynntils' : 'Artemis';
+        $dev = $userAgent->contains('dev');
+        $modloader = $mcVersion = null;
+
+        // Artemis only
+        if (!$isLegacy) {
+            $modloader = $userAgent->afterLast(' ');
+            if ($userAgent->contains('+')) {
+                $mcVersion = $userAgent->upper()->after('+MC-')->before(' ');
+            }
+        }
+
+        return [
+            'isLegacy' => $isLegacy,
+            'client' => $client,
+            'dev' => $dev,
+            'modloader' => $modloader,
+            'mcVersion' => $mcVersion,
+        ];
+    }
+
     public function latest(Request $request, $stream)
     {
         if (str_starts_with($stream, 'v')) {
             $stream = str_replace('v', '', $stream);
         }
 
-        $userAgent = str($request->userAgent())->lower();
-        $isArtemis = $userAgent->contains('artemis');
-        $client = $isArtemis ? 'Artemis' : 'Wynntils';
-        // Useragent example: Wynntils Artemis\0.0.3-pre-alpha.103+MC-1.19.4 (client) FABRIC
-        // Get the modloder from the useragent
-        // The modloader is the last word in the useragent
-        if ($isArtemis) {
-            $modloader = $userAgent->afterLast(' ');
-            if ($userAgent->contains('+')) {
-                $mcVersion = $userAgent->upper()->after('+MC-')->before(' ');
-            }
-        }
+        [
+            'isLegacy' => $isLegacy,
+            'client' => $client,
+            'dev' => $dev,
+            'modloader' => $modloader,
+            'mcVersion' => $mcVersion
+        ] = $this->userAgentDetails($request);
 
         $releases = $this->getReleases($client, $stream, 1, $mcVersion ?? null);
 
@@ -52,12 +75,12 @@ class VersionController extends Controller
         }
 
         // We need to filter the asset list to only the current modloader if we're using Artemis
-        if ($isArtemis) {
+        if ($isLegacy) {
+            $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
+        } else {
             $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
                 return str($asset['name'])->contains($modloader);
             });
-        } else {
-            $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
         }
 
         if (!$asset) {
@@ -74,7 +97,7 @@ class VersionController extends Controller
         ];
 
 
-        if ($isArtemis && str($asset['name'])->contains('+MC-')) {
+        if (!$isLegacy && str($asset['name'])->contains('+MC-')) {
             $tagMcVersion = str($asset['name'])->after('+MC-')->before('.jar');
             $response['supportedMcVersion'] = $tagMcVersion;
         }
@@ -84,9 +107,7 @@ class VersionController extends Controller
 
     public function changelog(Request $request, $version)
     {
-        $userAgent = str($request->userAgent())->lower();
-        $isArtemis = $userAgent->contains('artemis');
-        $client = $isArtemis ? 'Artemis' : 'Wynntils';
+        ['client' => $client] = $this->userAgentDetails($request);
         $stream = str($version)->contains(['alpha', 'beta']) ? 'ce' : 're';
 
         $releases = $this->getReleases($client, $stream);
@@ -137,9 +158,8 @@ class VersionController extends Controller
 
     public function changelogBetween(Request $request, $fromQuery, $toQuery)
     {
-        $userAgent = str($request->userAgent())->lower();
-        $isArtemis = $userAgent->contains('artemis');
-        $client = $isArtemis ? 'Artemis' : 'Wynntils';
+        ['client' => $client] = $this->userAgentDetails($request);
+
         $stream = str($fromQuery)->contains(['alpha', 'beta']) ? 'ce' : 're';
 
         $releases = $this->getReleases($client, $stream);
