@@ -16,7 +16,7 @@ class GuildList implements CacheContract
     {
         return Guild::all()
             ->filter(function($guild) {
-                return $guild->_id !== null || $guild->prefix !== null;
+                return $guild->_id !== null && $guild->prefix !== null;
             })
             ->toArray();
     }
