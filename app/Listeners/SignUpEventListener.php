@@ -28,6 +28,7 @@ class SignUpEventListener
         // Create event
         $signUpEvent = new GASignUpEvent();
         $signUpEvent->setMethod($event->method);
+        $signUpEvent->setParamValue('engagement_time_msec', '1');
 
         // Add event to base request
         $baseRequest->addEvent($signUpEvent);

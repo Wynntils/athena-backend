@@ -19,7 +19,7 @@ class LoginEventListener
     {
         // Create base request
         $baseRequest = new BaseRequest();
-        $baseRequest->setClientId($event->user->id);
+        $baseRequest->setClientId($event->userAgent);
         $baseRequest->setUserId($event->user->id);
         $baseRequest->setUserProperties(new UserProperties([
             new UserProperty('version', $event->user->latestVersion),
@@ -28,6 +28,7 @@ class LoginEventListener
         // Create event
         $loginEvent = new GALoginEvent();
         $loginEvent->setMethod($event->method);
+        $loginEvent->setParamValue('engagement_time_msec', '1');
 
         // Add event to base request
         $baseRequest->addEvent($loginEvent);

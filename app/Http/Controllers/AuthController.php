@@ -57,10 +57,10 @@ class AuthController extends Controller
             ]);
 
             // Fire SignUp Event
-            SignUpEvent::dispatch($user, 'Minecraft');
+            SignUpEvent::dispatch($user, $request->userAgent(), 'Minecraft');
         } else {
             // Fire Login Event
-            LoginEvent::dispatch($user, 'Minecraft');
+            LoginEvent::dispatch($user, $request->userAgent(), 'Minecraft');
         }
 
         $user->updateAccount($profile['name'], $request->validated('version'));

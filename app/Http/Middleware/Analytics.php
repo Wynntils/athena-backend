@@ -18,17 +18,20 @@ class Analytics
 
     public function handle(Request $request, Closure $next)
     {
-        $clientId = $this->getClientId($request);
+        $userId = $this->getUserId($request);
 
         // Create base request
         $baseRequest = new BaseRequest();
-        $baseRequest->setClientId($clientId);
+        $baseRequest->setUserId($userId);
+        // Get the user agent
+        $baseRequest->setClientId($request->userAgent());
 
         // Create event
         $pageViewEvent = new BaseEvent('page_view');
         $pageViewEvent->setParamValue('page_title', $request->path());
         $pageViewEvent->setParamValue('page_location', $request->fullUrl());
         $pageViewEvent->setParamValue('page_path', $request->path());
+        $pageViewEvent->setParamValue('engagement_time_msec', '1');
 
         // Add event to base request
         $baseRequest->addEvent($pageViewEvent);
@@ -43,7 +46,7 @@ class Analytics
         return $next($request);
     }
 
-    private function getClientId(Request $request)
+    private function getUserId(Request $request)
     {
         $clientId = null;
         if ($request->hasHeader('authToken')) {
