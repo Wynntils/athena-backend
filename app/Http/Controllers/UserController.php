@@ -6,7 +6,10 @@ use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Auth;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -58,6 +61,32 @@ class UserController extends Controller
         ]);
     }
 
+    public function getInfoV2(UserRequest $request): \Illuminate\Http\JsonResponse
+    {
+        $user = $this->getUser($request->validated('uuid'));
+
+        $cosmetics = $request->query('cosmetics', false);
+        $cosmetics = filter_var($cosmetics, FILTER_VALIDATE_BOOLEAN);
+
+        $response = [
+            'uuid' => $user->id,
+            'username' => $user->username,
+            'accountType' => $user->accountType,
+        ];
+
+        // Conditionally add cosmetics info
+        if ($cosmetics) {
+            $response['cosmetics'] = [
+                'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
+                'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
+                'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
+                'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '')
+            ];
+        }
+
+        return response()->json(['user' => $response]);
+    }
+
     public function getInfoPost(UserRequest $request): \Illuminate\Http\JsonResponse
     {
         $user = User::findOrFail($request->validated('uuid'));
@@ -72,5 +101,18 @@ class UserController extends Controller
                 ]
             ]
         ]);
+    }
+
+    private function getUser($user) {
+        $user = Cache::remember("user-{$user}", 3600, function () use ($user) {
+            return User::where('_id', $user)->first();
+        });
+
+
+        if (!$user) {
+            abort(404, response()->json(['error' => 'User not found']));
+        }
+
+        return $user;
     }
 }
