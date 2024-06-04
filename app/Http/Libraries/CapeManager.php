@@ -83,10 +83,14 @@ class CapeManager
         return $this->special->get($this->specialCapes[Carbon::now()->format('m-d')]) ?? $this->special->get('defaultCape');
     }
 
-    public function getCapeAsBase64($capeId): ?string
+    public function getCapeAsBase64($capeId, $omitDefaultCape): ?string
     {
         if ($this->isSpecialDate()) {
             return base64_encode($this->getSpecialCape());
+        }
+
+        if($omitDefaultCape) {
+            return base64_encode($this->approved->get($capeId));
         }
 
         return base64_encode($this->approved->get($capeId) ?? $this->special->get('defaultCape'));

@@ -57,7 +57,7 @@ class UserController extends Controller
                     'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
                     'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
                     'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '')
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true)
                 ]
             ]
         ]);
@@ -78,11 +78,14 @@ class UserController extends Controller
 
         // Conditionally add cosmetics info
         if ($cosmetics) {
+
+
+            $texture = CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true);
             $response['cosmetics'] = [
                 'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
                 'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
                 'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
-                'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '')
+                'texture' => $texture
             ];
         }
 
@@ -100,7 +103,7 @@ class UserController extends Controller
                     'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
                     'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
                     'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '')
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true)
                 ]
             ]
         ]);
