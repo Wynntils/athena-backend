@@ -26,4 +26,11 @@ class UserRequest extends BaseRequest
             'uuid' => 'required|uuid',
         ];
     }
+
+    public function getInfoV2(): array
+    {
+        return [
+            'uuid' => 'required|uuid',
+        ];
+    }
 }

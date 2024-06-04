@@ -44,8 +44,10 @@ class UserController extends Controller
         return response()->json(['configs' => Auth::user()?->getConfigs()], 200);
     }
 
-    public function getInfo(User $user): \Illuminate\Http\JsonResponse
+    public function getInfo($user): \Illuminate\Http\JsonResponse
     {
+        $user = $this->getUser($user);
+
         return response()->json([
             'user' => [
                 'uuid' => $user->id,
@@ -89,7 +91,8 @@ class UserController extends Controller
 
     public function getInfoPost(UserRequest $request): \Illuminate\Http\JsonResponse
     {
-        $user = User::findOrFail($request->validated('uuid'));
+        $user = $this->getUser($request->validated('uuid'));
+
         return response()->json([
             'user' => [
                 'accountType' => $user->accountType,

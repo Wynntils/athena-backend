@@ -22,7 +22,7 @@ use OpenApi\Attributes as OA;
                 description: "Production"
             ),
             new OA\Server(
-                url: "http://127.0.0.1:8000",
+                url: "http://127.0.0.1",
                 description: "Localhost"
             ),
         ],

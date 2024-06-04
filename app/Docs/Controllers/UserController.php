@@ -54,6 +54,40 @@ use OpenApi\Attributes as OA;
             new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
         ],
     ),
+    OA\Post(
+        path: "/v2/user/getInfo",
+        operationId: "postUserInfoV2",
+        summary: "Get user info v2",
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "uuid", type: "string", example: "123e4567-e89b-12d3-a456-426655440000"),
+                ]
+            )
+        ),
+        tags: ["User"],
+        parameters: [
+            new OA\Parameter(
+                name: "cosmetics",
+                in: "query",
+                required: false,
+                schema: new OA\Schema(type: "string"),
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "user", ref: "#/components/schemas/User", type: "object"),
+                    ]
+                )
+            ),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_UNAUTHORIZED, response: 401),
+            new OA\Response(ref: OpenAPI::REF_RESPONSE_SERVER_ERROR, response: 500)
+        ],
+    ),
     OA\Get(
         path: "/user/getInfo/{user}",
         operationId: "getUserInfo",

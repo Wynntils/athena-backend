@@ -30,9 +30,18 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('api')->group(function () {
-                foreach (glob(base_path('routes/api/*.php')) as $file) {
+                $pattern = base_path('routes/api/*.php');
+                $subPattern = base_path('routes/api/**/*.php');
+
+                $files = array_merge(glob($pattern), glob($subPattern));
+
+                foreach ($files as $file) {
+                    // Extract the relative path after "api/"
+                    $relativePath = str_replace(base_path('routes/api/'), '', $file);
+                    // Remove the ".php" extension to use as route prefix
+                    $routePrefix = str_replace('.php', '', $relativePath);
                     // prefix based on file name
-                    Route::prefix(basename($file, '.php'))
+                    Route::prefix($routePrefix)
                         ->name(basename($file, '.php') . '.')
                         ->group($file);
                 }

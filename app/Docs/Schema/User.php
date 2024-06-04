@@ -2,7 +2,8 @@
 
 namespace App\Docs\Schema;
 
-use App\Http\Enums\AccountType;
+
+use App\Enums\AccountType;
 use OpenApi\Attributes as OA;
 
 #[
