@@ -12,4 +12,8 @@ Route::controller(UserController::class)->group(static function () {
     Route::get('getInfo/{user}', 'getInfo')->name('getInfo');
 
     Route::post('getInfo', 'getInfoPost')->name('getInfoLegacy');
+
 });
+
+// v2 routes
+

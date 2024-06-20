@@ -15,7 +15,7 @@
             "description": "Production"
         },
         {
-            "url": "http://127.0.0.1:8000",
+            "url": "http://127.0.0.1",
             "description": "Localhost"
         }
     ],
@@ -587,89 +587,6 @@
                 }
             }
         },
-        "/capes/queue/approve/{capeToken}/{capeID}/{type}": {
-            "get": {
-                "tags": [
-                    "Cape"
-                ],
-                "summary": "Approve Cape",
-                "operationId": "approveCape",
-                "parameters": [
-                    {
-                        "name": "capeToken",
-                        "in": "path",
-                        "description": "The cape token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "capeID",
-                        "in": "path",
-                        "description": "The cape ID",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "type",
-                        "in": "path",
-                        "description": "The type of cape",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "cape",
-                                "elytra",
-                                "full"
-                            ]
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Successfully approved the cape."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "The provided cape was not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "There's not a cape with the provided SHA-1"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Unauthorized"
-                    },
-                    "500": {
-                        "$ref": "#/components/responses/ServerError"
-                    }
-                }
-            }
-        },
         "/capes/queue/get/{capeID}": {
             "get": {
                 "tags": [
@@ -859,131 +776,6 @@
                 }
             }
         },
-        "/telemetry/sendGatheringSpot": {
-            "post": {
-                "tags": [
-                    "Telemetry"
-                ],
-                "summary": "Send a gathering spot",
-                "operationId": "sendGatheringSpot",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "spot"
-                                ],
-                                "properties": {
-                                    "spot": {
-                                        "properties": {
-                                            "type": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "WOODCUTTING",
-                                                    "MINING",
-                                                    "FARMING",
-                                                    "FISHING"
-                                                ]
-                                            },
-                                            "material": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "OAK",
-                                                    "BIRCH",
-                                                    "WILLOW",
-                                                    "ACACIA",
-                                                    "SPRUCE",
-                                                    "JUNGLE",
-                                                    "DARK",
-                                                    "LIGHT",
-                                                    "PINE",
-                                                    "AVO",
-                                                    "SKY",
-                                                    "COPPER",
-                                                    "GRANITE",
-                                                    "GOLD",
-                                                    "SANDSTONE",
-                                                    "IRON",
-                                                    "SILVER",
-                                                    "COBALT",
-                                                    "KANDERSTONE",
-                                                    "DIAMOND",
-                                                    "MOLTEN",
-                                                    "VOIDSTONE",
-                                                    "WHEAT",
-                                                    "BARLEY",
-                                                    "OATS",
-                                                    "MALT",
-                                                    "HOPS",
-                                                    "RYE",
-                                                    "MILLET",
-                                                    "DECAY_ROOTS",
-                                                    "RICE",
-                                                    "SORGHUM",
-                                                    "HEMP",
-                                                    "GUDGEON",
-                                                    "TROUT",
-                                                    "SALMON",
-                                                    "CARP",
-                                                    "ICEFISH",
-                                                    "PIRANHA",
-                                                    "KOI",
-                                                    "GYLIA_FISH",
-                                                    "BASS",
-                                                    "MOLTEN_EEL",
-                                                    "STARFISH",
-                                                    "DERNIC"
-                                                ]
-                                            },
-                                            "x": {
-                                                "type": "integer"
-                                            },
-                                            "y": {
-                                                "type": "integer"
-                                            },
-                                            "z": {
-                                                "type": "integer"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Gathering spot saved"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/BadRequest"
-                    },
-                    "500": {
-                        "$ref": "#/components/responses/ServerError"
-                    }
-                },
-                "security": [
-                    {
-                        "AuthToken": []
-                    }
-                ]
-            }
-        },
         "/user/getConfigs": {
             "get": {
                 "tags": [
@@ -1031,6 +823,21 @@
                 ],
                 "summary": "Get user info",
                 "operationId": "postUserInfo",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "uuid": {
+                                        "type": "string",
+                                        "example": "123e4567-e89b-12d3-a456-426655440000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -1053,8 +860,64 @@
                     "500": {
                         "$ref": "#/components/responses/ServerError"
                     }
+                }
+            }
+        },
+        "/v2/user/getInfo": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user info v2",
+                "operationId": "postUserInfoV2",
+                "parameters": [
+                    {
+                        "name": "cosmetics",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "uuid": {
+                                        "type": "string",
+                                        "example": "123e4567-e89b-12d3-a456-426655440000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
                 },
-                "deprecated": true
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
             }
         },
         "/user/getInfo/{user}": {
@@ -1899,9 +1762,6 @@
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "rawHealth": {
-                        "$ref": "#/components/schemas/ItemStatus"
-                    },
-                    "health": {
                         "$ref": "#/components/schemas/ItemStatus"
                     },
                     "rawHealthRegen": {
