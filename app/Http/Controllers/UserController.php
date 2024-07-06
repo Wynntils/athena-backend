@@ -116,7 +116,7 @@ class UserController extends Controller
 
 
         if (!$user) {
-            abort(404, response()->json(['error' => 'User not found']));
+            response()->json(['error' => 'User not found'], 404)->throwResponse();
         }
 
         return $user;
