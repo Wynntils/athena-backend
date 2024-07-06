@@ -34,7 +34,7 @@ class BlockUserAgents
 
         foreach($this->blockedUserAgents as $blockedUserAgent) {
             if(stripos($userAgent, $blockedUserAgent) !== false) {
-                return response('This user agent is blocked', 403);
+                response()->json(['error' => 'This user-agent is blocked'], 403)->throwResponse();
             }
         }
 
