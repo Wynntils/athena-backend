@@ -20,6 +20,13 @@ class Analytics
     {
         $userId = $this->getUserId($request);
 
+        \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
+            $user = $this->getUser($request);
+            if ($user) {
+                $scope->setUser(['id' => $user->id, 'username' => $user->username]);
+            }
+        });
+
         // Create base request
         $baseRequest = new BaseRequest();
         $baseRequest->setUserId($userId);
@@ -49,12 +56,21 @@ class Analytics
     private function getUserId(Request $request)
     {
         $clientId = null;
-        if ($request->hasHeader('authToken')) {
-            $authToken = $request->header('authToken');
-            $user = \App\Models\User::where('authToken', $authToken)->first();
-            $clientId = $user?->id;
+        $user = $this->getUser($request);
+        if ($user) {
+            $clientId = $user->id;
         }
 
         return $clientId ?? $request->route('apiKey') ?? 'unknown';
+    }
+
+    private function getUser(Request $request) {
+        if ($request->hasHeader('authToken')) {
+            $authToken = $request->header('authToken');
+            $user = \App\Models\User::where('authToken', $authToken)->first();
+            return $user;
+        }
+
+        return null;
     }
 }

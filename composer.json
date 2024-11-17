@@ -26,6 +26,7 @@
         "patreon/patreon": "^1.0",
         "plesk/ext-laravel-integration": "^7.0",
         "ramsey/uuid": "^4.2",
+        "sentry/sentry-laravel": "^4.10",
         "socialiteproviders/discord": "^4.1",
         "socialiteproviders/minecraft": "^5.0",
         "zircote/swagger-php": "^4.2"
