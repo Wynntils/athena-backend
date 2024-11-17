@@ -19,9 +19,9 @@ class Analytics
     public function handle(Request $request, Closure $next)
     {
         $userId = $this->getUserId($request);
+        $user = $this->getUser($request);
 
-        \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
-            $user = $this->getUser($request);
+        \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($user): void {
             if ($user) {
                 $scope->setUser(['id' => $user->id, 'username' => $user->username]);
             }
