@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
+use App\Managers\CapeManager;
 use App\Models\User;
 use Auth;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {

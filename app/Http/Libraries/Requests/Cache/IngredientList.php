@@ -2,7 +2,7 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-use App\Http\Libraries\IngredientManager;
+use App\Managers\IngredientManager;
 use Http;
 
 class IngredientList implements CacheContract

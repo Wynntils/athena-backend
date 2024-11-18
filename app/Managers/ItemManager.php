@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Libraries;
+namespace App\Managers;
 
 use App\Enums\MajorIdentifications;
 use App\Http\Traits\Singleton;

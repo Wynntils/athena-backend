@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\MaskType;
-use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
+use App\Managers\CapeManager;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Image;

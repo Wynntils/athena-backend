@@ -2,7 +2,7 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-use App\Http\Libraries\ItemManager;
+use App\Managers\ItemManager;
 use GuzzleHttp\Exception\ConnectException;
 use Http;
 use Illuminate\Http\Client\Pool;

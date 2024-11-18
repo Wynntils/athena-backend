@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Libraries\CapeManager;
+use App\Managers\CapeManager;
 use Closure;
 use Illuminate\Http\Request;
 

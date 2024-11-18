@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Libraries;
+namespace App\Managers;
 
 use App\Enums\MaskType;
+use App\Http\Libraries\Notifications;
 use App\Http\Traits\Singleton;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;

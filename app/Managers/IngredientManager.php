@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Libraries;
+namespace App\Managers;
 
 class IngredientManager
 {

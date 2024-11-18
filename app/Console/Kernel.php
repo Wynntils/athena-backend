@@ -16,6 +16,20 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
          $schedule->command('patreon:update')->daily();
+
+        foreach (\App\Managers\CacheManager::$cacheTable as $cacheName => $cacheClass) {
+            $instance = new $cacheClass;
+
+            if ($instance instanceof \App\Http\Libraries\Requests\Cache\CacheContract) {
+                $rateInSeconds = $instance->refreshRate();
+                $rateInMinutes = max(1, (int) ceil($rateInSeconds / 60)); // Minimum 1-minute interval
+
+                $schedule->job(new \App\Jobs\GenerateCacheJob($cacheName))
+                    ->cron("*/{$rateInMinutes} * * * *") // Use cron syntax for variable intervals
+                    ;
+            }
+        }
+
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Models\Embedded;
 
-use App\Http\Libraries\CapeManager;
+use App\Managers\CapeManager;
 use Illuminate\Support\Facades\Storage;
 use Jenssegers\Mongodb\Eloquent\Model;
 
