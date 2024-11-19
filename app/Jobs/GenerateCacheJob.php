@@ -33,6 +33,7 @@ class GenerateCacheJob implements ShouldQueue
         }
 
         try {
+            Log::info("Generating cache for {$this->cacheName}");
             $data = $cacheClass->generate();
             Cache::forever("{$this->cacheName}.data", $data);
             Cache::forever("{$this->cacheName}.hash", md5(serialize($data)));

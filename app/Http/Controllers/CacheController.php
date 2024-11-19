@@ -22,11 +22,7 @@ class CacheController extends Controller
         }
 
         return response()->json($data, headers: ['timestamp' => now()->timestamp * 1000])
-            ->setCache([
-                           'max_age' => $cache->refreshRate(),
-                           's_maxage' => $cache->refreshRate(),
-                           'public' => true,
-                       ])
+            ->setCache(['max_age' => $cache->refreshRate(), 's_maxage' => $cache->refreshRate(), 'public' => true,])
             ->setExpires(now()->addSeconds($cache->refreshRate()))
             ->setEtag(Cache::get("{$cacheName}.hash"));
     }
@@ -34,10 +30,7 @@ class CacheController extends Controller
     public function getHashes(): \Illuminate\Http\JsonResponse
     {
         return response()->json(
-            [
-                'result' => CacheManager::getHashes(),
-                'message' => 'Successfully retrieved cache hashes.',
-            ],
+            ['result' => CacheManager::getHashes(), 'message' => 'Successfully retrieved cache hashes.',],
             200
         );
     }

@@ -10,7 +10,7 @@ class CacheManager
     public static array $cacheTable = [
         'gatheringSpots' => \App\Http\Libraries\Requests\Cache\GatheringSpots::class,
         'ingredientList' => \App\Http\Libraries\Requests\Cache\IngredientList::class,
-        'itemList' => \App\Http\Libraries\Requests\Cache\ItemList::class,
+//        'itemList' => \App\Http\Libraries\Requests\Cache\ItemList::class,
         'leaderboard' => \App\Http\Libraries\Requests\Cache\Leaderboard::class,
         'mapLocations' => \App\Http\Libraries\Requests\Cache\MapLocations::class,
         'serverList' => \App\Http\Libraries\Requests\Cache\ServerList::class,

@@ -24,9 +24,16 @@ class Kernel extends ConsoleKernel
                 $rateInSeconds = $instance->refreshRate();
                 $rateInMinutes = max(1, (int) ceil($rateInSeconds / 60)); // Minimum 1-minute interval
 
+                \Log::info("Scheduling job for {$cacheName} every {$rateInMinutes} minute(s).");
+
                 $schedule->job(new \App\Jobs\GenerateCacheJob($cacheName))
-                    ->cron("*/{$rateInMinutes} * * * *") // Use cron syntax for variable intervals
-                    ;
+                    ->cron("*/{$rateInMinutes} * * * *"); // Use cron syntax for variable intervals
+
+                if (!\Cache::has("{$cacheName}.hash")) {
+                    \Log::info("Cache {$cacheName} is missing. Generating cache now.");
+                    \App\Jobs\GenerateCacheJob::dispatch($cacheName);
+                }
+
             }
         }
 
