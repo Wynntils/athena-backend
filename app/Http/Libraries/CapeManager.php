@@ -19,9 +19,9 @@ class CapeManager
         //'01-01' => 'newYears',
         //'04-01' => 'aprilFools',
         //'07-04' => 'independenceDay',
-        '10-31' => 'halloween',
+        // '10-31' => 'halloween',
         //'12-24' => 'christmasEve',
-        '12-25' => 'christmas',
+        // '12-25' => 'christmas',
         //'12-31' => 'newYearsEve',
     ];
 
