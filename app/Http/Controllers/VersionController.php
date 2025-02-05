@@ -63,15 +63,18 @@ class VersionController extends Controller
             return response()->json(['error' => 'No release found for this stream'], 404);
         }
 
+        $mcVersion = $mcVersion ?? 'unknown';
+
         $cache = \Cache::get('version', []);
+
         if (
-            !isset($cache[$stream][$client])
-            || $cache[$stream][$client]['tag'] !== $latest['tag_name']
-            || !is_array($cache[$stream][$client]['md5'])
-            || empty($cache[$stream][$client]['md5'])
+            !isset($cache[$stream][$mcVersion][$client])
+            || $cache[$stream][$mcVersion][$client]['tag'] !== $latest['tag_name']
+            || !is_array($cache[$stream][$mcVersion][$client]['md5'])
+            || empty($cache[$stream][$mcVersion][$client]['md5'])
         ) {
-            $cache[$stream][$client] = [];
-            $cache = $this->updateCache($cache, $stream, $client, $latest);
+            $cache[$stream][$mcVersion][$client] = [];
+            $cache = $this->updateCache($cache, $stream, $mcVersion, $client, $latest);
         }
 
         // We need to filter the asset list to only the current modloader if we're using Artemis
@@ -92,7 +95,7 @@ class VersionController extends Controller
         $response = [
             'version' => $latestTag,
             'url' => $asset['browser_download_url'],
-            'md5' => $cache[$stream][$client]['md5'][$asset['name']],
+            'md5' => $cache[$stream][$mcVersion][$client]['md5'][$asset['name']],
             'changelog' => route('version.changelog', [$latest['tag_name']]),
         ];
 
@@ -328,7 +331,7 @@ class VersionController extends Controller
         });
     }
 
-    private function updateCache(mixed $cache, $stream, string $client, mixed $latest)
+    private function updateCache(mixed $cache, $stream, string $mcVersion, string $client, mixed $latest)
     {
         $md5 = [];
 
@@ -336,7 +339,7 @@ class VersionController extends Controller
             $md5[$asset['name']] = md5_file($asset['browser_download_url']);
         }
 
-        $cache[$stream][$client] = [
+        $cache[$stream][$mcVersion][$client] = [
             'tag' => $latest['tag_name'],
             'md5' => $md5,
         ];
