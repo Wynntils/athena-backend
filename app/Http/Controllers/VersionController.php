@@ -63,7 +63,7 @@ class VersionController extends Controller
             return response()->json(['error' => 'No release found for this stream'], 404);
         }
 
-        $mcVersion = (string) ($mcVersion ?? 'unknown');
+        $mcVersion = $mcVersion ?? 'unknown';
 
         $cache = \Cache::get('version', []);
 
