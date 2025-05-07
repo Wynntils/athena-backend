@@ -66,9 +66,9 @@ class User extends Model implements
         return $this->embedsOne(DiscordInfo::class);
     }
 
-    public function cosmeticInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    public function cosmetics()
     {
-        return $this->embedsOne(CosmeticInfo::class);
+        return $this->embedsOne(Cosmetics::class);
     }
 
     public function updateAccount($username, $version): void

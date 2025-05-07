@@ -54,10 +54,10 @@ class UserController extends Controller
                 'username' => $user->username,
                 'accountType' => $user->accountType,
                 'cosmetics' => [
-                    'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
-                    'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
-                    'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true)
+                    'hasCape' => $user->cosmetics?->capeStyle === "cape" ? true : false,
+                    'hasElytra' => $user->cosmetics?->capeStyle === "elytra" ? true : false,
+                    'hasEars' => false, //-- Ears are not implemented in the 1.21.4 versions yet.
+                    'texture' => $user->cosmetics?->cape?->texture,
                 ]
             ]
         ]);
