@@ -282,6 +282,78 @@ class VersionController extends Controller
         ]);
     }
 
+    public function changelogBetweenV2(Request $request, $fromQuery, $toQuery)
+    {
+        ['client' => $client] = $this->userAgentDetails($request);
+
+        // Determine the release stream (pre-releases vs. stable)
+        $stream = str($fromQuery)->contains(['alpha', 'beta']) ? 'ce' : 're';
+        $releases = $this->getReleases($client, $stream);
+
+        // Find the "from" and "to" releases, with pagination fallback
+        $from = $releases->firstWhere('tag_name', $fromQuery);
+        $to   = $releases->firstWhere('tag_name', $toQuery);
+
+        if (! $from || ! $to) {
+            $page = 1;
+            do {
+                $search = $this->getReleases($client, $stream, ++$page);
+                if (! $from) {
+                    $from = $search->firstWhere('tag_name', $fromQuery);
+                }
+                if (! $to) {
+                    $to = $search->firstWhere('tag_name', $toQuery);
+                }
+                $releases = $releases->merge($search);
+            } while ((! $from || ! $to) && $search->count() > 0);
+
+            if (! $from || ! $to) {
+                match (true) {
+                    ! $from && ! $to => $error = 'No releases found for these versions',
+                    ! $from          => $error = 'No release found for the from version',
+                    ! $to            => $error = 'No release found for the to version',
+                };
+                return response()->json(['error' => $error], 404);
+            }
+        }
+
+        // Reverse releases so we iterate oldest → newest
+        $releases = $releases->reverse();
+
+        $perVersionChangelogs = [];
+
+        foreach ($releases as $release) {
+            $tag = $release['tag_name'];
+
+            // Skip until after the "from" version
+            if (version_compare($tag, $from['tag_name'], '<=')) {
+                continue;
+            }
+
+            // Stop after including the "to" version
+            if (version_compare($tag, $to['tag_name'], '>')) {
+                break;
+            }
+
+            // Clean and normalize the changelog body
+            $body = str($release['body'])
+                ->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1')
+                ->replaceMatches('/\([0-9a-f]{7}\)/', '')
+                ->replace("\r\n", "\n")
+                ->value();
+
+            // Store the full body as a single string per version
+            $perVersionChangelogs[$tag] = $body;
+        }
+
+        return response()->json([
+            'from'       => $from['tag_name'],
+            'to'         => $to['tag_name'],
+            'changelogs' => $perVersionChangelogs,
+        ]);
+    }
+
+
     private function getReleases($repo, $stream, $page = 1, $mcVersion = null): \Illuminate\Support\Collection
     {
         if (!in_array($stream, [
