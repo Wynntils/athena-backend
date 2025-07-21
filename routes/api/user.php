@@ -9,13 +9,10 @@ Route::controller(UserController::class)->group(static function () {
         Route::post('updateDiscord', 'updateDiscord')->name('updateDiscord');
     });
 //    Route::post('setUserPassword', 'setUserPassword');
-    Route::get('getInfo/{user}', 'getInfo')
-        ->name('getInfo');
 
-    Route::post('getInfo', 'getInfoPost')
-        ->name('getInfoLegacy');
+    Route::middleware(['block.user.agents'])->group(static function () {
+        Route::get('getInfo/{user}', 'getInfo')->name('getInfo');
+        Route::post('getInfo', 'getInfoPost')->name('getInfoLegacy'); // Legacy route
+    });
 
 });
-
-// v2 routes
-
