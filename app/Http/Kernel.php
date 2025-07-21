@@ -24,6 +24,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
 //        \App\Http\Middleware\Monitor::class,
         \App\Http\Middleware\CacheControl::class,
+        \App\Http\Middleware\BlockNonWynntilsUserAgents::class,
     ];
 
     /**
@@ -70,6 +71,5 @@ class Kernel extends HttpKernel
         'cape.token' => \App\Http\Middleware\CapeTokenMiddleware::class,
         'athena.token' => \App\Http\Middleware\AthenaTokenMiddleware::class,
         'debug' => \App\Http\Middleware\DebugMiddleware::class,
-        'block.user.agents' => \App\Http\Middleware\BlockUserAgents::class,
     ];
 }
