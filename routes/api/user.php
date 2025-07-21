@@ -10,11 +10,9 @@ Route::controller(UserController::class)->group(static function () {
     });
 //    Route::post('setUserPassword', 'setUserPassword');
     Route::get('getInfo/{user}', 'getInfo')
-        ->middleware('block.user.agents')
         ->name('getInfo');
 
     Route::post('getInfo', 'getInfoPost')
-        ->middleware('block.user.agents')
         ->name('getInfoLegacy');
 
 });
