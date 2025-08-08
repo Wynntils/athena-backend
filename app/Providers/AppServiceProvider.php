@@ -29,7 +29,9 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         Http::macro('wynn', function () {
-            return Http::withHeaders(['apiKey' => config('athena.api.wynn.apiKey')])
+            return Http::withHeaders([
+                    'Authorization' => 'Bearer ' . config('athena.api.wynn.apiKey'),
+                ])
                 ->withUserAgent(config('athena.general.userAgent'))
                 ->connectTimeout(50)
                 ->timeout(50);
