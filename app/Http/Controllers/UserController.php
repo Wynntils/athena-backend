@@ -110,7 +110,8 @@ class UserController extends Controller
     }
 
     private function getUser($user) {
-        $user = Cache::remember("user-{$user}", 3600, function () use ($user) {
+        //-- TTL 10 min
+        $user = Cache::remember("user-{$user}", 600, function () use ($user) {
             return User::where('_id', $user)->first();
         });
 
