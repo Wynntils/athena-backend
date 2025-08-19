@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('patreon:update')->daily();
+         // TODO: Fix this patreon update command
+         // $schedule->command('patreon:update')->daily();
     }
 
     /**
