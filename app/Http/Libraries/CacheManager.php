@@ -17,6 +17,7 @@ class CacheManager
         'territoryList' => \App\Http\Libraries\Requests\Cache\TerritoryList::class,
         'guildList' => \App\Http\Libraries\Requests\Cache\GuildList::class, // All guilds
         'guildListWithColors' => \App\Http\Libraries\Requests\Cache\GuildListWithColors::class, // Only guilds with color set
+        'itemWeights' => \App\Http\Libraries\Requests\Cache\ItemWeights::class
     ];
 
     public static function generateCache($cacheName) {
