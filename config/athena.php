@@ -30,6 +30,12 @@ return [
     ],
 
     'api' => [
+        'wynnpool' => [
+            'itemWeights' => 'https://api.wynnpool.com/item/weight/all'
+        ],
+        'nori' => [
+            'itemWeights' => 'https://nori.fish/api/item/mythic'
+        ],
         'wynn' => [
             'apiKey' => env('WYNN_APIKEY'),
 
