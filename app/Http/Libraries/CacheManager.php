@@ -51,7 +51,7 @@ class CacheManager
             return array_merge(Cache::get($storageKey.'.backup', []), ['message' => 'Failed to generate cache. Returning old cache.']);
         }
 
-        Cache::forever($storageKey.'.hash', md5(serialize($data)));
+        Cache::forever($storageKey.'.hash', hash('sha512', serialize($data)));
         Cache::forever($storageKey.'.backup', $data);
         return $data;
     }
