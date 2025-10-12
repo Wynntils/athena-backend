@@ -4,6 +4,8 @@
  */
 
 
+use App\Models\Guild;
+
 if (!function_exists('cleanNull')) {
     function cleanNull(?array $array): ?object
     {
@@ -139,5 +141,28 @@ if(!function_exists("colourFromName")) {
 if(!function_exists("rgbFloatsToHex")) {
     function rgbFloatsToHex(array $rgb) {
         return "#" . dechex(round($rgb[0] * 255)) . dechex(round($rgb[1] * 255)) . dechex(round($rgb[2] * 255));
+    }
+}
+
+if(!function_exists("generateColorAndUpdate")) {
+    function generateColorAndUpdate(Guild $guild): string
+    {
+        $crc32Value = crc32(time());
+        $random = random_int(1, $crc32Value);
+        $minS = 0.5;
+        $minV = 0.75;
+
+        $rgbaColor = hsvToRgb(
+            $random / mt_getrandmax(),
+            $minS + (1 - $minS) * ($random / mt_getrandmax()),
+            $minV + (1 - $minV) * ($random / mt_getrandmax()),
+            1
+        );
+
+        $hex = rgbFloatsToHex($rgbaColor);
+
+        $guild->update(['color' => $hex]);
+
+        return $hex;
     }
 }

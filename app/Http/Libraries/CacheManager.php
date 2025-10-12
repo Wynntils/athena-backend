@@ -15,24 +15,32 @@ class CacheManager
         'mapLocations' => \App\Http\Libraries\Requests\Cache\MapLocations::class,
         'serverList' => \App\Http\Libraries\Requests\Cache\ServerList::class,
         'territoryList' => \App\Http\Libraries\Requests\Cache\TerritoryList::class,
-        'guildList' => \App\Http\Libraries\Requests\Cache\GuildList::class, // All guilds
-        'guildListWithColors' => \App\Http\Libraries\Requests\Cache\GuildListWithColors::class, // Only guilds with color set
-        'itemWeights' => \App\Http\Libraries\Requests\Cache\ItemWeights::class
+        'guildList' => \App\Http\Libraries\Requests\Cache\GuildList::class,
+        'guildListWithColors' => \App\Http\Libraries\Requests\Cache\GuildListWithColors::class,
+        'itemWeights' => \App\Http\Libraries\Requests\Cache\ItemWeights::class,
     ];
 
-    public static function generateCache($cacheName) {
-        if (!$cache = self::getCacheClass($cacheName)) {
+    private static array $v2CacheTable = [
+        'territoryList' => \App\Http\Libraries\Requests\Cache\v2\TerritoryList::class,
+    ];
+
+    public static function generateCache(string $cacheName, string $version = 'v1')
+    {
+        if (!$cache = self::getCacheClass($cacheName, $version)) {
             return null;
         }
 
+        $key = self::key($version, $cacheName);
+
         if (app()->environment('local')) {
-            return self::generate($cacheName, $cache);
+            return self::generate($key, $cache);
         }
 
-        return Cache::remember($cacheName, $cache->refreshRate(), static fn() => self::generate($cacheName, $cache));
+        return Cache::remember($key, $cache->refreshRate(), static fn() => self::generate($key, $cache));
     }
 
-    private static function generate($cacheName, CacheContract $cache) {
+    private static function generate(string $storageKey, CacheContract $cache)
+    {
         try {
             $data = $cache->generate();
         } catch (\Exception $e) {
@@ -40,30 +48,44 @@ class CacheManager
                 throw $e;
             }
             \Log::error($e->getMessage());
-            // If the cache fails to generate, we want to return the old cache
-            return array_merge(Cache::get($cacheName.'.backup', []), ['message' => 'Failed to generate cache. Returning old cache.']);
+            return array_merge(Cache::get($storageKey.'.backup', []), ['message' => 'Failed to generate cache. Returning old cache.']);
         }
-        Cache::forever($cacheName.'.hash', md5(serialize($data)));
-        Cache::forever($cacheName.'.backup', $data);
+
+        Cache::forever($storageKey.'.hash', md5(serialize($data)));
+        Cache::forever($storageKey.'.backup', $data);
         return $data;
     }
 
-    public static function getCacheClass($cache): ?CacheContract
+    public static function getCacheClass(string $cache, string $version = 'v1'): ?CacheContract
     {
-        if (array_key_exists($cache, self::$cacheTable)) {
-            return new self::$cacheTable[$cache];
+        $table = self::table($version);
+        if (array_key_exists($cache, $table)) {
+            $class = $table[$cache];
+            return new $class();
         }
-
         return null;
     }
 
-    public static function getHashes(): object
+    public static function getHashes(string $version = 'v1'): object
     {
         $hashes = [];
-        foreach (self::$cacheTable as $name => $class) {
-            $hashes[$name] = Cache::get($name.'.hash');
+        foreach (self::table($version) as $name => $_class) {
+            $hashes[$name] = Cache::get(self::key($version, $name).'.hash');
+        }
+        return cleanNull($hashes);
+    }
+
+    private static function table(string $version): array
+    {
+        if ($version === 'v2') {
+            return array_replace(self::$cacheTable, self::$v2CacheTable);
         }
 
-        return cleanNull($hashes);
+        return self::$cacheTable;
+    }
+
+    private static function key(string $version, string $name): string
+    {
+        return $version === 'v2' ? "v2.$name" : $name;
     }
 }
