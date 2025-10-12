@@ -156,7 +156,6 @@ if(!function_exists("generateColorAndUpdate")) {
             $random / mt_getrandmax(),
             $minS + (1 - $minS) * ($random / mt_getrandmax()),
             $minV + (1 - $minV) * ($random / mt_getrandmax()),
-            1
         );
 
         $hex = rgbFloatsToHex($rgbaColor);
