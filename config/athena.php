@@ -44,11 +44,11 @@ return [
             'builderIds' => 'https://wynnbuilder.github.io/compress.json',
 
             'v2' => [
-                'leaderboards' => 'https://api.wynncraft.com/v2/leaderboards/player/',
                 'ingredients' => 'https://api.wynncraft.com/v2/ingredient/search/skills/%5Etailoring,armouring,jeweling,cooking,woodworking,weaponsmithing,alchemism,scribing',
             ],
 
             'v3' => [
+                'leaderboards' => 'https://api.wynncraft.com/v3/leaderboards/',
                 'territories' => 'https://api.wynncraft.com/v3/guild/list/territory',
                 'mapLocations' => 'https://api.wynncraft.com/v3/map/locations',
                 'items' => 'https://api.wynncraft.com/v3/item/database?fullResult=True',
