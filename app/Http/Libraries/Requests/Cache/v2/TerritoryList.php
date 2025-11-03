@@ -31,7 +31,7 @@ class TerritoryList implements CacheContract
             $name   = data_get($t, 'guild.name');
             if ($name || $prefix) {
                 $id  = $prefix ? 'p:' . mb_strtoupper($prefix) : 'n:' . mb_strtolower($name);
-                $key = 'guild_color:' . sha1($id);
+                $key = 'guild_color:' . hash('sha512', $id);
 
                 $color = Cache::remember($key, 3600, function () use ($t) {
                     $guild = Guild::gather(['guild' => data_get($t, 'guild')]);
