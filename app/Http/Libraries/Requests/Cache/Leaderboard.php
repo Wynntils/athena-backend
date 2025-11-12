@@ -72,9 +72,7 @@ class Leaderboard implements CacheContract
                 ?? null;
         }
 
-        return $row['characterUuid']
-            ?? $row['uuid']
-            ?? ($row['character']['uuid'] ?? null);
+        return $row['uuid'] ?? "redacted";
     }
 
     private function isGuildType(string $type): bool
