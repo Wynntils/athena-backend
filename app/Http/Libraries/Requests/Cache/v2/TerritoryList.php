@@ -27,14 +27,23 @@ class TerritoryList implements CacheContract
         }
 
         return $wynnTerritories->map(function ($t) {
-            $prefix = data_get($t, 'guild.prefix');
-            $name   = data_get($t, 'guild.name');
+            $rawGuild = data_get($t, 'guild');
+
+            // Safeguard against unexpected structures (string guild names, missing keys, etc.)
+            if (is_string($rawGuild)) {
+                $rawGuild = ['name' => $rawGuild, 'prefix' => data_get($t, 'guildPrefix')];
+                data_set($t, 'guild', $rawGuild);
+            }
+
+            $prefix = data_get($rawGuild, 'prefix');
+            $name   = data_get($rawGuild, 'name');
             if ($name || $prefix) {
+                $guild = Guild::gather(['guild' => $rawGuild]);
+
                 $id  = $prefix ? 'p:' . mb_strtoupper($prefix) : 'n:' . mb_strtolower($name);
                 $key = 'guild_color:' . hash('sha512', $id);
 
-                $color = Cache::remember($key, 3600, function () use ($t) {
-                    $guild = Guild::gather(['guild' => data_get($t, 'guild')]);
+                $color = Cache::remember($key, 3600, function () use ($guild) {
                     return $guild->color ?: generateColorAndUpdate($guild);
                 });
 
