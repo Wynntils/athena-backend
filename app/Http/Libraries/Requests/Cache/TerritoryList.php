@@ -23,22 +23,30 @@ class TerritoryList implements CacheContract
 
         return [
             'territories' => $wynnTerritories->mapWithKeys(static function ($item, $key) {
-                $item['territory'] = $key; // v3 api
-                $guild = Guild::gather($item);
+                $guild = Guild::gather(['guild' => $item['guild'] ?? null]);
+
+                $guildName = data_get($item, 'guild.name');
+                $guildPrefix = data_get($item, 'guild.prefix', 'NONE');
+
+                if ($guildName === null && is_string($item['guild'] ?? null)) {
+                    $guildName = $item['guild'];
+                }
 
                 $territory = [];
-                $territory['territory'] = $item['territory'];
-                $territory['guild'] = $item['guild']['name'];
-                $territory['guildPrefix'] = $item['guild']['prefix'];
+                $territory['territory'] = $key;
+                $territory['guild'] = $guildName;
+                $territory['guildPrefix'] = $guildPrefix;
                 $territory['guildColor'] = empty($guild->color) ? generateColorAndUpdate($guild) : $guild->color;
                 $territory['acquired'] = $item['acquired'];
 
-                if (array_key_exists('location', $item)) {
+                $start = data_get($item, 'location.start');
+                $end = data_get($item, 'location.end');
+                if (is_array($start) && is_array($end)) {
                     $location = [];
-                    $location['startX'] = $item['location']['start'][0];
-                    $location['startZ'] = $item['location']['start'][1];
-                    $location['endX'] = $item['location']['end'][0];
-                    $location['endZ'] = $item['location']['end'][1];
+                    $location['startX'] = $start[0] ?? null;
+                    $location['startZ'] = $start[1] ?? null;
+                    $location['endX'] = $end[0] ?? null;
+                    $location['endZ'] = $end[1] ?? null;
                     $territory['location'] = $location;
                 }
 

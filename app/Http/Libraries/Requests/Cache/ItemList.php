@@ -30,13 +30,16 @@ class ItemList implements CacheContract
         }
 
         $wynnItems = $responses['wynnItems']->json();
-        if ($wynnItems === null) {
+        if ($wynnItems === null || !is_array($wynnItems)) {
             throw new \Exception('Failed to fetch items from Wynn API');
         }
 
         $result = $items = $materialTypes = $translatedReferences = [];
 
         foreach ($wynnItems as $itemName => $item) {
+            if (!is_array($item)) {
+                throw new \Exception(sprintf('Unexpected item entry for "%s" from Wynn API', $itemName));
+            }
             // Quick fix for v3 api
             $item['name'] = $itemName;
             $converted = ItemManager::convertItem($item);
