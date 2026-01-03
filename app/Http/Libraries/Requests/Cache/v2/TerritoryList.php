@@ -16,15 +16,25 @@ class TerritoryList implements CacheContract
         return 15;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function generate(): array
     {
-        $wynnTerritories = Http::wynn()
-            ->get(config('athena.api.wynn.v3.territories'))
-            ->collect();
+        $response = Http::wynn()
+            ->get(config('athena.api.wynn.v3.territories'));
 
-        if ($wynnTerritories === null) {
-            throw new \Exception('Failed to fetch territories from Wynn API');
+        if(!$response->successful()) {
+            throw new \Exception('Failed to fetch territories from Wynn API.');
         }
+
+        $json = $response->json();
+        if(!is_array($json) || array_key_exists('error', $json)) {
+            $error = data_get($json, 'detail');
+            throw new \Exception('Failed to fetch territories from Wynn API: ' . $error);
+        }
+
+        $wynnTerritories = collect($json);
 
         return $wynnTerritories->map(function ($t) {
             $rawGuild = data_get($t, 'guild');
