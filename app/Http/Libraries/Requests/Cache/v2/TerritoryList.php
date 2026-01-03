@@ -25,13 +25,13 @@ class TerritoryList implements CacheContract
             ->get(config('athena.api.wynn.v3.territories'));
 
         if(!$response->successful()) {
-            throw new \Exception('Failed to fetch territories from Wynn API.');
+            throw new \UnexpectedValueException('Failed to fetch territories from Wynn API.');
         }
 
         $json = $response->json();
         if(!is_array($json) || array_key_exists('error', $json)) {
             $error = data_get($json, 'detail');
-            throw new \Exception('Failed to fetch territories from Wynn API: ' . $error);
+            throw new \UnexpectedValueException('Failed to fetch territories from Wynn API: ' . $error);
         }
 
         $wynnTerritories = collect($json);
