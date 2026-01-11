@@ -10,6 +10,7 @@
         "br33f/php-ga4-mp": "^0.1.6",
         "dedoc/scramble": "^0.13.10",
         "intervention/image": "^3.11",
+        "jenssegers/mongodb": "^5.5",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "patreon/patreon": "^1.0",

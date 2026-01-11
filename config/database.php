@@ -45,16 +45,13 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', 27017),
-            'database' => env('DB_DATABASE', 'homestead'),
-            'username' => env('DB_USERNAME', 'homestead'),
-            'password' => env('DB_PASSWORD', 'secret'),
+            'host' => env('MONGODB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('MONGODB_PORT', env('DB_PORT', 27017)),
+            'database' => env('MONGODB_DATABASE', env('DB_DATABASE', 'athena')),
+            'username' => env('MONGODB_USERNAME', env('DB_USERNAME')),
+            'password' => env('MONGODB_PASSWORD', env('DB_PASSWORD')),
             'options' => [
-                // here you can pass more settings to the Mongo Driver Manager
-                // see https://www.php.net/manual/en/mongodb-driver-manager.construct.php under "Uri Options" for a list of complete parameters that you can use
-
-                'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
+                'database' => env('MONGODB_AUTH_DATABASE', 'admin'),
             ],
         ],
 
@@ -80,17 +77,17 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8',
+            'url' => env('PGSQL_URL', env('DATABASE_URL')),
+            'host' => env('PGSQL_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('PGSQL_PORT', env('DB_PORT', '5432')),
+            'database' => env('PGSQL_DATABASE', env('DB_DATABASE', 'athena_backend')),
+            'username' => env('PGSQL_USERNAME', env('DB_USERNAME', 'athena_user')),
+            'password' => env('PGSQL_PASSWORD', env('DB_PASSWORD', '')),
+            'charset' => env('PGSQL_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'search_path' => env('PGSQL_SCHEMA', 'public'),
+            'sslmode' => env('PGSQL_SSLMODE', 'prefer'),
         ],
 
         'sqlsrv' => [
