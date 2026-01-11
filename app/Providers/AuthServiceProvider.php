@@ -33,7 +33,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Auth::viaRequest('authToken', static function (Request $request) {
-            return User::where('authToken', $request->header('authToken') ?? $request->input('authToken'))->first();
+            return User::where('auth_token', $request->header('authToken') ?? $request->input('authToken'))->first();
         });
     }
 }

@@ -39,13 +39,14 @@ class LegacyApiController extends Controller
 
         $cosmetics = collect($request->validated('cosmetics'));
 
-        $user->cosmeticInfo()->create([
+        $user->cosmetic_info = [
             'capeTexture' => $cosmetics->get('texture') ?? '',
             'elytraEnabled' => $cosmetics->get('isElytra') ?? false,
             'maxResolution' => $cosmetics->get('maxResolution') ?? '128x128',
             'allowAnimated' => $cosmetics->get('allowAnimated') ?? false,
             'parts' => $cosmetics->get('parts') ?? [],
-        ]);
+        ];
+        $user->save();
 
         return ["result" => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
     }
@@ -60,7 +61,7 @@ class LegacyApiController extends Controller
 
     public function setUserPassword(LegacyApiRequest $request)
     {
-        $user = User::where('authToken', $request->validated('token'))->firstOrFail();
+        $user = User::where('auth_token', $request->validated('token'))->firstOrFail();
         $user->password = \Hash::make($request->validated('password'));
         $user->save();
         return ["result" => collect(new UserResource($user)), 'message' => 'Successfully set user account password.'];
@@ -109,16 +110,16 @@ class LegacyApiController extends Controller
     {
         return match (true) {
             str($user)->startsWith("uuid-") => User::findOrFail(substr($user, strlen('uuid-'))),
-            str($user)->startsWith("<@") => User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $user))->firstOrFail(),
+            str($user)->startsWith("<@") => User::whereRaw("discord_info->>'id' = ?", [str_replace(['<@!', '<@', '>'], '', $user)])->firstOrFail(),
             str($user)->match("/[a-zA-Z0-9_]{1,16}/")->isNotEmpty() => User::where('username',
                 $user)->firstOrFail(),
-            default => User::where('authToken', $user)->firstOrFail()
+            default => User::where('auth_token', $user)->firstOrFail()
         };
     }
 
 
     private function getLinkedDiscordUsers($discordId): \Illuminate\Support\Collection
     {
-        return User::where('discordInfo.id', str_replace(['<@!', '<@', '>'], '', $discordId))->get();
+        return User::whereRaw("discord_info->>'id' = ?", [str_replace(['<@!', '<@', '>'], '', $discordId)])->get();
     }
 }

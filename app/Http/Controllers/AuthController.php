@@ -48,11 +48,11 @@ class AuthController extends Controller
             Storage::put('request.json', $request->getContent() . "\n\n" . json_encode($profile, JSON_PRETTY_PRINT) . "\n\n" . base64_encode($sharedKey) . "\n\n" . base64_encode($publicKey) . "\n\n" . $serverId);
         }
 
-        $user = User::where('_id', Uuid::fromString($profile['id'])->toString())->first();
+        $user = User::where('id', Uuid::fromString($profile['id'])->toString())->first();
 
         if ($user === null) {
             $user = User::create([
-                '_id' => Uuid::fromString($profile['id'])->toString(),
+                'id' => Uuid::fromString($profile['id'])->toString(),
                 'accountType' => AccountType::NORMAL
             ]);
 

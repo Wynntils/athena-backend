@@ -4,27 +4,26 @@ namespace App\Models;
 
 use App\Enums\AccountType;
 use App\Enums\DonatorType;
-use App\Models\Embedded\CosmeticInfo;
-use App\Models\Embedded\DiscordInfo;
 use ArrayObject;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Jenssegers\Mongodb\Eloquent\Builder;
-use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
+ * @property string $id
  * @property string $username
  * @property string $authToken
  * @property AccountType $accountType
  * @property DonatorType $donatorType
- * @property DiscordInfo|null $discordInfo
- * @property CosmeticInfo|null $cosmeticInfo
- *
- * @mixin Builder
+ * @property array|null $discordInfo
+ * @property array|null $cosmeticInfo
+ * @property array|null $usedVersions
+ * @property string|null $latestVersion
+ * @property int|null $lastActivity
  */
 class User extends Model implements
     AuthenticatableContract,
@@ -32,19 +31,28 @@ class User extends Model implements
 {
     use Authenticatable, Authorizable;
 
-    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        '_id',
+        'id',
         'accountType',
         'donatorType',
         'username',
         'password',
+        'auth_token',
+        'last_activity',
+        'latest_version',
+        'discord_info',
+        'cosmetic_info',
+        'used_versions',
     ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -52,46 +60,113 @@ class User extends Model implements
      */
     protected $hidden = [
         'password',
-        'authToken',
+        'auth_token',
         'remember_token',
     ];
 
     protected $casts = [
         'accountType' => AccountType::class,
         'donatorType' => DonatorType::class,
+        'discord_info' => 'array',
+        'cosmetic_info' => 'array',
+        'used_versions' => 'array',
+        'last_activity' => 'integer',
     ];
 
-    public function discordInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    // Accessor for MongoDB compatibility
+    public function getAuthTokenAttribute($value)
     {
-        return $this->embedsOne(DiscordInfo::class);
+        return $this->attributes['auth_token'] ?? $value;
     }
 
-    public function cosmeticInfo(): \Jenssegers\Mongodb\Relations\EmbedsOne
+    // Mutator for MongoDB compatibility
+    public function setAuthTokenAttribute($value)
     {
-        return $this->embedsOne(CosmeticInfo::class);
+        $this->attributes['auth_token'] = $value;
+    }
+
+    // Accessor for discordInfo
+    public function getDiscordInfoAttribute($value)
+    {
+        return $this->attributes['discord_info'] ?? $value;
+    }
+
+    // Mutator for discordInfo
+    public function setDiscordInfoAttribute($value)
+    {
+        $this->attributes['discord_info'] = $value;
+    }
+
+    // Accessor for cosmeticInfo
+    public function getCosmeticInfoAttribute($value)
+    {
+        return $this->attributes['cosmetic_info'] ?? $value;
+    }
+
+    // Mutator for cosmeticInfo
+    public function setCosmeticInfoAttribute($value)
+    {
+        $this->attributes['cosmetic_info'] = $value;
+    }
+
+    // Accessor for usedVersions
+    public function getUsedVersionsAttribute($value)
+    {
+        return $this->attributes['used_versions'] ?? $value;
+    }
+
+    // Mutator for usedVersions
+    public function setUsedVersionsAttribute($value)
+    {
+        $this->attributes['used_versions'] = $value;
+    }
+
+    // Accessor for lastActivity
+    public function getLastActivityAttribute($value)
+    {
+        return $this->attributes['last_activity'] ?? $value;
+    }
+
+    // Mutator for lastActivity
+    public function setLastActivityAttribute($value)
+    {
+        $this->attributes['last_activity'] = $value;
+    }
+
+    // Accessor for latestVersion
+    public function getLatestVersionAttribute($value)
+    {
+        return $this->attributes['latest_version'] ?? $value;
+    }
+
+    // Mutator for latestVersion
+    public function setLatestVersionAttribute($value)
+    {
+        $this->attributes['latest_version'] = $value;
     }
 
     public function updateAccount($username, $version): void
     {
-        $this->authToken = \Str::uuid()->toString();
-        $this->lastActivity = currentTimeMillis();
+        $this->auth_token = \Str::uuid()->toString();
+        $this->last_activity = currentTimeMillis();
         $this->username = $username;
 
-        $this->latestVersion = $version;
+        $this->latest_version = $version;
 
-        $usedVersions = $this->usedVersions;
+        $usedVersions = $this->used_versions ?? [];
         $usedVersions[$version] = currentTimeMillis();
-        $this->usedVersions = $usedVersions;
+        $this->used_versions = $usedVersions;
 
         $this->save();
     }
 
     public function updateDiscord($id, $username): void
     {
-        $this->discordInfo()->create([
+        $this->discord_info = [
             'id' => $id,
             'username' => $username,
-        ]);
+        ];
+        $this->save();
     }
 
     public function getConfigs(): ArrayObject
@@ -149,5 +224,47 @@ class User extends Model implements
         return collect($configs->files($this->id))->map(function ($file) {
             return basename($file);
         })->toArray();
+    }
+
+    // Cosmetic Info Helper Methods
+    public function hasCape(): bool
+    {
+        if (\App\Http\Libraries\CapeManager::instance()->isSpecialDate()) {
+            return true;
+        }
+
+        $cosmeticInfo = $this->cosmetic_info ?? [];
+        $elytraEnabled = $cosmeticInfo['elytraEnabled'] ?? false;
+        return !$elytraEnabled && $this->isTextureValid();
+    }
+
+    private function isTextureValid(): bool
+    {
+        $cosmeticInfo = $this->cosmetic_info ?? [];
+        $capeTexture = $cosmeticInfo['capeTexture'] ?? '';
+        return !empty($capeTexture) && Storage::disk('approved')->exists($capeTexture);
+    }
+
+    public function hasPart($part): bool
+    {
+        $cosmeticInfo = $this->cosmetic_info ?? [];
+        $parts = $cosmeticInfo['parts'] ?? [];
+        return !empty($parts) && ($parts[$part] ?? false) === true;
+    }
+
+    public function hasElytra(): bool
+    {
+        if (\App\Http\Libraries\CapeManager::instance()->isSpecialDate()) {
+            return false;
+        }
+
+        $cosmeticInfo = $this->cosmetic_info ?? [];
+        $elytraEnabled = $cosmeticInfo['elytraEnabled'] ?? false;
+        return $elytraEnabled && $this->isTextureValid();
+    }
+
+    public function getFormattedTexture(): string
+    {
+        return $this->isTextureValid() ? ($this->cosmetic_info['capeTexture'] ?? 'defaultCape') : 'defaultCape';
     }
 }

@@ -51,7 +51,7 @@ class Analytics
         $clientId = null;
         if ($request->hasHeader('authToken')) {
             $authToken = $request->header('authToken');
-            $user = \App\Models\User::where('authToken', $authToken)->first();
+            $user = \App\Models\User::where('auth_token', $authToken)->first();
             $clientId = $user?->id;
         }
 

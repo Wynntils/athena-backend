@@ -12,20 +12,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->uuid('id')->primary();
+            $table->uuid('auth_token')->unique()->index();
+            $table->string('username', 16)->index();
+            $table->string('password', 60)->nullable(); // Exact bcrypt length
+            $table->string('account_type', 50)->default('NORMAL')->index();
+            $table->string('donator_type', 50)->nullable();
+            $table->bigInteger('last_activity')->nullable()->index();
+            $table->string('latest_version', 30)->nullable();
+
+            // Flexible data as JSONB
+            $table->jsonb('discord_info')->nullable();
+            $table->jsonb('cosmetic_info')->nullable();
+            $table->jsonb('used_versions')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
+        // Create indexes for nested JSON fields
+        DB::statement("CREATE INDEX idx_discord_id ON users ((discord_info->>'id'))");
+        DB::statement("CREATE INDEX idx_cape_texture ON users ((cosmetic_info->>'capeTexture'))");
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
@@ -43,7 +50,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };

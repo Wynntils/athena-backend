@@ -214,7 +214,7 @@ class PatreonController extends Controller
             $item = collect($item);
             $discordId = $item->pull('attributes.social_connections.discord.user_id');
             if(!empty($discordId)) {
-                $user = User::where('discordInfo.id', $discordId)->get();
+                $user = User::whereRaw("discord_info->>'id' = ?", [$discordId])->get();
             } else {
                 $user = collect([]);
             }

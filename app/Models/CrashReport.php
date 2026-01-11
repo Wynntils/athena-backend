@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
+ * @property int $id
  * @property string $trace_hash
  * @property string $trace
  * @property array $occurrences
@@ -16,8 +16,6 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property bool $handled
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
- *
- * @mixin Builder
  */
 class CrashReport extends Model
 {
@@ -28,25 +26,28 @@ class CrashReport extends Model
         'trace',
         'occurrences',
         'count',
+        'handled',
     ];
 
     protected $casts = [
-        'occurrences' => 'object',
-        'comments' => 'object',
+        'occurrences' => 'array',
+        'comments' => 'array',
+        'count' => 'integer',
+        'handled' => 'boolean',
     ];
 
     public function getEarliestOccurrenceDate(): Carbon
     {
         $occurrence = $this->occurrences[0];
 
-        return Carbon::parse($occurrence->time);
+        return Carbon::parse($occurrence['time'] ?? $occurrence->time);
     }
 
     public function getLatestOccurrenceDate(): Carbon
     {
         $occurrence = $this->occurrences[count($this->occurrences) - 1];
 
-        return Carbon::parse($occurrence->time);
+        return Carbon::parse($occurrence['time'] ?? $occurrence->time);
     }
 
     public function getRouteKeyName(): string

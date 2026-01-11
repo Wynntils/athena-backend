@@ -54,10 +54,10 @@ class UserController extends Controller
                 'username' => $user->username,
                 'accountType' => $user->accountType,
                 'cosmetics' => [
-                    'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
-                    'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
-                    'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true)
+                    'hasCape' => $user->hasCape(),
+                    'hasElytra' => $user->hasElytra(),
+                    'hasEars' => $user->hasPart("ears"),
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true)
                 ]
             ]
         ]);
@@ -80,11 +80,11 @@ class UserController extends Controller
         if ($cosmetics) {
 
 
-            $texture = CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true);
+            $texture = CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true);
             $response['cosmetics'] = [
-                'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
-                'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
-                'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
+                'hasCape' => $user->hasCape(),
+                'hasElytra' => $user->hasElytra(),
+                'hasEars' => $user->hasPart("ears"),
                 'texture' => $texture
             ];
         }
@@ -100,19 +100,19 @@ class UserController extends Controller
             'user' => [
                 'accountType' => $user->accountType,
                 'cosmetics' => [
-                    'hasCape' => $user->cosmeticInfo?->hasCape() ?? false,
-                    'hasElytra' => $user->cosmeticInfo?->hasElytra() ?? false,
-                    'hasEars' => $user->cosmeticInfo?->hasPart("ears") ?? false,
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->cosmeticInfo?->getFormattedTexture() ?? '', true)
+                    'hasCape' => $user->hasCape(),
+                    'hasElytra' => $user->hasElytra(),
+                    'hasEars' => $user->hasPart("ears"),
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true)
                 ]
             ]
         ]);
     }
 
-    private function getUser($user) {
+    private function getUser($user): User {
         //-- TTL 10 min
         $user = Cache::remember("user-{$user}", 600, function () use ($user) {
-            return User::where('_id', $user)->first();
+            return User::where('id', $user)->first();
         });
 
 
