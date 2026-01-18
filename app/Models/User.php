@@ -72,134 +72,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'last_activity' => 'integer',
     ];
 
-    // Accessor for MongoDB compatibility
-    public function getAuthTokenAttribute($value)
-    {
-        return $this->attributes['auth_token'] ?? $value;
-    }
-
-    // Mutator for MongoDB compatibility
-    public function setAuthTokenAttribute($value)
-    {
-        $this->attributes['auth_token'] = $value;
-    }
-
-    // Accessor for discordInfo
-    public function getDiscordInfoAttribute($value)
-    {
-        $result = $this->attributes['discord_info'] ?? $value;
-
-        // If it's a string (JSON), decode it to an array
-        if (is_string($result)) {
-            $decoded = json_decode($result, true);
-
-            return is_array($decoded) ? $decoded : null;
-        }
-
-        // If it's already an array, return it
-        if (is_array($result)) {
-            return $result;
-        }
-
-        return $result;
-    }
-
-    // Mutator for discordInfo
-    public function setDiscordInfoAttribute($value)
-    {
-        $this->attributes['discord_info'] = $value;
-    }
-
-    // Accessor for cosmeticInfo
-    public function getCosmeticInfoAttribute($value)
-    {
-        $result = $this->attributes['cosmetic_info'] ?? $value;
-
-        // If it's a string (JSON), decode it to an array
-        if (is_string($result)) {
-            $decoded = json_decode($result, true);
-
-            return is_array($decoded) ? $decoded : null;
-        }
-
-        // If it's already an array, return it
-        if (is_array($result)) {
-            return $result;
-        }
-
-        return $result;
-    }
-
-    // Mutator for cosmeticInfo
-    public function setCosmeticInfoAttribute($value)
-    {
-        $this->attributes['cosmetic_info'] = $value;
-    }
-
-    // Accessor for usedVersions
-    public function getUsedVersionsAttribute($value)
-    {
-        $result = $this->attributes['used_versions'] ?? $value;
-
-        // If it's a string (JSON), decode it to an array
-        if (is_string($result)) {
-            $decoded = json_decode($result, true);
-
-            return is_array($decoded) ? $decoded : [];
-        }
-
-        // If it's already an array, return it
-        if (is_array($result)) {
-            return $result;
-        }
-
-        // Default to empty array
-        return [];
-    }
-
-    // Mutator for usedVersions
-    public function setUsedVersionsAttribute($value)
-    {
-        $this->attributes['used_versions'] = $value;
-    }
-
-    // Accessor for lastActivity
-    public function getLastActivityAttribute($value)
-    {
-        return $this->attributes['last_activity'] ?? $value;
-    }
-
-    // Mutator for lastActivity
-    public function setLastActivityAttribute($value)
-    {
-        $this->attributes['last_activity'] = $value;
-    }
-
-    // Accessor for latestVersion
-    public function getLatestVersionAttribute($value)
-    {
-        return $this->attributes['latest_version'] ?? $value;
-    }
-
-    // Mutator for latestVersion
-    public function setLatestVersionAttribute($value)
-    {
-        $this->attributes['latest_version'] = $value;
-    }
-
     public function updateAccount($username, $version): void
     {
         $this->auth_token = \Str::uuid()->toString();
         $this->last_activity = currentTimeMillis();
         $this->username = $username;
-
         $this->latest_version = $version;
 
-        // Ensure used_versions is always an array
-        $usedVersions = $this->used_versions;
-        if (! is_array($usedVersions)) {
-            $usedVersions = [];
-        }
+        $usedVersions = $this->used_versions ?? [];
         $usedVersions[$version] = currentTimeMillis();
         $this->used_versions = $usedVersions;
 
