@@ -257,6 +257,7 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
+        $skipped = 0;
         $remaining = $total - $skip;
         $bar = $this->output->createProgressBar($remaining);
 
@@ -266,32 +267,50 @@ class MigrateFromMongoDB extends Command
 
         $bar->start();
 
-        $mongodb->table('guilds')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($guilds) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('guilds')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($guilds) use ($pgsql, &$migrated, &$skipped, $bar) {
             $data = [];
 
             foreach ($guilds as $guild) {
                 $guild = (array) $guild;
 
+                // Validate guild ID is not null
+                $guildId = $guild['id'] ?? null;
+                if (!$guildId || empty($guildId)) {
+                    $this->errors[] = "guilds: Skipped guild with invalid ID: {$guildId} (prefix: " . ($guild['prefix'] ?? 'Unknown') . ")";
+                    $skipped++;
+                    $bar->advance(1);
+                    continue;
+                }
+
                 $data[] = [
-                    'id' => $guild['id'],
+                    'id' => $guildId,
                     'prefix' => $guild['prefix'] ??  'NONE',
                     'color' => $guild['color'] ?? null,
                 ];
             }
 
             foreach ($data as $row) {
-                $pgsql->table('guilds')->updateOrInsert(
-                    ['id' => $row['id']],
-                    $row
-                );
+                try {
+                    $pgsql->table('guilds')->updateOrInsert(
+                        ['id' => $row['id']],
+                        $row
+                    );
+                    $migrated++;
+                    $bar->advance(1);
+                } catch (\Exception $e) {
+                    $this->errors[] = "guilds: Failed to insert guild {$row['id']} ({$row['prefix']}): " . $e->getMessage();
+                    $skipped++;
+                    $bar->advance(1);
+                }
             }
-
-            $migrated += count($data);
-            $bar->advance(count($data));
         });
 
         $bar->finish();
         $this->newLine();
+
+        if ($skipped > 0) {
+            $this->warn("  ⚠️  Skipped {$skipped} invalid records");
+        }
 
         return $migrated;
     }
@@ -309,6 +328,7 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
+        $skipped = 0;
         $remaining = $total - $skip;
         $bar = $this->output->createProgressBar($remaining);
 
@@ -318,14 +338,23 @@ class MigrateFromMongoDB extends Command
 
         $bar->start();
 
-        $mongodb->table('gathering_spots')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($spots) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('gathering_spots')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($spots) use ($pgsql, &$migrated, &$skipped, $bar) {
             $data = [];
 
             foreach ($spots as $spot) {
                 $spot = (array) $spot;
 
+                // Validate spot ID is not null
+                $spotId = $spot['id'] ?? null;
+                if (!$spotId || empty($spotId)) {
+                    $this->errors[] = "gathering_spots: Skipped spot with invalid ID: {$spotId}";
+                    $skipped++;
+                    $bar->advance(1);
+                    continue;
+                }
+
                 $data[] = [
-                    'id' => $spot['id'],
+                    'id' => $spotId,
                     'type' => $spot['type'] ??  '',
                     'material' => $spot['material'] ??  '',
                     'last_seen' => $spot['lastSeen'] ?? 0,
@@ -334,18 +363,27 @@ class MigrateFromMongoDB extends Command
             }
 
             foreach ($data as $row) {
-                $pgsql->table('gathering_spots')->updateOrInsert(
-                    ['id' => $row['id']],
-                    $row
-                );
+                try {
+                    $pgsql->table('gathering_spots')->updateOrInsert(
+                        ['id' => $row['id']],
+                        $row
+                    );
+                    $migrated++;
+                    $bar->advance(1);
+                } catch (\Exception $e) {
+                    $this->errors[] = "gathering_spots: Failed to insert spot {$row['id']}: " . $e->getMessage();
+                    $skipped++;
+                    $bar->advance(1);
+                }
             }
-
-            $migrated += count($data);
-            $bar->advance(count($data));
         });
 
         $bar->finish();
         $this->newLine();
+
+        if ($skipped > 0) {
+            $this->warn("  ⚠️  Skipped {$skipped} invalid records");
+        }
 
         return $migrated;
     }
@@ -363,6 +401,7 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
+        $skipped = 0;
         $remaining = $total - $skip;
         $bar = $this->output->createProgressBar($remaining);
 
@@ -372,14 +411,23 @@ class MigrateFromMongoDB extends Command
 
         $bar->start();
 
-        $mongodb->table('api_keys')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($apiKeys) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('api_keys')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($apiKeys) use ($pgsql, &$migrated, &$skipped, $bar) {
             $data = [];
 
             foreach ($apiKeys as $key) {
                 $key = (array) $key;
 
+                // Validate API key ID is not null
+                $keyId = $key['id'] ?? null;
+                if (!$keyId || empty($keyId)) {
+                    $this->errors[] = "api_keys: Skipped API key with invalid ID: {$keyId} (name: " . ($key['name'] ?? 'Unknown') . ")";
+                    $skipped++;
+                    $bar->advance(1);
+                    continue;
+                }
+
                 $data[] = [
-                    'id' => $key['id'],
+                    'id' => $keyId,
                     'name' => $key['name'] ??  'Unknown',
                     'description' => $key['description'] ??  null,
                     'admin_contact' => isset($key['adminContact']) ? json_encode($key['adminContact']) : null,
@@ -389,18 +437,27 @@ class MigrateFromMongoDB extends Command
             }
 
             foreach ($data as $row) {
-                $pgsql->table('api_keys')->updateOrInsert(
-                    ['id' => $row['id']],
-                    $row
-                );
+                try {
+                    $pgsql->table('api_keys')->updateOrInsert(
+                        ['id' => $row['id']],
+                        $row
+                    );
+                    $migrated++;
+                    $bar->advance(1);
+                } catch (\Exception $e) {
+                    $this->errors[] = "api_keys: Failed to insert API key {$row['id']} ({$row['name']}): " . $e->getMessage();
+                    $skipped++;
+                    $bar->advance(1);
+                }
             }
-
-            $migrated += count($data);
-            $bar->advance(count($data));
         });
 
         $bar->finish();
         $this->newLine();
+
+        if ($skipped > 0) {
+            $this->warn("  ⚠️  Skipped {$skipped} invalid records");
+        }
 
         return $migrated;
     }
@@ -418,6 +475,7 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
+        $skipped = 0;
         $remaining = $total - $skip;
         $bar = $this->output->createProgressBar($remaining);
 
@@ -427,31 +485,49 @@ class MigrateFromMongoDB extends Command
 
         $bar->start();
 
-        $mongodb->table('servers')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($servers) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('servers')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($servers) use ($pgsql, &$migrated, &$skipped, $bar) {
             $data = [];
 
             foreach ($servers as $server) {
                 $server = (array) $server;
 
+                // Validate server ID is not null
+                $serverId = $server['id'] ?? null;
+                if (!$serverId || empty($serverId)) {
+                    $this->errors[] = "servers: Skipped server with invalid ID: {$serverId}";
+                    $skipped++;
+                    $bar->advance(1);
+                    continue;
+                }
+
                 $data[] = [
-                    'id' => $server['id'],
+                    'id' => $serverId,
                     'first_seen' => $server['firstSeen'] ?? 0,
                 ];
             }
 
             foreach ($data as $row) {
-                $pgsql->table('servers')->updateOrInsert(
-                    ['id' => $row['id']],
-                    $row
-                );
+                try {
+                    $pgsql->table('servers')->updateOrInsert(
+                        ['id' => $row['id']],
+                        $row
+                    );
+                    $migrated++;
+                    $bar->advance(1);
+                } catch (\Exception $e) {
+                    $this->errors[] = "servers: Failed to insert server {$row['id']}: " . $e->getMessage();
+                    $skipped++;
+                    $bar->advance(1);
+                }
             }
-
-            $migrated += count($data);
-            $bar->advance(count($data));
         });
 
         $bar->finish();
         $this->newLine();
+
+        if ($skipped > 0) {
+            $this->warn("  ⚠️  Skipped {$skipped} invalid records");
+        }
 
         return $migrated;
     }
