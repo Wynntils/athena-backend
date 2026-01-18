@@ -1,0 +1,12 @@
+{
+    "agents": [
+        "copilot",
+        "phpstorm"
+    ],
+    "editors": [
+        "phpstorm",
+        "vscode"
+    ],
+    "guidelines": [],
+    "sail": true
+}
