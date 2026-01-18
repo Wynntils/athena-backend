@@ -1,11 +1,11 @@
 services:
     laravel.test:
         build:
-            context: './vendor/laravel/sail/runtimes/8.5'
+            context: ./vendor/laravel/sail/runtimes/8.5
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-        image: 'sail-8.5/app'
+        image: sail-8.5/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -24,6 +24,7 @@ services:
         depends_on:
             - pgsql
             - mongodb
+            - redis
     pgsql:
         image: 'postgres:18-alpine'
         ports:
@@ -68,6 +69,21 @@ services:
                 - '--eval=db.runCommand({ping:1})'
             retries: 3
             timeout: 5s
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        volumes:
+            - 'sail-redis:/data'
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
 networks:
     sail:
         driver: bridge
@@ -75,4 +91,6 @@ volumes:
     sail-pgsql:
         driver: local
     sail-mongodb:
+        driver: local
+    sail-redis:
         driver: local
