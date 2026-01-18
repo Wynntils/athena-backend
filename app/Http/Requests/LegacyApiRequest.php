@@ -53,7 +53,7 @@ class LegacyApiRequest extends BaseRequest
     public function setUserPassword(): array
     {
         return [
-            'token' => 'required|uuid|exists:App\Models\User,authToken',
+            'token' => 'required|uuid|exists:App\Models\User,auth_token',
             'password' => 'required|string',
         ];
     }
@@ -73,5 +73,4 @@ class LegacyApiRequest extends BaseRequest
             'configName' => 'required|string',
         ];
     }
-
 }

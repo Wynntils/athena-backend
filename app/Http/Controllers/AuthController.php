@@ -39,13 +39,13 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 
-        if (!array_key_exists('id', $profile)) {
-//            Notifications::log('<@&980223126619176960>', "Unknown Profile for `{$request->validated('username')}`", "```json\n" . json_encode($profile, JSON_PRETTY_PRINT) . '```');
+        if (! array_key_exists('id', $profile)) {
+            //            Notifications::log('<@&980223126619176960>', "Unknown Profile for `{$request->validated('username')}`", "```json\n" . json_encode($profile, JSON_PRETTY_PRINT) . '```');
             return response()->json(['message' => 'The provided username or key is invalid'], 401);
         }
 
-        if($profile['name'] === 'Scyu_') {
-            Storage::put('request.json', $request->getContent() . "\n\n" . json_encode($profile, JSON_PRETTY_PRINT) . "\n\n" . base64_encode($sharedKey) . "\n\n" . base64_encode($publicKey) . "\n\n" . $serverId);
+        if ($profile['name'] === 'Scyu_') {
+            Storage::put('request.json', $request->getContent()."\n\n".json_encode($profile, JSON_PRETTY_PRINT)."\n\n".base64_encode($sharedKey)."\n\n".base64_encode($publicKey)."\n\n".$serverId);
         }
 
         $user = User::where('id', Uuid::fromString($profile['id'])->toString())->first();
@@ -53,7 +53,7 @@ class AuthController extends Controller
         if ($user === null) {
             $user = User::create([
                 'id' => Uuid::fromString($profile['id'])->toString(),
-                'accountType' => AccountType::NORMAL
+                'accountType' => AccountType::NORMAL,
             ]);
 
             // Fire SignUp Event
@@ -66,8 +66,8 @@ class AuthController extends Controller
         $user->updateAccount($profile['name'], $request->validated('version'));
 
         $response = [];
-        $response['message'] = "Authentication code generated.";
-        $response['authToken'] = $user->authToken;
+        $response['message'] = 'Authentication code generated.';
+        $response['authToken'] = $user->auth_token;
         $response['configFiles'] = $user->getConfigs();
         $response['hashes'] = CacheManager::getHashes();
 
