@@ -111,7 +111,7 @@ class MigrateFromMongoDB extends Command
         return true;
     }
 
-    private function migrateTable(string $table, int $batchSize): void
+    private function migrateTable(string $table, int $batchSize, int $skip = 0): void
     {
         $this->info("📦 Migrating {$table}...");
 
@@ -126,7 +126,7 @@ class MigrateFromMongoDB extends Command
         $startTime = microtime(true);
 
         try {
-            $count = $this->$method($batchSize);
+            $count = $this->$method($batchSize, $skip);
             $duration = round(microtime(true) - $startTime, 2);
 
             $this->stats[$table] = [
