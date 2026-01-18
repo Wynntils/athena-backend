@@ -14,6 +14,6 @@ class GuildList implements CacheContract
 
     public function generate(): array
     {
-        return Guild::where('_id', '!=', null)->get()->toArray();
+        return Guild::where('id', '!=', null)->get()->toArray();
     }
 }

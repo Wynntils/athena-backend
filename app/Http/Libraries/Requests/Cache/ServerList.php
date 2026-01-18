@@ -32,7 +32,7 @@ class ServerList implements CacheContract
             $validServers[] = $key;
 
             $server['firstSeen'] = Server::firstOrCreate(
-                ['_id' => $key],
+                ['id' => $key],
                 ['firstSeen' => currentTimeMillis()]
             )->firstSeen;
 
@@ -42,7 +42,7 @@ class ServerList implements CacheContract
         }
 
         // clean old servers
-        Server::whereNotIn('_id', $validServers)->delete();
+        Server::whereNotIn('id', $validServers)->delete();
 
         return $result;
     }
