@@ -155,14 +155,24 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
+        $skipped = 0;
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $mongodb->table('users')->orderBy('_id')->chunk($batchSize, function ($users) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('users')->orderBy('_id')->chunk($batchSize, function ($users) use ($pgsql, &$migrated, &$skipped, $bar) {
             $data = [];
 
             foreach ($users as $user) {
                 $user = (array) $user;
+
+                // Validate user ID is a valid UUID
+                $userId = $user['id'] ?? null;
+                if (!$userId || !Str::isUuid($userId)) {
+                    $this->errors[] = "users: Skipped user with invalid ID: {$userId} (username: " . ($user['username'] ?? 'Unknown') . ")";
+                    $skipped++;
+                    $bar->advance(1);
+                    continue;
+                }
 
                 // Ensure auth_token is a valid UUID
                 $authToken = $user['authToken'] ?? null;
@@ -175,7 +185,7 @@ class MigrateFromMongoDB extends Command
                 $donatorType = $this->mapDonatorType($user['donatorType'] ?? null);
 
                 $data[] = [
-                    'id' => $user['id'],
+                    'id' => $userId,
                     'auth_token' => $authToken,
                     'username' => $user['username'] ?? 'Unknown',
                     'password' => $user['password'] ??  null,
@@ -193,18 +203,27 @@ class MigrateFromMongoDB extends Command
 
             // Use upsert for idempotency
             foreach ($data as $row) {
-                $pgsql->table('users')->updateOrInsert(
-                    ['id' => $row['id']],
-                    $row
-                );
+                try {
+                    $pgsql->table('users')->updateOrInsert(
+                        ['id' => $row['id']],
+                        $row
+                    );
+                    $migrated++;
+                    $bar->advance(1);
+                } catch (\Exception $e) {
+                    $this->errors[] = "users: Failed to insert user {$row['id']} ({$row['username']}): " . $e->getMessage();
+                    $skipped++;
+                    $bar->advance(1);
+                }
             }
-
-            $migrated += count($data);
-            $bar->advance(count($data));
         });
 
         $bar->finish();
         $this->newLine();
+
+        if ($skipped > 0) {
+            $this->warn("  ⚠️  Skipped {$skipped} invalid records");
+        }
 
         return $migrated;
     }
