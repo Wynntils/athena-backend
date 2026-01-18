@@ -229,6 +229,8 @@ class MigrateFromMongoDB extends Command
             $data = [];
 
             foreach ($guilds as $guild) {
+                $guild = (array) $guild;
+
                 $data[] = [
                     'id' => $guild['id'],
                     'prefix' => $guild['prefix'] ??  'NONE',
@@ -273,6 +275,8 @@ class MigrateFromMongoDB extends Command
             $data = [];
 
             foreach ($spots as $spot) {
+                $spot = (array) $spot;
+
                 $data[] = [
                     'id' => $spot['id'],
                     'type' => $spot['type'] ??  '',
@@ -319,6 +323,8 @@ class MigrateFromMongoDB extends Command
             $data = [];
 
             foreach ($keys as $key) {
+                $key = (array) $key;
+
                 $data[] = [
                     'id' => $key['id'],
                     'name' => $key['name'] ??  'Unknown',
@@ -366,6 +372,8 @@ class MigrateFromMongoDB extends Command
             $data = [];
 
             foreach ($servers as $server) {
+                $server = (array) $server;
+
                 $data[] = [
                     'id' => $server['id'],
                     'first_seen' => $server['firstSeen'] ?? 0,
@@ -407,6 +415,8 @@ class MigrateFromMongoDB extends Command
 
         $mongodb->table('crash_reports')->orderBy('_id')->chunk($batchSize, function ($reports) use ($pgsql, &$migrated, $bar) {
             foreach ($reports as $report) {
+                $report = (array) $report;
+
                 $traceHash = $report['trace_hash'] ?? md5($report['trace'] ?? uniqid());
 
                 $data = [
