@@ -25,13 +25,12 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $latestVersion
  * @property int|null $lastActivity
  */
-class User extends Model implements
-    AuthenticatableContract,
-    AuthorizableContract
+class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     /**
@@ -88,7 +87,21 @@ class User extends Model implements
     // Accessor for discordInfo
     public function getDiscordInfoAttribute($value)
     {
-        return $this->attributes['discord_info'] ?? $value;
+        $result = $this->attributes['discord_info'] ?? $value;
+
+        // If it's a string (JSON), decode it to an array
+        if (is_string($result)) {
+            $decoded = json_decode($result, true);
+
+            return is_array($decoded) ? $decoded : null;
+        }
+
+        // If it's already an array, return it
+        if (is_array($result)) {
+            return $result;
+        }
+
+        return $result;
     }
 
     // Mutator for discordInfo
@@ -100,7 +113,21 @@ class User extends Model implements
     // Accessor for cosmeticInfo
     public function getCosmeticInfoAttribute($value)
     {
-        return $this->attributes['cosmetic_info'] ?? $value;
+        $result = $this->attributes['cosmetic_info'] ?? $value;
+
+        // If it's a string (JSON), decode it to an array
+        if (is_string($result)) {
+            $decoded = json_decode($result, true);
+
+            return is_array($decoded) ? $decoded : null;
+        }
+
+        // If it's already an array, return it
+        if (is_array($result)) {
+            return $result;
+        }
+
+        return $result;
     }
 
     // Mutator for cosmeticInfo
@@ -112,7 +139,22 @@ class User extends Model implements
     // Accessor for usedVersions
     public function getUsedVersionsAttribute($value)
     {
-        return $this->attributes['used_versions'] ?? $value;
+        $result = $this->attributes['used_versions'] ?? $value;
+
+        // If it's a string (JSON), decode it to an array
+        if (is_string($result)) {
+            $decoded = json_decode($result, true);
+
+            return is_array($decoded) ? $decoded : [];
+        }
+
+        // If it's already an array, return it
+        if (is_array($result)) {
+            return $result;
+        }
+
+        // Default to empty array
+        return [];
     }
 
     // Mutator for usedVersions
@@ -153,7 +195,11 @@ class User extends Model implements
 
         $this->latest_version = $version;
 
-        $usedVersions = $this->used_versions ?? [];
+        // Ensure used_versions is always an array
+        $usedVersions = $this->used_versions;
+        if (! is_array($usedVersions)) {
+            $usedVersions = [];
+        }
         $usedVersions[$version] = currentTimeMillis();
         $this->used_versions = $usedVersions;
 
@@ -171,7 +217,7 @@ class User extends Model implements
 
     public function getConfigs(): ArrayObject
     {
-        $files = new ArrayObject();
+        $files = new ArrayObject;
         $configs = Storage::disk('configs');
         foreach ($configs->files($this->id) as $file) {
             $files[basename($file)] = zlib_decode($configs->get($file));
@@ -183,8 +229,9 @@ class User extends Model implements
     public function uploadConfig(UploadedFile $file): bool
     {
         if (in_array($this->id, config('athena.debug.users'))) {
-            \Log::info('Uploading config for user ' . $this->id, ['file' => $file->getClientOriginalName()]);
+            \Log::info('Uploading config for user '.$this->id, ['file' => $file->getClientOriginalName()]);
         }
+
         return Storage::disk('configs')->put($this->id.'/'.$file->getClientOriginalName(), zlib_encode(json_encode(json_decode(file_get_contents($file))), ZLIB_ENCODING_DEFLATE));
     }
 
@@ -197,7 +244,7 @@ class User extends Model implements
     {
         $configs = Storage::disk('configs');
 
-        if (!$configs->exists($this->id.'/'.$file)) {
+        if (! $configs->exists($this->id.'/'.$file)) {
             return false;
         }
 
@@ -210,7 +257,7 @@ class User extends Model implements
     {
         $configs = Storage::disk('configs');
 
-        if (!$configs->exists($this->id.'/'.$file)) {
+        if (! $configs->exists($this->id.'/'.$file)) {
             return null;
         }
 
@@ -235,21 +282,24 @@ class User extends Model implements
 
         $cosmeticInfo = $this->cosmetic_info ?? [];
         $elytraEnabled = $cosmeticInfo['elytraEnabled'] ?? false;
-        return !$elytraEnabled && $this->isTextureValid();
+
+        return ! $elytraEnabled && $this->isTextureValid();
     }
 
     private function isTextureValid(): bool
     {
         $cosmeticInfo = $this->cosmetic_info ?? [];
         $capeTexture = $cosmeticInfo['capeTexture'] ?? '';
-        return !empty($capeTexture) && Storage::disk('approved')->exists($capeTexture);
+
+        return ! empty($capeTexture) && Storage::disk('approved')->exists($capeTexture);
     }
 
     public function hasPart($part): bool
     {
         $cosmeticInfo = $this->cosmetic_info ?? [];
         $parts = $cosmeticInfo['parts'] ?? [];
-        return !empty($parts) && ($parts[$part] ?? false) === true;
+
+        return ! empty($parts) && ($parts[$part] ?? false) === true;
     }
 
     public function hasElytra(): bool
@@ -260,6 +310,7 @@ class User extends Model implements
 
         $cosmeticInfo = $this->cosmetic_info ?? [];
         $elytraEnabled = $cosmeticInfo['elytraEnabled'] ?? false;
+
         return $elytraEnabled && $this->isTextureValid();
     }
 
