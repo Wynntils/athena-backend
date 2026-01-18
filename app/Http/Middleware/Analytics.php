@@ -54,6 +54,11 @@ class Analytics
         if ($request->hasHeader('authToken')) {
             $authToken = $request->header('authToken');
 
+            // Skip if auth token is empty or invalid
+            if (empty($authToken) || ! is_string($authToken)) {
+                return 'unknown';
+            }
+
             // Cache user ID lookup for 5 minutes to avoid repeated DB queries
             return Cache::remember(
                 "analytics_user_id:{$authToken}",
