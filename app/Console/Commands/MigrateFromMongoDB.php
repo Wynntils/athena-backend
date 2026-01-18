@@ -11,6 +11,7 @@ class MigrateFromMongoDB extends Command
     protected $signature = 'mongo:migrate
                             {table? : Specific table to migrate (users, guilds, gathering_spots, api_keys, servers, crash_reports, patreon_api)}
                             {--batch-size=500 : Number of records per batch}
+                            {--skip=0 : Number of records to skip (for resuming)}
                             {--verify : Verify data after migration}
                             {--force : Skip confirmation prompts}';
 
@@ -30,9 +31,13 @@ class MigrateFromMongoDB extends Command
 
         $table = $this->argument('table');
         $batchSize = (int) $this->option('batch-size');
+        $skip = (int) $this->option('skip');
 
         $this->info('🚀 Starting MongoDB to PostgreSQL migration...');
         $this->info('Batch size: ' . $batchSize);
+        if ($skip > 0) {
+            $this->info('Skipping first: ' . number_format($skip) . ' records');
+        }
         $this->newLine();
 
         // Test connections
@@ -41,8 +46,13 @@ class MigrateFromMongoDB extends Command
         }
 
         if ($table) {
-            $this->migrateTable($table, $batchSize);
+            $this->migrateTable($table, $batchSize, $skip);
         } else {
+            if ($skip > 0) {
+                $this->warn('⚠️  Skip option is only available when migrating a specific table');
+                $this->newLine();
+            }
+
             // Migrate in dependency order
             $tables = [
                 'users',
@@ -55,7 +65,7 @@ class MigrateFromMongoDB extends Command
             ];
 
             foreach ($tables as $tableName) {
-                $this->migrateTable($tableName, $batchSize);
+                $this->migrateTable($tableName, $batchSize, 0);
                 $this->newLine();
             }
         }
@@ -142,7 +152,7 @@ class MigrateFromMongoDB extends Command
         }
     }
 
-    private function migrateUsers(int $batchSize): int
+    private function migrateUsers(int $batchSize, int $skip = 0): int
     {
         $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
@@ -156,10 +166,16 @@ class MigrateFromMongoDB extends Command
 
         $migrated = 0;
         $skipped = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        $mongodb->table('users')->orderBy('_id')->chunk($batchSize, function ($users) use ($pgsql, &$migrated, &$skipped, $bar) {
+        $mongodb->table('users')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($users) use ($pgsql, &$migrated, &$skipped, $bar) {
             $data = [];
 
             foreach ($users as $user) {
@@ -228,7 +244,7 @@ class MigrateFromMongoDB extends Command
         return $migrated;
     }
 
-    private function migrateGuilds(int $batchSize): int
+    private function migrateGuilds(int $batchSize, int $skip = 0): int
     {
         $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
@@ -241,10 +257,16 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        $mongodb->table('guilds')->orderBy('_id')->chunk($batchSize, function ($guilds) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('guilds')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($guilds) use ($pgsql, &$migrated, $bar) {
             $data = [];
 
             foreach ($guilds as $guild) {
@@ -274,12 +296,12 @@ class MigrateFromMongoDB extends Command
         return $migrated;
     }
 
-    private function migrateGatheringSpots(int $batchSize): int
+    private function migrateGatheringSpots(int $batchSize, int $skip = 0): int
     {
         $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
 
-        $total = $mongodb->table('gatheringSpot')->count();
+        $total = $mongodb->table('gathering_spots')->count();
 
         if ($total === 0) {
             $this->warn('  ⚠️  No gathering spots found in MongoDB');
@@ -287,10 +309,16 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        $mongodb->table('gatheringSpot')->orderBy('_id')->chunk($batchSize, function ($spots) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('gathering_spots')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($spots) use ($pgsql, &$migrated, $bar) {
             $data = [];
 
             foreach ($spots as $spot) {
@@ -322,12 +350,12 @@ class MigrateFromMongoDB extends Command
         return $migrated;
     }
 
-    private function migrateApiKeys(int $batchSize): int
+    private function migrateApiKeys(int $batchSize, int $skip = 0): int
     {
         $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
 
-        $total = $mongodb->table('apiKeys')->count();
+        $total = $mongodb->table('api_keys')->count();
 
         if ($total === 0) {
             $this->warn('  ⚠️  No API keys found in MongoDB');
@@ -335,13 +363,19 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        $mongodb->table('apiKeys')->orderBy('_id')->chunk($batchSize, function ($keys) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('api_keys')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($apiKeys) use ($pgsql, &$migrated, $bar) {
             $data = [];
 
-            foreach ($keys as $key) {
+            foreach ($apiKeys as $key) {
                 $key = (array) $key;
 
                 $data[] = [
@@ -371,7 +405,7 @@ class MigrateFromMongoDB extends Command
         return $migrated;
     }
 
-    private function migrateServers(int $batchSize): int
+    private function migrateServers(int $batchSize, int $skip = 0): int
     {
         $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
@@ -384,10 +418,16 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        $mongodb->table('servers')->orderBy('_id')->chunk($batchSize, function ($servers) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('servers')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($servers) use ($pgsql, &$migrated, $bar) {
             $data = [];
 
             foreach ($servers as $server) {
@@ -416,9 +456,9 @@ class MigrateFromMongoDB extends Command
         return $migrated;
     }
 
-    private function migrateCrashReports(int $batchSize): int
+    private function migrateCrashReports(int $batchSize, int $skip = 0): int
     {
-        $mongodb = DB:: connection('mongodb');
+        $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
 
         $total = $mongodb->table('crash_reports')->count();
@@ -429,10 +469,16 @@ class MigrateFromMongoDB extends Command
         }
 
         $migrated = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        $mongodb->table('crash_reports')->orderBy('_id')->chunk($batchSize, function ($reports) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('crash_reports')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($reports) use ($pgsql, &$migrated, $bar) {
             foreach ($reports as $report) {
                 $report = (array) $report;
 
@@ -474,36 +520,41 @@ class MigrateFromMongoDB extends Command
         return $migrated;
     }
 
-    private function migratePatreonApi(int $batchSize): int
+    private function migratePatreonApi(int $batchSize, int $skip = 0): int
     {
-        $mongodb = DB:: connection('mongodb');
+        $mongodb = DB::connection('mongodb');
         $pgsql = DB::connection('pgsql');
 
         $total = $mongodb->table('patreon_api')->count();
 
         if ($total === 0) {
-            $this->warn('  ⚠️  No Patreon API records found in MongoDB');
+            $this->warn('  ⚠️  No Patreon API data found in MongoDB');
             return 0;
         }
 
         $migrated = 0;
-        $bar = $this->output->createProgressBar($total);
+        $remaining = $total - $skip;
+        $bar = $this->output->createProgressBar($remaining);
+
+        if ($skip > 0) {
+            $this->info("  Resuming from record " . number_format($skip) . " of " . number_format($total));
+        }
+
         $bar->start();
 
-        // Clear existing records first (there should only be one)
-        $pgsql->table('patreon_api')->truncate();
-
-        $mongodb->table('patreon_api')->orderBy('_id')->chunk($batchSize, function ($tokens) use ($pgsql, &$migrated, $bar) {
+        $mongodb->table('patreon_api')->orderBy('_id')->skip($skip)->chunk($batchSize, function ($tokens) use ($pgsql, &$migrated, $bar) {
             $data = [];
 
             foreach ($tokens as $token) {
+                $token = (array) $token;
+
                 $data[] = [
                     'access_token' => $token['access_token'] ?? '',
                     'refresh_token' => $token['refresh_token'] ?? '',
-                    'expires_in' => $token['expires_in'] ??  0,
-                    'scope' => $token['scope'] ??  null,
+                    'expires_in' => $token['expires_in'] ?? 0,
+                    'scope' => $token['scope'] ?? null,
                     'token_type' => $token['token_type'] ?? 'Bearer',
-                    'created_at' => isset($token['created_at']) ? $token['created_at'] :  now(),
+                    'created_at' => isset($token['created_at']) ? $token['created_at'] : now(),
                     'updated_at' => isset($token['updated_at']) ? $token['updated_at'] : now(),
                 ];
             }
