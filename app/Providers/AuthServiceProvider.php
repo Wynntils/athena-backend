@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -33,7 +34,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Auth::viaRequest('authToken', static function (Request $request) {
-            return User::where('auth_token', $request->header('authToken') ?? $request->input('authToken'))->first();
+            $token = $request->header('authToken') ?? $request->input('authToken');
+            if (! $token) {
+                return null;
+            }
+
+            return Cache::remember("auth_token:{$token}", 300, function () use ($token) {
+                return User::where('auth_token', $token)->first();
+            });
         });
     }
 }
