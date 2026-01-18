@@ -9,6 +9,7 @@
         "php": "^8.2",
         "br33f/php-ga4-mp": "^0.1.6",
         "dedoc/scramble": "^0.13.10",
+        "graham-campbell/github": "*",
         "intervention/image": "^3.11",
         "jenssegers/mongodb": "^5.5",
         "laravel/framework": "^12.0",
