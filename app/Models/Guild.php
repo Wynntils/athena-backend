@@ -2,23 +2,21 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Builder;
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property string $id
  * @property string $prefix
  * @property string $color
- *
- * @mixin Builder
  */
 class Guild extends Model
 {
-
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        '_id',
+        'id',
         'prefix',
         'color'
     ];
@@ -56,13 +54,16 @@ class Guild extends Model
         $normalized = self::normalizeGuildData($guild);
 
         if ($normalized === null) {
-            return new Guild(['_id' => 'None', 'prefix' => 'NONE', 'color' => '#ffffff']);
+            return new Guild(['id' => 'None', 'prefix' => 'NONE', 'color' => '#ffffff']);
         }
 
-        return Guild::updateOrCreate(
-            ['_id' => $normalized['name']],
+        /** @var Guild $result */
+        $result = Guild::updateOrCreate(
+            ['id' => $normalized['name']],
             ['prefix' => $normalized['prefix']]
         );
+
+        return $result;
     }
 
 }

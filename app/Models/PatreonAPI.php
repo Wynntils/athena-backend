@@ -2,44 +2,37 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Builder;
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 use Patreon;
 
 /**
  * Class PatreonAPI
  * @package App\Models
+ * @property int $id
  * @property string $access_token
  * @property string $refresh_token
  * @property int $expires_in
  * @property string $scope
  * @property string $token_type
- * @property string $created_at
- * @property string $updated_at
- *
- * @mixin Builder
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  */
 class PatreonAPI extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'patreon_api';
+    protected $table = 'patreon_api';
+
     protected $fillable = [
         'access_token',
         'refresh_token',
         'expires_in',
         'scope',
         'token_type',
-        'created_at',
-        'updated_at',
-    ];
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
     ];
 
     protected $casts = [
-        'expires_in' => 'int',
+        'expires_in' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public static function getApi(): Patreon\API

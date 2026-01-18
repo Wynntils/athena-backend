@@ -119,7 +119,7 @@ class Handler extends ExceptionHandler
             }
 
             if ($request->input('authToken') !== null) {
-                $user = \App\Models\User::where('authToken', $request->input('authToken'))->first(['username']);
+                $user = \App\Models\User::where('auth_token', $request->input('authToken'))->first(['username']);
             }
             \Log::error(
                 sprintf("(%s) %s %s: %s", $request->userAgent(), $request->method(), $request->path(), $exception->getMessage()),

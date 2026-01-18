@@ -14,25 +14,28 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $discordInfo = $this->discord_info ?? [];
+        $cosmeticInfo = $this->cosmetic_info ?? [];
+
         return [
-            'uuid' => $this->_id,
+            'uuid' => $this->id,
             'username' => $this->username,
             'accountType' => $this->accountType,
-            'authToken' => $this->authToken,
+            'authToken' => $this->auth_token,
             'versions' => [
-                'latest' => $this->latestVersion,
-                'used' => $this->usedVersions,
+                'latest' => $this->latest_version,
+                'used' => $this->used_versions ?? [],
             ],
             'discord' => [
-                'username' => $this->discordInfo?->username,
-                'id' => $this->discordInfo?->id,
+                'username' => $discordInfo['username'] ?? null,
+                'id' => $discordInfo['id'] ?? null,
             ],
             'cosmetics' => [
-                'texture' => $this->cosmeticInfo?->capeTexture ?? '',
-                'isElytra' => $this->cosmeticInfo?->elytraEnabled ?? false,
-                'maxResolution' => $this->cosmeticInfo?->maxResolution ?? '0x0',
-                'allowAnimated' => $this->cosmeticInfo?->allowAnimated ?? false,
-                'parts' => $this->cosmeticInfo?->parts ?? [],
+                'texture' => $cosmeticInfo['capeTexture'] ?? '',
+                'isElytra' => $cosmeticInfo['elytraEnabled'] ?? false,
+                'maxResolution' => $cosmeticInfo['maxResolution'] ?? '0x0',
+                'allowAnimated' => $cosmeticInfo['allowAnimated'] ?? false,
+                'parts' => $cosmeticInfo['parts'] ?? [],
             ],
         ];
     }

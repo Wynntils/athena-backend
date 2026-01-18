@@ -78,7 +78,7 @@ class PatreonUpdate extends Command
         });
 
         // Get all current donators
-        $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get(['_id', 'username', 'discordInfo']);
+        $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get(['id', 'username', 'discord_info']);
 
         // Loop through all current donators, and check if they are still donators
         $currentDonators->each(function ($item) use ($tierData, $patreonMembers, $currentDonators, &$removedDonators, &$errorDonators) {
@@ -86,13 +86,13 @@ class PatreonUpdate extends Command
                 // Skip special donators (they are not patreon donators)
                 return;
             }
-            if (!isset($item->discordInfo['id'])) {
+            if (!isset($item->discord_info['id'])) {
                 $this->error(sprintf('Donator %s has no discord id', $item->username));
                 $item->accountType = AccountType::NORMAL;
                 $item->donatorType = DonatorType::NONE;
                 $currentDonators->forget($item->id);
             } else {
-                $discordId = $item->discordInfo['id'];
+                $discordId = $item->discord_info['id'];
 
                 $donator = $patreonMembers->where('social_connections.discord.user_id', $discordId)->first();
 
@@ -122,7 +122,7 @@ class PatreonUpdate extends Command
         $patreonMembers->each(function ($item) use ($tierData, $patreonMembers, $currentDonators) {
             $discordId = $item['social_connections']['discord']['user_id'];
 
-            $user = $currentDonators->where('discordInfo.id', $discordId)->first();
+            $user = $currentDonators->where('discord_info.id', $discordId)->first();
 
             if ($user) {
                 if (!empty($item['tier_id'])) {
@@ -147,7 +147,7 @@ class PatreonUpdate extends Command
         $patreonMembers->each(function ($item) use ($tierData, $patreonMembers, &$newDonators, &$unhandledDonators) {
             $discordId = $item['social_connections']['discord']['user_id'];
 
-            $users = User::where('discordInfo.id', $discordId);
+            $users = User::whereRaw("discord_info->>'id' = ?", [$discordId]);
 
             if ($users->count() > 1) {
                 $this->error(sprintf('Patreon Donator %s (%s) discord id has multiple Wynntils Users', $item['attributes']['full_name'], $discordId));

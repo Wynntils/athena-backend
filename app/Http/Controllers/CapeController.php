@@ -103,10 +103,11 @@ class CapeController extends Controller
                 $this->manager->deleteQueuedCape($originalSha);
 
                 // Set users who had the cape to have the new cape
-                foreach (User::where('cosmeticInfo.capeTexture', $originalSha)->get() as $user) {
-                    $cosmeticInfo = $user->cosmeticInfo;
-                    $cosmeticInfo->capeTexture = $sha;
-                    $cosmeticInfo->save();
+                foreach (User::whereRaw("cosmetic_info->>'capeTexture' = ?", [$originalSha])->get() as $user) {
+                    $cosmeticInfo = $user->cosmetic_info;
+                    $cosmeticInfo['capeTexture'] = $sha;
+                    $user->cosmetic_info = $cosmeticInfo;
+                    $user->save();
                 }
 
             }

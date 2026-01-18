@@ -54,7 +54,7 @@ class WynntilsOAuthController
 
         switch ($provider) {
             case 'discord':
-                $user = User::where('discordInfo.id', $socialiteUser->id)->first();
+                $user = User::whereRaw("discord_info->>'id' = ?", [$socialiteUser->id])->first();
                 if (!$user) {
                     return redirect()->route('auth.login')->withErrors('No Wynntils account is linked to this Discord account.');
                 }
