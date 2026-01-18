@@ -55,6 +55,7 @@ class AuthController extends Controller
                 'id' => Uuid::fromString($profile['id'])->toString(),
                 'account_type' => AccountType::NORMAL,
                 'auth_token' => \Str::uuid()->toString(),
+                'username' => $profile['name'],
             ]);
 
             // Fire SignUp Event
