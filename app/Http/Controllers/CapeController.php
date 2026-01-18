@@ -27,7 +27,9 @@ class CapeController extends Controller
 
     public function getUserCape($uuid)
     {
-        return response()->file($this->manager->getCape(User::findOrFail($uuid)->cosmeticInfo?->getFormattedTexture() ?? ''), [
+        $user = User::findOrFail($uuid);
+
+        return response()->file($this->manager->getCape($user->getFormattedTexture()), [
             'Content-Type' => 'image/png',
         ]);
     }
@@ -35,6 +37,7 @@ class CapeController extends Controller
     public function list(): \Illuminate\Http\JsonResponse
     {
         $result = $this->manager->listCapes();
+
         return response()->json(['result' => $result])
             ->setCache([
                 'max_age' => 60,
@@ -84,7 +87,7 @@ class CapeController extends Controller
         $sha = $request->route('sha');
         $type = MaskType::tryFrom($request->route('type')) ?? MaskType::FULL;
 
-        if (!$this->manager->isQueued($sha)) {
+        if (! $this->manager->isQueued($sha)) {
             return response()->json(['message' => 'There\'s not a cape in the queue with the provided SHA-1'], 404);
         }
 
@@ -114,6 +117,7 @@ class CapeController extends Controller
         }
 
         $this->manager->approveCape($sha);
+
         return response()->json(['message' => 'Successfully approved the cape.']);
     }
 
@@ -121,8 +125,7 @@ class CapeController extends Controller
     {
         $sha1 = $request->route('sha');
 
-        if (!$this->manager->isQueued($sha1) && !$this->manager->isApproved($sha1))
-        {
+        if (! $this->manager->isQueued($sha1) && ! $this->manager->isApproved($sha1)) {
             return response()->json(['message' => 'There\'s not a cape with the provided SHA-1'], 404);
         }
 

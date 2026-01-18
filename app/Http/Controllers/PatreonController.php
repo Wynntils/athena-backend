@@ -13,13 +13,12 @@ use Illuminate\Support\Collection;
 
 class PatreonController extends Controller
 {
-
     public function webhook(Request $request)
     {
         $payload = $request->getContent();
         $signature = $request->header('X-Patreon-Signature');
 
-        if (!$this->verifySignature($payload, $signature)) {
+        if (! $this->verifySignature($payload, $signature)) {
             abort(403, 'Invalid signature');
         }
 
@@ -104,33 +103,33 @@ class PatreonController extends Controller
             ->setAvatar('https://c5.patreon.com/external/favicon/apple-touch-icon.png')
             ->setMessage($message);
 
-        $embed = new Embed();
+        $embed = new Embed;
         $embed->setColor($color)->setAuthor(
-            (new Embed\Author())
+            (new Embed\Author)
                 ->setName($fullName)
                 ->setUrl($patronUrl)
                 ->setIconUrl($patronImage)
         )->addField(
-            (new Embed\Field())
+            (new Embed\Field)
                 ->setName('Amount')
                 ->setValue(number_format(($pledgeAmount / 100), 2, '.', ' '))
                 ->setIsInline(true)
         )->addField(
-            (new Embed\Field())
+            (new Embed\Field)
                 ->setName('Payment Status')
                 ->setValue($pledgeStatus)
                 ->setIsInline(true)
         )->addField(
-            (new Embed\Field())
+            (new Embed\Field)
                 ->setName('Months')
                 ->setValue($pledgeMonths)
                 ->setIsInline(true)
-        )->setFooter((new Embed\Footer())
-            ->setText($eventType." | Total Patrons: ".$patronCount)
+        )->setFooter((new Embed\Footer)
+            ->setText($eventType.' | Total Patrons: '.$patronCount)
         );
         if ($tier !== null) {
             $embed->addField(
-                (new Embed\Field())
+                (new Embed\Field)
                     ->setName('Tier')
                     ->setValue($tier)
                     ->setIsInline(true)
@@ -145,21 +144,21 @@ class PatreonController extends Controller
         $api_client = PatreonAPI::getApi();
         $campaign_id = '2422432';
 
-        $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get();
+        $currentDonators = User::where('account_type', AccountType::DONATOR->value)->get();
 
         $queryData = [
             'page' => [
-                'count' => 100
+                'count' => 100,
             ],
-            'include' => join(',', [
+            'include' => implode(',', [
                 'user',
-                'currently_entitled_tiers'
+                'currently_entitled_tiers',
             ]),
             'fields' => [
-                'user' => join(',', [
-                    'social_connections'
+                'user' => implode(',', [
+                    'social_connections',
                 ]),
-                'member' => join(',', [
+                'member' => implode(',', [
                     'full_name',
                     'is_follower',
                     'last_charge_date',
@@ -168,10 +167,10 @@ class PatreonController extends Controller
                     'currently_entitled_amount_cents',
                     'patron_status',
                 ]),
-                'tier' => join(',', [
+                'tier' => implode(',', [
                     'title',
-                ])
-            ]
+                ]),
+            ],
         ];
 
         $memberList = [];
@@ -179,14 +178,14 @@ class PatreonController extends Controller
         $continue = true;
 
         do {
-            $query = str_replace("%2C", ',', http_build_query($queryData));
+            $query = str_replace('%2C', ',', http_build_query($queryData));
 
             $data = $api_client->get_data("campaigns/{$campaign_id}/members?{$query}");
 
-            if(!is_array($data)) {
+            if (! is_array($data)) {
                 return response()->json([
                     'error' => 'Invalid response from Patreon',
-                    'data' => $data
+                    'data' => $data,
                 ], 500);
             }
 
@@ -194,12 +193,13 @@ class PatreonController extends Controller
                 $item = collect($item);
                 $userData = collect($data['included'])->where('type', 'user')->where('id', $item->pull('relationships.user.data.id'))->first();
                 $tierData = collect($data['included'])->where('type', 'tier')->where('id', $item->pull('relationships.currently_entitled_tiers.data.0.id'))->first();
+
                 return $item->mergeRecursive($userData)->put('tier', $tierData['attributes']['title'] ?? 'None');
             })->keyBy('id.1');
 
             $memberList += $members->toArray();
 
-            if(isset($data['meta']['pagination']['cursors'])) {
+            if (isset($data['meta']['pagination']['cursors'])) {
                 $queryData['page']['cursor'] = $data['meta']['pagination']['cursors']['next'];
             } else {
                 $continue = false;
@@ -210,50 +210,55 @@ class PatreonController extends Controller
 
         $activePatrons = $memberList->where('attributes.patron_status', 'active_patron');
 
-        $discordList = $activePatrons->map(function($item) use (&$currentDonators) {
+        $discordList = $activePatrons->map(function ($item) use (&$currentDonators) {
             $item = collect($item);
             $discordId = $item->pull('attributes.social_connections.discord.user_id');
-            if(!empty($discordId)) {
+            if (! empty($discordId)) {
                 $user = User::whereRaw("discord_info->>'id' = ?", [$discordId])->get();
             } else {
                 $user = collect([]);
             }
 
-            $user->each(function($user) use (&$currentDonators) {
-                $currentDonators = $currentDonators->reject(function($currentDonator) use ($user) {
+            $user->each(function ($user) use (&$currentDonators) {
+                $currentDonators = $currentDonators->reject(function ($currentDonator) use ($user) {
                     return $currentDonator->id === $user->id;
                 });
             });
 
-            foreach($user as $usr) {
-                if($usr->accountType === AccountType::DONATOR) {
+            foreach ($user as $usr) {
+                if ($usr->accountType === AccountType::DONATOR) {
                     $user = collect([$usr]);
                     break;
                 }
             }
 
-            return sprintf("%-21s|%-25s|%-10s|%-25s|%-25s",
-                "<@" . $discordId . ">",
-                "`" . $item->pull('attributes.full_name') . "`",
+            return sprintf('%-21s|%-25s|%-10s|%-25s|%-25s',
+                '<@'.$discordId.'>',
+                '`'.$item->pull('attributes.full_name').'`',
                 $item->pull('tier'),
-                $user->map(function($item) {return $item->username;})->join(','),
-                $user->map(function($item) {return $item->accountType->value;})->join(','),
+                $user->map(function ($item) {
+                    return $item->username;
+                })->join(','),
+                $user->map(function ($item) {
+                    return $item->accountType->value;
+                })->join(','),
             );
         });
 
-        $output = "**Current Patreon Donators:**\n" . $discordList->join("\n");
+        $output = "**Current Patreon Donators:**\n".$discordList->join("\n");
         $output .= "\n";
         $output .= "\n";
         $output .= "**Donators not tracked via Patreon:**\n";
-        $output .= $currentDonators->map(function($item) {
-            return sprintf("%-21s|%-25s|%-10s",
-                "<@" . $item->discordInfo?->id . ">",
-                "`" . $item->username . "`",
-                $item->accountType->value,
+        $output .= $currentDonators->map(function ($item) {
+            $discordInfo = $item->discord_info ?? [];
+
+            return sprintf('%-21s|%-25s|%-10s',
+                '<@'.($discordInfo['id'] ?? 'unknown').'>',
+                '`'.$item->username.'`',
+                $item->account_type->value,
             );
         })->join("\n");
 
         return response($output)->header('Content-Type', 'text/plain');
     }
-
 }

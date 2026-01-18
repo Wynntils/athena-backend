@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property string $id
  * @property string $username
- * @property string $authToken
- * @property AccountType $accountType
- * @property DonatorType $donatorType
- * @property array|null $discordInfo
- * @property array|null $cosmeticInfo
- * @property array|null $usedVersions
- * @property string|null $latestVersion
- * @property int|null $lastActivity
+ * @property string $auth_token
+ * @property AccountType $account_type
+ * @property DonatorType $donator_type
+ * @property array|null $discord_info
+ * @property array|null $cosmetic_info
+ * @property array|null $used_versions
+ * @property string|null $latest_version
+ * @property int|null $last_activity
  */
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
@@ -40,8 +40,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     protected $fillable = [
         'id',
-        'accountType',
-        'donatorType',
+        'account_type',
+        'donator_type',
         'username',
         'password',
         'auth_token',
@@ -64,8 +64,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     protected $casts = [
-        'accountType' => AccountType::class,
-        'donatorType' => DonatorType::class,
+        'account_type' => AccountType::class,
+        'donator_type' => DonatorType::class,
         'discord_info' => 'array',
         'cosmetic_info' => 'array',
         'used_versions' => 'array',

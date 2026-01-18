@@ -66,7 +66,7 @@ class PatreonUpdate extends Command
         $this->info(sprintf('Found %d active patrons with a discord account', $patreonMembers->count()));
 
         // Check for any patreon members that don't include a tier_id
-        $patreonMembers->each(function ($item) use ($patreonMembers, &$errorDonators) {
+        $patreonMembers->each(function ($item) use (&$errorDonators) {
             if (empty($item['tier_id'])) {
                 $this->error(sprintf('Donator %s (%s) has no tier id', $item['attributes']['full_name'], $item['social_connections']['discord']['user_id']));
                 $this->error(json_encode($item));
@@ -78,18 +78,18 @@ class PatreonUpdate extends Command
         });
 
         // Get all current donators
-        $currentDonators = User::where('accountType', AccountType::DONATOR->value)->get(['id', 'username', 'discord_info']);
+        $currentDonators = User::where('account_type', AccountType::DONATOR->value)->get(['id', 'username', 'discord_info']);
 
         // Loop through all current donators, and check if they are still donators
         $currentDonators->each(function ($item) use ($tierData, $patreonMembers, $currentDonators, &$removedDonators, &$errorDonators) {
-            if ($item->donatorType === DonatorType::SPECIAL->value) {
+            if ($item->donator_type === DonatorType::SPECIAL->value) {
                 // Skip special donators (they are not patreon donators)
                 return;
             }
-            if (!isset($item->discord_info['id'])) {
+            if (! isset($item->discord_info['id'])) {
                 $this->error(sprintf('Donator %s has no discord id', $item->username));
-                $item->accountType = AccountType::NORMAL;
-                $item->donatorType = DonatorType::NONE;
+                $item->account_type = AccountType::NORMAL;
+                $item->donator_type = DonatorType::NONE;
                 $currentDonators->forget($item->id);
             } else {
                 $discordId = $item->discord_info['id'];
@@ -98,16 +98,16 @@ class PatreonUpdate extends Command
 
                 if ($donator) {
                     $this->info(sprintf('Donator %s (%s) is still a donator', $item->username, $discordId));
-                    if (!empty($donator['tier_id'])) {
+                    if (! empty($donator['tier_id'])) {
                         // Update the donator type if needed
                         $donatorTier = $tierData[$donator['tier_id']];
-                        $item->donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
+                        $item->donator_type = DonatorType::fromPatreonLevel($donatorTier['title']);
                     }
-                    $item->accountType = AccountType::DONATOR;
+                    $item->account_type = AccountType::DONATOR;
                 } else {
                     $this->warn(sprintf('Donator %s (%s) is not a patreon donator', $item->username, $discordId));
-                    $item->accountType = AccountType::NORMAL;
-                    $item->donatorType = DonatorType::NONE;
+                    $item->account_type = AccountType::NORMAL;
+                    $item->donator_type = DonatorType::NONE;
                     $currentDonators->forget($item->id);
                     $removedDonators[] = [
                         'user' => $item,
@@ -125,7 +125,7 @@ class PatreonUpdate extends Command
             $user = $currentDonators->where('discord_info.id', $discordId)->first();
 
             if ($user) {
-                if (!empty($item['tier_id'])) {
+                if (! empty($item['tier_id'])) {
                     // check if the donator type is correct
                     $donatorTier = $tierData[$item['tier_id']];
                     $donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
@@ -155,6 +155,7 @@ class PatreonUpdate extends Command
                     'member' => $item,
                     'reason' => 'Multiple Wynntils Users found',
                 ];
+
                 return;
             }
 
@@ -164,17 +165,19 @@ class PatreonUpdate extends Command
                     'member' => $item,
                     'reason' => 'No Wynntils Users found',
                 ];
+
                 return;
             }
 
             $user = $users->first();
 
-            if (!$user) {
+            if (! $user) {
                 $this->error(sprintf('Donator %s (%s) is not found in the database', $item['attributes']['full_name'], $discordId));
                 $unhandledDonators[] = [
                     'member' => $item,
                     'reason' => 'User not found in database',
                 ];
+
                 return;
             }
 
@@ -183,10 +186,10 @@ class PatreonUpdate extends Command
                 'member' => $item,
             ];
 
-            $user->accountType = AccountType::DONATOR;
-            if (!empty($item['tier_id'])) {
+            $user->account_type = AccountType::DONATOR;
+            if (! empty($item['tier_id'])) {
                 $donatorTier = $tierData[$item['tier_id']];
-                $user->donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
+                $user->donator_type = DonatorType::fromPatreonLevel($donatorTier['title']);
             }
             $user->save();
             $this->info(sprintf('Donator %s (%s) is now marked as donator', $user->username, $discordId));
@@ -212,12 +215,12 @@ class PatreonUpdate extends Command
         $wh->setUsername(config('athena.webhook.discord.username'))
             ->setAvatar(config('athena.webhook.discord.avatar'));
 
-        $embed = new Embed();
+        $embed = new Embed;
         $embed->setColor(EmbedColor::AQUA)->setDescription($message);
 
         if (count($newDonators) > 0) {
             $embed->addField(
-                (new Embed\Field())
+                (new Embed\Field)
                     ->setName('New Donators')
                     ->setValue(implode("\n", array_map(function ($item) use ($tierData) {
                         return sprintf('%s <@%s> %s', $item['user']['username'], $item['user']['discordInfo']['id'], $item['member']['tier_id'] ? sprintf('(%s)', $tierData[$item['member']['tier_id']]['title']) : '');
@@ -227,7 +230,7 @@ class PatreonUpdate extends Command
 
         if (count($unhandledDonators) > 0) {
             $embed->addField(
-                (new Embed\Field())
+                (new Embed\Field)
                     ->setName('Unhandled Donators')
                     ->setValue(implode("\n", array_map(function ($item) {
                         return sprintf('%s %s (%s)', $item['member']['attributes']['full_name'], isset($item['member']['social_connections']['discord']) ? sprintf('<@%s>', $item['member']['social_connections']['discord']['user_id']) : '', $item['reason']);
@@ -237,7 +240,7 @@ class PatreonUpdate extends Command
 
         if (count($removedDonators) > 0) {
             $embed->addField(
-                (new Embed\Field())
+                (new Embed\Field)
                     ->setName('Removed Donators')
                     ->setValue(implode("\n", array_map(function ($item) {
                         return sprintf('%s <@%s> (%s)', $item['user']['username'], $item['user']['discordInfo']['id'], $item['reason']);
@@ -247,7 +250,7 @@ class PatreonUpdate extends Command
 
         if (count($errorDonators) > 0) {
             $embed->addField(
-                (new Embed\Field())
+                (new Embed\Field)
                     ->setName('Error Donators')
                     ->setValue(implode("\n", array_map(function ($item) {
                         return sprintf('%s <@%s> (%s)', $item['member']['attributes']['full_name'], $item['member']['social_connections']['discord']['user_id'], $item['reason']);
@@ -262,7 +265,7 @@ class PatreonUpdate extends Command
     {
         $tiersQuery = [
             'page' => [
-                'count' => 10000
+                'count' => 10000,
             ],
             'include' => implode(',', [
                 'tiers',
@@ -270,15 +273,16 @@ class PatreonUpdate extends Command
             'fields' => [
                 'tier' => implode(',', [
                     'title',
-                    'discord_role_ids'
-                ])
-            ]
+                    'discord_role_ids',
+                ]),
+            ],
         ];
 
-        $data = $this->api->get_data(sprintf("campaigns/%s?%s", self::PATREON_CAMPAGIN_ID, $this->buildQuery($tiersQuery)));
+        $data = $this->api->get_data(sprintf('campaigns/%s?%s', self::PATREON_CAMPAGIN_ID, $this->buildQuery($tiersQuery)));
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $this->error('Invalid response from Patreon');
+
             return Command::FAILURE;
         }
 
@@ -302,15 +306,15 @@ class PatreonUpdate extends Command
         // Get all members from Patreon
         $membersQuery = [
             'page' => [
-                'count' => 10000
+                'count' => 10000,
             ],
             'include' => implode(',', [
                 'user',
-                'currently_entitled_tiers'
+                'currently_entitled_tiers',
             ]),
             'fields' => [
                 'user' => implode(',', [
-                    'social_connections'
+                    'social_connections',
                 ]),
                 'member' => implode(',', [
                     'full_name',
@@ -319,19 +323,20 @@ class PatreonUpdate extends Command
                     'last_charge_status',
                     'lifetime_support_cents',
                     'currently_entitled_amount_cents',
-                    'patron_status'
+                    'patron_status',
                 ]),
-            ]
+            ],
         ];
 
         $patreonMembers = collect();
 
         $this->info('Fetching members from Patreon');
         do {
-            $data = $this->api->get_data(sprintf("campaigns/%s/members?%s", self::PATREON_CAMPAGIN_ID, $this->buildQuery($membersQuery)));
+            $data = $this->api->get_data(sprintf('campaigns/%s/members?%s', self::PATREON_CAMPAGIN_ID, $this->buildQuery($membersQuery)));
 
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 $this->error('Invalid response from Patreon');
+
                 return Command::FAILURE;
             }
 
@@ -345,6 +350,7 @@ class PatreonUpdate extends Command
             $members = $memberData->map(function ($item) use ($includedData) {
                 $item = collect($item);
                 $userData = $includedData->where('type', 'user')->where('id', $item->pull('relationships.user.data.id'))->first();
+
                 return [
                     'id' => $item->get('id'),
                     'attributes' => $item->get('attributes'),
@@ -357,7 +363,7 @@ class PatreonUpdate extends Command
 
             if ($data['meta']['pagination']['cursors']['next'] !== null) {
                 $membersQuery['page']['cursor'] = $data['meta']['pagination']['cursors']['next'];
-                $this->info('Fetching next page... ' . $membersQuery['page']['cursor']);
+                $this->info('Fetching next page... '.$membersQuery['page']['cursor']);
             }
         } while ($data['meta']['pagination']['cursors']['next'] !== null);
 
@@ -366,6 +372,6 @@ class PatreonUpdate extends Command
 
     private function buildQuery($query)
     {
-        return str_replace("%2C", ',', http_build_query($query));
+        return str_replace('%2C', ',', http_build_query($query));
     }
 }

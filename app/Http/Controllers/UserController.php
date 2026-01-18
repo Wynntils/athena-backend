@@ -6,16 +6,15 @@ use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Auth;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function updateDiscord(UserRequest $request): \Illuminate\Http\JsonResponse
     {
         \Auth::user()?->updateDiscord($request->validated('id'), $request->validated('username'));
+
         return response()->json(['message' => 'Success'], 200);
     }
 
@@ -27,7 +26,7 @@ class UserController extends Controller
         /** @var \App\Models\User $user */
         $user = \Auth::user();
         /** @var UploadedFile $config */
-        foreach($request->validated('config') as $config) {
+        foreach ($request->validated('config') as $config) {
             $fileResult = [];
             $uploadResult[] = &$fileResult;
             $fileResult['name'] = $config->getClientOriginalName();
@@ -56,10 +55,10 @@ class UserController extends Controller
                 'cosmetics' => [
                     'hasCape' => $user->hasCape(),
                     'hasElytra' => $user->hasElytra(),
-                    'hasEars' => $user->hasPart("ears"),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true)
-                ]
-            ]
+                    'hasEars' => $user->hasPart('ears'),
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true),
+                ],
+            ],
         ]);
     }
 
@@ -79,13 +78,12 @@ class UserController extends Controller
         // Conditionally add cosmetics info
         if ($cosmetics) {
 
-
             $texture = CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true);
             $response['cosmetics'] = [
                 'hasCape' => $user->hasCape(),
                 'hasElytra' => $user->hasElytra(),
-                'hasEars' => $user->hasPart("ears"),
-                'texture' => $texture
+                'hasEars' => $user->hasPart('ears'),
+                'texture' => $texture,
             ];
         }
 
@@ -98,25 +96,25 @@ class UserController extends Controller
 
         return response()->json([
             'user' => [
-                'accountType' => $user->accountType,
+                'accountType' => $user->account_type,
                 'cosmetics' => [
                     'hasCape' => $user->hasCape(),
                     'hasElytra' => $user->hasElytra(),
-                    'hasEars' => $user->hasPart("ears"),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true)
-                ]
-            ]
+                    'hasEars' => $user->hasPart('ears'),
+                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true),
+                ],
+            ],
         ]);
     }
 
-    private function getUser($user): User {
-        //-- TTL 10 min
+    private function getUser($user): User
+    {
+        // -- TTL 10 min
         $user = Cache::remember("user-{$user}", 600, function () use ($user) {
             return User::where('id', $user)->first();
         });
 
-
-        if (!$user) {
+        if (! $user) {
             response()->json(['error' => 'User not found'], 404)->throwResponse();
         }
 

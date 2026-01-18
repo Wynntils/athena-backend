@@ -53,7 +53,7 @@ class AuthController extends Controller
         if ($user === null) {
             $user = User::create([
                 'id' => Uuid::fromString($profile['id'])->toString(),
-                'accountType' => AccountType::NORMAL,
+                'account_type' => AccountType::NORMAL,
             ]);
 
             // Fire SignUp Event
