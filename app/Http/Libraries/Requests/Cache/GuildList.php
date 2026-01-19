@@ -20,6 +20,8 @@ class GuildList implements CacheContract
             ->map(function ($guild) {
                 $arr = $guild->toArray();
                 $arr['_id'] = $arr['id'];
+                $arr['color'] = isset($arr['color']) ? (string) $arr['color'] : '';
+
                 unset($arr['id']);
                 return $arr;
             })
