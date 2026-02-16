@@ -49,8 +49,8 @@
                                     <tbody>
                                     @foreach ($crashReport->occurrences as $occurrence)
                                         <tr>
-                                            <td>{{ $occurrence->version }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($occurrence->time) }}</td>
+                                            <td>{{ $occurrence['version'] }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($occurrence['time']) }}</td>
                                         </tr>
                                     @endforeach
                                     </tbody>
