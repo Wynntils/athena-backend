@@ -151,17 +151,20 @@ class CrashReportController extends Controller
     public function index(Request $request)
     {
         // get showHandled parameter will be either "on" or "1" or "0"
-        $showHandled = $request->input('showHandled') === 'on' || $request->input('showHandled') === '1';
+        $showHandled = $request->input('showHandled') === 'on'
+            || $request->input('showHandled') === '1';
 
-        if ($showHandled) {
-            $crashReports = CrashReport::orderByDesc('updated_at');
-        } else {
-            $crashReports = CrashReport::where('handled', false);
+        $crashReports = CrashReport::query();
+
+        if (!$showHandled) {
+            $crashReports->whereRaw('"handled" IS FALSE');
         }
 
         if ($search = $request->input('search')) {
-            $crashReports = $crashReports->where('trace', 'like', "%$search%")
-                ->orWhere('trace_hash', 'like', "%$search%");
+            $crashReports->where(function ($q) use ($search) {
+                $q->where('trace', 'like', "%{$search}%")
+                    ->orWhere('trace_hash', 'like', "%{$search}%");
+            });
         }
 
         $crashReports = $crashReports->orderByDesc('updated_at')->paginate(10);
