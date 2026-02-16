@@ -156,7 +156,7 @@ class CrashReportController extends Controller
         if ($showHandled) {
             $crashReports = CrashReport::orderByDesc('updated_at');
         } else {
-            $crashReports = CrashReport::where('handled', false)->orWhere('handled', 'exists', false);
+            $crashReports = CrashReport::where('handled', false);
         }
 
         if ($search = $request->input('search')) {
