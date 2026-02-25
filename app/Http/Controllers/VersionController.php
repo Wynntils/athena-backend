@@ -21,9 +21,9 @@ class VersionController extends Controller
         $dev = $userAgent->contains('dev');
         $modloader = $mcVersion = null;
 
-        $modloader = $this->normalizeModloader($userAgent->afterLast(' '));
+        $modloader = $this->normalizeModloader((string) $userAgent->afterLast(' '));
         if ($userAgent->contains('+')) {
-            $mcVersion = $userAgent->upper()->after('+MC-')->before(' ');
+            $mcVersion = (string) $userAgent->upper()->after('+MC-')->before(' ');
         }
 
         return [
@@ -45,8 +45,10 @@ class VersionController extends Controller
             'stream' => $userAgentStream,
         ] = $this->userAgentDetails($request);
 
+        $requestedMcVersion = $mcVersion ? strtolower((string) $mcVersion) : null;
+
         $stream = $this->resolveLatestStream($stream, $userAgentStream);
-        $releases = $this->getReleases($client, $stream, 1, $mcVersion ?? null);
+        $releases = $this->getReleases($client, $stream, 1, $requestedMcVersion);
 
         $latest = $releases->first(function ($release) {
             return !empty($release['assets']); // Filter out releases without assets
@@ -57,9 +59,8 @@ class VersionController extends Controller
                 ->header('Vary', 'User-Agent');
         }
 
-        $requestedMcVersion = $mcVersion;
-        $mcVersion = (string) ($mcVersion ?? 'unknown');
-        $assetMd5 = $this->getCachedAssetMd5($client, $stream, $mcVersion, $latest);
+        $cacheMcVersion = (string) ($requestedMcVersion ?? 'unknown');
+        $assetMd5 = $this->getCachedAssetMd5($client, $stream, $cacheMcVersion, $latest);
 
         $asset = collect($latest['assets'])->first(function ($asset) use ($modloader, $requestedMcVersion) {
             $name = str($asset['name']);
@@ -91,7 +92,7 @@ class VersionController extends Controller
 
 
         if (str($asset['name'])->contains('+MC-')) {
-            $tagMcVersion = str($asset['name'])->after('+MC-')->before('.jar');
+            $tagMcVersion = (string) str($asset['name'])->after('+MC-')->before('.jar');
             $response['supportedMcVersion'] = $tagMcVersion;
         }
 
@@ -163,7 +164,7 @@ class VersionController extends Controller
             return null;
         }
 
-        return $matches[1];
+        return strtolower($matches[1]);
     }
 
     private function userAgentStream(string $userAgent): string
@@ -295,8 +296,10 @@ class VersionController extends Controller
             // the +MC- prefix is used to indicate that the release is for a specific mcVersion
             // this prefix is found in the assets name
             if ($mcVersion) {
-                $assets = collect($release['assets'])->filter(function ($asset) use ($mcVersion) {
-                    return $this->assetMinecraftVersion($asset['name']) === $mcVersion;
+                $requestedMcVersion = strtolower((string) $mcVersion);
+
+                $assets = collect($release['assets'])->filter(function ($asset) use ($requestedMcVersion) {
+                    return $this->assetMinecraftVersion($asset['name']) === $requestedMcVersion;
                 });
                 if ($assets->isEmpty()) {
                     return false;
