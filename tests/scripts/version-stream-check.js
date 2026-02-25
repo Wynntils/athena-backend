@@ -82,6 +82,7 @@ export const options = {
 };
 
 export default function () {
+    // NOSONAR
     const c = cases[Math.floor(Math.random() * cases.length)];
     const res = http.get(`${BASE}/version/latest/${c.stream}`, {
         headers: { 'User-Agent': c.ua },
