@@ -12,6 +12,7 @@ const cases = [
         ua: 'Wynntils Artemis\\v2.4.10+MC-1.21.11 (client) FABRIC',
         expect: (v) => !isPrereleaseTag(v),
         assertNeverPrerelease: true,
+        expectedSupportedMcVersion: '1.21.11',
     },
     {
         name: 'stable fabric ce -> release (default)',
@@ -24,6 +25,7 @@ const cases = [
         stream: 'latest',
         ua: 'Wynntils Artemis\\v2.4.10-beta.71+MC-1.21.11 (client) FABRIC',
         expect: (v) => /beta/i.test(v),
+        expectedSupportedMcVersion: '1.21.11',
     },
     {
         name: 'beta fabric ce -> beta',
@@ -52,12 +54,44 @@ const cases = [
         stream: 'latest',
         ua: 'Wynntils Artemis\\v2.4.10+MC-1.21.11 (client) NEOFORGE',
         expect: (v) => !isPrereleaseTag(v),
+        expectedSupportedMcVersion: '1.21.11',
     },
     {
         name: 'beta neoforge latest -> beta',
         stream: 'latest',
         ua: 'Wynntils Artemis\\v2.4.10-beta.71+MC-1.21.11 (client) NEOFORGE',
         expect: (v) => /beta/i.test(v),
+        expectedSupportedMcVersion: '1.21.11',
+    },
+
+    // MC 1.21.4 regression checks (asset selection must match requested MC version)
+    {
+        name: 'stable fabric latest -> release (mc 1.21.4)',
+        stream: 'latest',
+        ua: 'Wynntils Artemis\\v2.4.10+MC-1.21.4 (client) FABRIC',
+        expect: (v) => !isPrereleaseTag(v),
+        expectedSupportedMcVersion: '1.21.4',
+    },
+    {
+        name: 'beta fabric latest -> beta (mc 1.21.4)',
+        stream: 'latest',
+        ua: 'Wynntils Artemis\\v2.4.10-beta.71+MC-1.21.4 (client) FABRIC',
+        expect: (v) => /beta/i.test(v),
+        expectedSupportedMcVersion: '1.21.4',
+    },
+    {
+        name: 'stable neoforge latest -> release (mc 1.21.4)',
+        stream: 'latest',
+        ua: 'Wynntils Artemis\\v2.4.10+MC-1.21.4 (client) NEOFORGE',
+        expect: (v) => !isPrereleaseTag(v),
+        expectedSupportedMcVersion: '1.21.4',
+    },
+    {
+        name: 'beta neoforge latest -> beta (mc 1.21.4)',
+        stream: 'latest',
+        ua: 'Wynntils Artemis\\v2.4.10-beta.71+MC-1.21.4 (client) NEOFORGE',
+        expect: (v) => /beta/i.test(v),
+        expectedSupportedMcVersion: '1.21.4',
     },
 
     // Explicit stream wins
@@ -107,6 +141,17 @@ export default function () {
             try {
                 const body = JSON.parse(r.body);
                 return typeof body.version === 'string' && !isPrereleaseTag(body.version);
+            } catch {
+                return false;
+            }
+        };
+    }
+
+    if (c.expectedSupportedMcVersion) {
+        checks[`${c.name}: supportedMcVersion matches request`] = (r) => {
+            try {
+                const body = JSON.parse(r.body);
+                return body.supportedMcVersion === c.expectedSupportedMcVersion;
             } catch {
                 return false;
             }
