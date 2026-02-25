@@ -53,18 +53,31 @@ class VersionController extends Controller
         });
 
         if (!$latest) {
-            return response()->json(['error' => 'No release found for this stream'], 404);
+            return response()->json(['error' => 'No release found for this stream'], 404)
+                ->header('Vary', 'User-Agent');
         }
 
+        $requestedMcVersion = $mcVersion;
         $mcVersion = (string) ($mcVersion ?? 'unknown');
         $assetMd5 = $this->getCachedAssetMd5($client, $stream, $mcVersion, $latest);
 
-        $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
-            return str($asset['name'])->contains($modloader);
+        $asset = collect($latest['assets'])->first(function ($asset) use ($modloader, $requestedMcVersion) {
+            $name = str($asset['name']);
+
+            if (!$name->contains($modloader)) {
+                return false;
+            }
+
+            if (!$requestedMcVersion) {
+                return true;
+            }
+
+            return $this->assetMinecraftVersion($asset['name']) === $requestedMcVersion;
         });
 
         if (!$asset) {
-            return response()->json(['error' => 'No release found for this stream'], 404);
+            return response()->json(['error' => 'No release found for this stream'], 404)
+                ->header('Vary', 'User-Agent');
         }
 
         $latestTag = str($latest['tag_name']);
@@ -82,7 +95,7 @@ class VersionController extends Controller
             $response['supportedMcVersion'] = $tagMcVersion;
         }
 
-        return response()->json($response);
+        return response()->json($response)->header('Vary', 'User-Agent');
     }
 
     public function changelog(Request $request, $version)
@@ -142,6 +155,15 @@ class VersionController extends Controller
             'forge' => 'neoforge',
             default => $modloader,
         };
+    }
+
+    private function assetMinecraftVersion(string $assetName): ?string
+    {
+        if (!preg_match('/\+MC-([0-9]+(?:\.[0-9]+)*)/i', $assetName, $matches)) {
+            return null;
+        }
+
+        return $matches[1];
     }
 
     private function userAgentStream(string $userAgent): string
@@ -274,7 +296,7 @@ class VersionController extends Controller
             // this prefix is found in the assets name
             if ($mcVersion) {
                 $assets = collect($release['assets'])->filter(function ($asset) use ($mcVersion) {
-                    return str_contains($asset['name'], '+MC-') && str_contains($asset['name'], $mcVersion);
+                    return $this->assetMinecraftVersion($asset['name']) === $mcVersion;
                 });
                 if ($assets->isEmpty()) {
                     return false;
