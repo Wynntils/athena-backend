@@ -12,47 +12,40 @@ class VersionController extends Controller
     }
 
     private function userAgentDetails(Request $request) {
-        // Legacy User Agent: Wynntils\\1.15.1-10 (client)
-        // Semver User Agent: Wynntils Artemis\\v0.0.4-beta.71+MC-1.20.2 (client) FABRIC
+        // Semver User Agent: Wynntils Artemis\\v0.0.4+MC-1.20.2 (client) FABRIC
+        // BETA User Agent : Wynntils Artemis\\v0.0.4-beta.71+MC-1.20.2 (client) FABRIC
         // DEV User Agent: Wynntils Artemis\\v0.0.4-SNAPSHOT+MC-1.20.2 (dev) FABRIC
         $userAgent = str($request->userAgent())->lower();
 
-        $isLegacy = $userAgent->startsWith('wynntils\\');
-        $client = $isLegacy ? 'Wynntils' : 'Artemis';
+        $client = 'Artemis';
         $dev = $userAgent->contains('dev');
         $modloader = $mcVersion = null;
 
-        // Artemis only
-        if (!$isLegacy) {
-            $modloader = $userAgent->afterLast(' ');
-            if ($userAgent->contains('+')) {
-                $mcVersion = $userAgent->upper()->after('+MC-')->before(' ');
-            }
+        $modloader = $this->normalizeModloader($userAgent->afterLast(' '));
+        if ($userAgent->contains('+')) {
+            $mcVersion = $userAgent->upper()->after('+MC-')->before(' ');
         }
 
         return [
-            'isLegacy' => $isLegacy,
             'client' => $client,
             'dev' => $dev,
             'modloader' => $modloader,
             'mcVersion' => $mcVersion,
+            'stream' => $this->userAgentStream($userAgent),
         ];
     }
 
     public function latest(Request $request, $stream)
     {
-        if (str_starts_with($stream, 'v')) {
-            $stream = str_replace('v', '', $stream);
-        }
-
         [
-            'isLegacy' => $isLegacy,
             'client' => $client,
             'dev' => $dev,
             'modloader' => $modloader,
-            'mcVersion' => $mcVersion
+            'mcVersion' => $mcVersion,
+            'stream' => $userAgentStream,
         ] = $this->userAgentDetails($request);
 
+        $stream = $this->resolveLatestStream($stream, $userAgentStream);
         $releases = $this->getReleases($client, $stream, 1, $mcVersion ?? null);
 
         $latest = $releases->first(function ($release) {
@@ -64,27 +57,11 @@ class VersionController extends Controller
         }
 
         $mcVersion = (string) ($mcVersion ?? 'unknown');
+        $assetMd5 = $this->getCachedAssetMd5($client, $stream, $mcVersion, $latest);
 
-        $cache = \Cache::get('version', []);
-
-        if (
-            !isset($cache[$stream][$mcVersion][$client])
-            || $cache[$stream][$mcVersion][$client]['tag'] !== $latest['tag_name']
-            || !is_array($cache[$stream][$mcVersion][$client]['md5'])
-            || empty($cache[$stream][$mcVersion][$client]['md5'])
-        ) {
-            $cache[$stream][$mcVersion][$client] = [];
-            $cache = $this->updateCache($cache, $stream, $mcVersion, $client, $latest);
-        }
-
-        // We need to filter the asset list to only the current modloader if we're using Artemis
-        if ($isLegacy) {
-            $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
-        } else {
-            $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
-                return str($asset['name'])->contains($modloader);
-            });
-        }
+        $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
+            return str($asset['name'])->contains($modloader);
+        });
 
         if (!$asset) {
             return response()->json(['error' => 'No release found for this stream'], 404);
@@ -95,12 +72,12 @@ class VersionController extends Controller
         $response = [
             'version' => $latestTag,
             'url' => $asset['browser_download_url'],
-            'md5' => $cache[$stream][$mcVersion][$client]['md5'][$asset['name']],
+            'md5' => $assetMd5[$asset['name']] ?? null,
             'changelog' => route('version.changelog', [$latest['tag_name']]),
         ];
 
 
-        if (!$isLegacy && str($asset['name'])->contains('+MC-')) {
+        if (str($asset['name'])->contains('+MC-')) {
             $tagMcVersion = str($asset['name'])->after('+MC-')->before('.jar');
             $response['supportedMcVersion'] = $tagMcVersion;
         }
@@ -138,8 +115,8 @@ class VersionController extends Controller
 
     public function download($version, $stream, $modloader = 'fabric')
     {
-        $client = $version === "legacy" ? 'Wynntils' : 'Artemis';
-        $isArtemis = $client === 'Artemis';
+        $client = 'Artemis';
+        $modloader = $this->normalizeModloader(strtolower($modloader));
         $releases = $this->getReleases($client, $stream);
 
         $latest = $releases->first();
@@ -148,141 +125,53 @@ class VersionController extends Controller
             return response()->json(['error' => 'No release found for this version'], 404);
         }
 
-        if ($isArtemis) {
-            $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
-                return str($asset['name'])->contains($modloader);
-            });
-        } else {
-            $asset = $latest['assets'][0]; // Legacy Wynntils only has one asset
+        $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
+            return str($asset['name'])->contains($modloader);
+        });
+
+        if (!$asset) {
+            return response()->json(['error' => 'No release found for this version'], 404);
         }
 
         return response()->redirectTo($asset['browser_download_url']);
     }
 
-    public function changelogBetween(Request $request, $fromQuery, $toQuery)
+    private function normalizeModloader(?string $modloader): ?string
     {
-        ['client' => $client] = $this->userAgentDetails($request);
-
-        $stream = str($fromQuery)->contains(['alpha', 'beta']) ? 'ce' : 're';
-
-        $releases = $this->getReleases($client, $stream);
-
-        $from = $releases->firstWhere('tag_name', $fromQuery);
-        $to = $releases->firstWhere('tag_name', $toQuery);
-
-        if (!$from || !$to) {
-            $page = 1;
-            // Check the next page of releases if we didn't find the release
-            do {
-                $search = $this->getReleases($client, $stream, ++$page);
-                if (!$from) {
-                    $from = $search->firstWhere('tag_name', $fromQuery);
-                }
-                if (!$to) {
-                    $to = $search->firstWhere('tag_name', $toQuery);
-                }
-                $releases = $releases->merge($search);
-            } while ((!$from || !$to) && $search->count() > 0);
-
-            if (!$from || !$to) {
-                match (true) {
-                    !$from && !$to => $error = 'No releases found for these versions',
-                    !$from => $error = 'No release found for the from version',
-                    !$to => $error = 'No release found for the to version',
-                };
-
-                return response()->json(['error' => $error], 404);
-            }
-        }
-
-        // Reverse the releases so we can iterate from the oldest to the newest
-        $releases = $releases->reverse();
-
-        // We want to collate all the changelog headings and their bodies
-        $changelog = [];
-        $header = null;
-
-        foreach ($releases as $release) {
-            if (version_compare($release['tag_name'], $from['tag_name'], '<=')) {
-                continue;
-            }
-
-            // clean changelog body of markdown links and commit hashes
-            $release['body'] = str($release['body'])->replaceMatches('/\[(.*?)\]\(.*?\)/', '$1');
-            $release['body'] = str($release['body'])->replaceMatches('/\([0-9a-f]{7}\)/', '');
-            // replace crlf with lf
-            $release['body'] = str($release['body'])->replace("\r\n", "\n");
-
-            // Split the changelog into lines
-            $lines = explode("\n", $release['body']);
-
-            // Iterate over the lines and collate the headings and their bodies
-            // Headers start with ### and are followed by a space
-            foreach ($lines as $line) {
-                $line = str($line)->trim();
-                if ($line->isEmpty()) {
-                    continue;
-                }
-                if ($line->startsWith('## ')) {
-                    continue;
-                }
-                if ($line->startsWith('### ')) {
-                    $header = str($line)->replace('### ', '')->value();
-                    if (!isset($changelog[$header])) {
-                        $changelog[$header] = [];
-                    }
-                } else {
-                    $line = $line->value();
-                    if(empty($header)){
-                        continue;
-                    }
-                    // check if value is already in array
-                    if (!in_array($line, $changelog[$header])) {
-                        $changelog[$header][] = $line;
-                    }
-                }
-            }
-
-            if ($release['tag_name'] === $to['tag_name']) {
-                break;
-            }
-        }
-
-        // Join the changelog headings and their bodies into a single string
-        //  - Headings should be in a specific order
-        $changelog = collect($changelog)->sortKeysUsing(function ($a, $b) {
-                $order = [
-                    'New Features',
-                    'Bug Fixes',
-                    'Performance Improvements',
-                    'Reverts',
-                    'Documentation',
-                    'Styles',
-                    'Miscellaneous Chores',
-                    'Code Refactoring',
-                    'Tests',
-                    'Build System',
-                    'Continuous Integration',
-                ];
-                $aIndex = array_search($a, $order);
-                $bIndex = array_search($b, $order);
-
-                return $aIndex <=> $bIndex;
-            })->map(function ($body, $header) {
-                return "### $header \n" . implode("\n", $body);
-            })->implode("\n\n");
-
-        // Add the version range to the top of the changelog
-        $changelog = "## Changelog from $from[tag_name] to $to[tag_name] \n\n" . $changelog;
-
-        return response()->json([
-            'from' => $from['tag_name'],
-            'to' => $to['tag_name'],
-            'changelog' => $changelog,
-        ]);
+        return match (strtolower((string) $modloader)) {
+            'forge' => 'neoforge',
+            default => $modloader,
+        };
     }
 
-    public function changelogBetweenV2(Request $request, $fromQuery, $toQuery)
+    private function userAgentStream(string $userAgent): string
+    {
+        return match (true) {
+            str_contains($userAgent, 'pre-alpha') => 'pre-alpha',
+            str_contains($userAgent, 'beta') || str_contains($userAgent, '-beta') => 'beta',
+            str_contains($userAgent, ' alpha') || str_contains($userAgent, '-alpha') => 'alpha',
+            str_contains($userAgent, ' rc') || str_contains($userAgent, '-rc') => 'rc',
+            default => 'release',
+        };
+    }
+
+    private function resolveLatestStream(string $requestedStream, string $userAgentStream): string
+    {
+        $normalized = strtolower((string) $requestedStream);
+
+        if (str_starts_with($normalized, 'v')) {
+            $normalized = substr($normalized, 1);
+        }
+
+        return match ($normalized) {
+            '', 'latest', 'ce' => $userAgentStream ?: 'release',
+            're' => 'release',
+            'pre-alpha', 'alpha', 'beta', 'rc', 'release' => $normalized,
+            default => 'release',
+        };
+    }
+
+    public function changelogBetween(Request $request, $fromQuery, $toQuery)
     {
         ['client' => $client] = $this->userAgentDetails($request);
 
@@ -356,9 +245,10 @@ class VersionController extends Controller
 
     private function getReleases($repo, $stream, $page = 1, $mcVersion = null): \Illuminate\Support\Collection
     {
+        $stream = $this->normalizeReleaseStream($stream);
+
         if (!in_array($stream, [
-            're', 'latest', 'ce', // legacy versioning
-            'pre-alpha', 'alpha', 'beta', 'rc', 'release', // semver versioning
+            'ce', 'pre-alpha', 'alpha', 'beta', 'rc', 'release',
         ])) {
             throw new \InvalidArgumentException('Invalid stream');
         }
@@ -391,33 +281,40 @@ class VersionController extends Controller
                 }
             }
             return $release['draft'] === false && match ($stream) {
-                'release', 're', 'latest' => $release['prerelease'] === false,
+                'release' => $release['prerelease'] === false,
+                'ce' => $release['prerelease'] === true,
                 'pre-alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'pre-alpha'),
                 'alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'alpha') && !str_contains($release['tag_name'], 'pre-alpha'),
                 'beta' => $release['prerelease'] === true && str_contains($release['tag_name'], 'beta'),
                 'rc' => $release['prerelease'] === true && str_contains($release['tag_name'], 'rc'),
-                default => true,
             } && !str($release['tag_name'])->upper()->contains('+MC-');
         })->sort(function ($a, $b) {
             return version_compare($b['tag_name'], $a['tag_name']);
         });
     }
 
-    private function updateCache(mixed $cache, $stream, string $mcVersion, string $client, mixed $latest)
+    private function normalizeReleaseStream(string $stream): string
     {
-        $md5 = [];
+        return match (strtolower($stream)) {
+            're', 'latest' => 'release',
+            default => strtolower($stream),
+        };
+    }
 
-        foreach($latest['assets'] as $key => $asset) {
-            $md5[$asset['name']] = md5_file($asset['browser_download_url']);
-        }
+    private function getCachedAssetMd5(string $client, string $stream, string $mcVersion, array $latest): array
+    {
+        $stream = $this->normalizeReleaseStream($stream);
+        $tag = strtolower((string) $latest['tag_name']);
+        $cacheKey = "version.md5.{$client}.{$stream}.{$mcVersion}.{$tag}";
 
-        $cache[$stream][$mcVersion][$client] = [
-            'tag' => $latest['tag_name'],
-            'md5' => $md5,
-        ];
+        return \Cache::remember($cacheKey, 300, function () use ($latest) {
+            $md5 = [];
 
-        \Cache::put('version', $cache);
+            foreach ($latest['assets'] as $asset) {
+                $md5[$asset['name']] = md5_file($asset['browser_download_url']);
+            }
 
-        return $cache;
+            return $md5;
+        });
     }
 }
