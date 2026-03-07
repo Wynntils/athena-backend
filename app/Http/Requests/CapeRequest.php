@@ -8,6 +8,7 @@ class CapeRequest extends BaseRequest
     {
         return [
             'cape' => 'required|file|mimes:png|max:500',
+            'username' => 'required|string'
         ];
     }
 

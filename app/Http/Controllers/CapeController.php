@@ -63,6 +63,7 @@ class CapeController extends Controller
     public function uploadCape(CapeRequest $request): \Illuminate\Http\JsonResponse
     {
         $capePath = $request->validated('cape')?->path();
+        $username = $request->validated('username');
 
         $image = Image::make($capePath);
 
@@ -78,7 +79,7 @@ class CapeController extends Controller
             $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $hash], 400),
             $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.', 'sha-1' => $hash], 400),
             $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.', 'sha-1' => $hash], 400),
-            default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($image)]),
+            default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($image, $username)]),
         };
     }
 
