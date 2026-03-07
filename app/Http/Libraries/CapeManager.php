@@ -143,7 +143,7 @@ class CapeManager
         if ($notify) {
             Notifications::cape(
                 title: "A new cape needs approval!",
-                description: sprintf("**Uploaded by:** %s/n➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
+                description: sprintf("**Uploaded by:** %s\n➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
                     $username,
                     route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
                     route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
