@@ -65,6 +65,10 @@ class VersionController extends Controller
         $asset = collect($latest['assets'])->first(function ($asset) use ($modloader, $requestedMcVersion) {
             $name = str($asset['name']);
 
+            if ($this->isSourceJar($name)) {
+                return false;
+            }
+
             if (!$name->contains($modloader)) {
                 return false;
             }
@@ -140,7 +144,10 @@ class VersionController extends Controller
         }
 
         $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
-            return str($asset['name'])->contains($modloader);
+            $name = (string) $asset['name'];
+
+            return !$this->isSourceJar($name)
+                && str_contains(strtolower($name), strtolower((string) $modloader));
         });
 
         if (!$asset) {
@@ -299,7 +306,13 @@ class VersionController extends Controller
                 $requestedMcVersion = strtolower((string) $mcVersion);
 
                 $assets = collect($release['assets'])->filter(function ($asset) use ($requestedMcVersion) {
-                    return $this->assetMinecraftVersion($asset['name']) === $requestedMcVersion;
+                    $name = (string) $asset['name'];
+
+                    if ($this->isSourceJar($name)) {
+                        return false;
+                    }
+
+                    return $this->assetMinecraftVersion($name) === $requestedMcVersion;
                 });
                 if ($assets->isEmpty()) {
                     return false;
@@ -341,5 +354,10 @@ class VersionController extends Controller
 
             return $md5;
         });
+    }
+
+    private function isSourceJar(string $assetName): bool
+    {
+        return str_ends_with(strtolower($assetName), '-sources.jar');
     }
 }
