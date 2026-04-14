@@ -63,6 +63,11 @@ class ItemWeights implements CacheContract
         $out = [];
         foreach ($weights as $weight) {
             if (!isset($weight['item_name'], $weight['weight_name'], $weight['identifications'])) continue;
+
+            if ($weight['item_name'] === 'Trance') {
+                continue;
+            }
+
             $item = $weight['item_name'];
             $weightName = $weight['weight_name'];
             $out[$item][$weightName] = $weight['identifications'];
