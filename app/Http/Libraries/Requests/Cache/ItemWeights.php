@@ -7,6 +7,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+// TODO: Add a way to dynamically filter out items if one of the weights fail to calculate due to an item change.
 class ItemWeights implements CacheContract
 {
     public function refreshRate(): int
@@ -63,10 +64,6 @@ class ItemWeights implements CacheContract
         $out = [];
         foreach ($weights as $weight) {
             if (!isset($weight['item_name'], $weight['weight_name'], $weight['identifications'])) continue;
-
-            if ($weight['item_name'] === 'Trance') {
-                continue;
-            }
 
             $item = $weight['item_name'];
             $weightName = $weight['weight_name'];
