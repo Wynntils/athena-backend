@@ -3,6 +3,7 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use Http;
+use http\Client\Response;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Cache;
 
@@ -23,17 +24,28 @@ class Leaderboard implements CacheContract
         $exclude = '4ca3e683-59f7-42b1-b727-b3e5d9da3ae6';
         $base = rtrim(config('athena.api.wynn.v3.leaderboards'), '/');
 
-        $responses = Http::wynn()->pool(function (Pool $pool) use ($types, $base) {
+        $responses = Http::pool(function (Pool $pool) use ($types, $base) {
             $reqs = [];
+
             foreach ($types as $type) {
-                $reqs[] = $pool->as($type)->get("{$base}/{$type}", ['resultLimit' => 12]);
+                $reqs[] = $pool
+                    ->as($type)
+                    ->withHeaders([
+                        'Authorization' => 'Bearer ' . config('athena.api.wynn.apiKey'),
+                    ])
+                    ->withUserAgent(config('athena.general.userAgent'))
+                    ->connectTimeout(50)
+                    ->timeout(50)
+                    ->get("{$base}/{$type}", ['resultLimit' => 12]);
             }
+
             return $reqs;
         });
 
         $result = [];
         foreach ($responses as $type => $resp) {
             if (!$resp->successful()) {
+                throw new \Exception('Failed to fetch leaderboard type ' . $resp);
                 continue;
             }
 
@@ -53,7 +65,11 @@ class Leaderboard implements CacheContract
                 $ids = $ids->reject(fn(string $id) => $id === $exclude);
             }
 
-            $result[$type] = $ids
+            $key = str_contains(strtolower($type), 'fruma')
+                ? str_ireplace('fruma', 'wartorn', $type)
+                : $type;
+
+            $result[$key] = $ids
                 ->values()
                 ->take(9)
                 ->mapWithKeys(fn(string $id, int $i) => [(string)($i + 1) => $id])
