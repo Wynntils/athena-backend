@@ -32,9 +32,11 @@ class CacheManager
 
         $key = self::key($version, $cacheName);
 
+        /* Uncomment this when working on caches locally
         if (app()->environment('local')) {
             return self::generate($key, $cache);
         }
+        */
 
         return Cache::remember($key, $cache->refreshRate(), static fn() => self::generate($key, $cache));
     }
