@@ -65,11 +65,7 @@ class Leaderboard implements CacheContract
                 $ids = $ids->reject(fn(string $id) => $id === $exclude);
             }
 
-            $key = str_contains(strtolower($type), 'fruma')
-                ? str_ireplace('fruma', 'wartorn', $type)
-                : $type;
-
-            $result[$key] = $ids
+            $result[$type] = $ids
                 ->values()
                 ->take(9)
                 ->mapWithKeys(fn(string $id, int $i) => [(string)($i + 1) => $id])
