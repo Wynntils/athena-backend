@@ -27,7 +27,6 @@ The following are removed entirely with no backwards-compatibility stubs:
 
 **Routes:**
 - Generic catch-all `GET cache/get/{cache}` and `GET v2/cache/get/{cache}`
-- `GET cache/getHashes`
 - The entire `routes/api/v2/cache.php` route file
 
 The v1/v2 versioning split is eliminated. `territoryList` becomes a flat named endpoint.
@@ -67,7 +66,7 @@ $schedule->job(new RefreshItemWeightsCache)->hourly()->onOneServer();
 
 ## Controllers
 
-The monolithic `CacheController` is replaced by five invokable controllers in `App\Http\Controllers\Cache\`:
+The monolithic `CacheController` is replaced by six invokable controllers in `App\Http\Controllers\Cache\`:
 
 | Controller | Route |
 |---|---|
@@ -76,6 +75,7 @@ The monolithic `CacheController` is replaced by five invokable controllers in `A
 | `ItemWeightsController` | `GET /cache/get/itemWeights` |
 | `LeaderboardController` | `GET /cache/get/leaderboard` |
 | `TerritoryListController` | `GET /cache/get/territoryList` |
+| `HashesController` | `GET /cache/getHashes` |
 
 Each controller's `__invoke` method:
 1. Reads `Cache::get('cache.{name}')` from the store
@@ -87,6 +87,18 @@ Response headers (same behaviour as current `serveCache()`):
 - `Cache-Control: public, max-age={interval}, s-maxage={interval}`
 - `Expires`: now + interval
 - `ETag`: `cache.{name}.hash` value from cache store
+
+`HashesController` reads all five `cache.{name}.hash` keys and returns them as a flat map. It is returned to the client on login so Wynntils knows which caches need re-fetching. Response shape:
+
+```json
+{
+  "guildList": "<sha512>",
+  "serverList": "<sha512>",
+  "itemWeights": "<sha512>",
+  "leaderboard": "<sha512>",
+  "territoryList": "<sha512>"
+}
+```
 
 Each controller carries `#[Group('Cache')]` and declares its return type as `XxxCacheResource|JsonResponse` so Scramble infers the response shape correctly — no `#[ExcludeRouteFromDocs]` needed.
 
@@ -111,6 +123,7 @@ App\Http\Controllers\Cache\
     ItemWeightsController
     LeaderboardController
     TerritoryListController
+    HashesController
 
 App\Jobs\Cache\
     RefreshGuildListCache
@@ -133,7 +146,7 @@ App\Http\Resources\Cache\            (unchanged)
     LeaderboardCacheResource
     TerritoryListCacheResource
 
-routes/api/cache.php                 (updated, catch-alls and hashes route removed)
+routes/api/cache.php                 (updated, catch-alls removed, getHashes retained)
 routes/api/v2/cache.php              (deleted)
 App\Console\Kernel.php               (schedules added)
 ```
