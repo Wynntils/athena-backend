@@ -17,7 +17,7 @@ class UserResource extends JsonResource
     {
         return [
             'user' => [
-                'accountType' => $this->account_type,
+                'accountType' => $this->account_type->value,
                 'cosmetics'   => [
                     'hasCape'   => $this->hasCape(),
                     'hasElytra' => $this->hasElytra(),

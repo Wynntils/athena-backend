@@ -32,5 +32,7 @@ class ResourceSchemaTest extends TestCase
                     'cosmetics' => ['hasCape', 'hasElytra', 'hasEars', 'texture'],
                 ],
             ]);
+
+        $response->assertJsonPath('user.accountType', AccountType::NORMAL->value);
     }
 }
