@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
-use App\Http\Resources\UserResource;
 use App\Models\Guild;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,14 +15,14 @@ class LegacyApiController extends Controller
     {
         $user = $this->getUser($request->validated('user'));
 
-        return ['result' => collect(new UserResource($user)), 'message' => 'Successfully found user account.'];
+        return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully found user account.'];
     }
 
     /** @deprecated */
     public function getLinkedUsersData(LegacyApiRequest $request)
     {
         $userList = $this->getLinkedDiscordUsers($request->validated('user'))->map(function ($user) {
-            return new UserResource($user);
+            return $this->toLegacyArray($user);
         });
 
         return ['result' => $userList, 'message' => 'Successfully found user accounts.'];
@@ -36,7 +35,7 @@ class LegacyApiController extends Controller
         $user->account_type = AccountType::tryFrom($request->validated('type')) ?? AccountType::NORMAL;
         $user->save();
 
-        return ['result' => collect(new UserResource($user)), 'message' => 'Successfully updated user account.'];
+        return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully updated user account.'];
     }
 
     /** @deprecated */
@@ -55,7 +54,7 @@ class LegacyApiController extends Controller
         ];
         $user->save();
 
-        return ['result' => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
+        return ['result' => $this->toLegacyArray($user), 'message' => 'Updated users cosmetics successfully.'];
     }
 
     /** @deprecated */
@@ -75,7 +74,7 @@ class LegacyApiController extends Controller
         $user->password = \Hash::make($request->validated('password'));
         $user->save();
 
-        return ['result' => collect(new UserResource($user)), 'message' => 'Successfully set user account password.'];
+        return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully set user account password.'];
     }
 
     /** @deprecated */
@@ -83,7 +82,7 @@ class LegacyApiController extends Controller
     {
         $user = $this->getUser($request->validated('user'));
         if (\Hash::check($request->validated('password'), $user->password)) {
-            return ['result' => collect(new UserResource($user)), 'message' => 'Successfully found and validated user account.'];
+            return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully found and validated user account.'];
         }
 
         return ['message' => 'Invalid password.'];
@@ -113,6 +112,34 @@ class LegacyApiController extends Controller
         } catch (\JsonException $e) {
             return ['message' => "Failed to parse user '$lookup' configuration.", $config];
         }
+    }
+
+    private function toLegacyArray(User $user): array
+    {
+        $discordInfo = $user->discord_info ?? [];
+        $cosmeticInfo = $user->cosmetic_info ?? [];
+
+        return [
+            'uuid'        => $user->id,
+            'username'    => $user->username,
+            'accountType' => $user->account_type->value,
+            'authToken'   => $user->auth_token,
+            'versions'    => [
+                'latest' => $user->latest_version,
+                'used'   => $user->used_versions ?? [],
+            ],
+            'discord'     => [
+                'username' => $discordInfo['username'] ?? null,
+                'id'       => $discordInfo['id'] ?? null,
+            ],
+            'cosmetics'   => [
+                'texture'       => $cosmeticInfo['capeTexture'] ?? '',
+                'isElytra'      => $cosmeticInfo['elytraEnabled'] ?? false,
+                'maxResolution' => $cosmeticInfo['maxResolution'] ?? '0x0',
+                'allowAnimated' => $cosmeticInfo['allowAnimated'] ?? false,
+                'parts'         => $cosmeticInfo['parts'] ?? [],
+            ],
+        ];
     }
 
     /**

@@ -11,7 +11,7 @@ class TerritoryListCacheResource extends JsonResource
 
     /**
      * @return array<string, array{
-     *     guild: array{name: string|null, prefix: string|null, color: string},
+     *     guild: array{name: string|null, prefix: string|null, color: string|null},
      *     acquired: string,
      *     location: array{start: array{int, int}, end: array{int, int}}
      * }>
