@@ -49,18 +49,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`PublicKeyResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "publicKeyIn": {
-                                            "type": "string"
+                                        "data": {
+                                            "$ref": "#/components/schemas/PublicKeyResource"
                                         }
                                     },
                                     "required": [
-                                        "publicKeyIn"
+                                        "data"
                                     ]
                                 }
                             }
@@ -77,33 +77,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`AuthResponseResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Authentication code generated."
-                                            ]
-                                        },
-                                        "authToken": {
-                                            "type": "string"
-                                        },
-                                        "configFiles": {
-                                            "type": "object"
-                                        },
-                                        "hashes": {
-                                            "type": "object"
+                                        "data": {
+                                            "$ref": "#/components/schemas/AuthResponseResource"
                                         }
                                     },
                                     "required": [
-                                        "message",
-                                        "authToken",
-                                        "configFiles",
-                                        "hashes"
+                                        "data"
                                     ]
                                 }
                             }
@@ -1087,32 +1072,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`VersionResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "version": {
-                                            "type": "string"
-                                        },
-                                        "url": {
-                                            "type": "string"
-                                        },
-                                        "md5": {},
-                                        "changelog": {
-                                            "type": "string"
-                                        },
-                                        "supportedMcVersion": {
-                                            "type": "string"
+                                        "data": {
+                                            "$ref": "#/components/schemas/VersionResource"
                                         }
                                     },
                                     "required": [
-                                        "version",
-                                        "url",
-                                        "md5",
-                                        "changelog",
-                                        "supportedMcVersion"
+                                        "data"
                                     ]
                                 }
                             }
@@ -2139,6 +2110,49 @@
             }
         },
         "schemas": {
+            "AuthResponseResource": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "authToken": {
+                        "type": "string"
+                    },
+                    "configFiles": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "hashes": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "message",
+                    "authToken",
+                    "configFiles",
+                    "hashes"
+                ],
+                "title": "AuthResponseResource"
+            },
+            "PublicKeyResource": {
+                "type": "object",
+                "properties": {
+                    "publicKeyIn": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "publicKeyIn"
+                ],
+                "title": "PublicKeyResource"
+            },
             "UserResource": {
                 "type": "object",
                 "properties": {
@@ -2182,6 +2196,36 @@
                     "user"
                 ],
                 "title": "UserResource"
+            },
+            "VersionResource": {
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "md5": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "changelog": {
+                        "type": "string"
+                    },
+                    "supportedMcVersion": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "version",
+                    "url",
+                    "md5",
+                    "changelog"
+                ],
+                "title": "VersionResource"
             }
         },
         "responses": {
