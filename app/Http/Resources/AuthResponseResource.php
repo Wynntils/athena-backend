@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AuthResponseResource extends JsonResource
 {
+    public static $wrap = null;
+
     /**
      * @return array{message: string, authToken: string, configFiles: array<string, mixed>, hashes: array<string, string|null>}
      */

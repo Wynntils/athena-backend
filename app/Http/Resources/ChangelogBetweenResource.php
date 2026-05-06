@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChangelogBetweenResource extends JsonResource
 {
+    public static $wrap = null;
+
     /**
      * @return array{from: string, to: string, changelogs: array<string, string>}
      */

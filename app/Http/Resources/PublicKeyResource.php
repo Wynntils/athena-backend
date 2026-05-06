@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PublicKeyResource extends JsonResource
 {
+    public static $wrap = null;
+
     /**
      * @return array{publicKeyIn: string}
      */

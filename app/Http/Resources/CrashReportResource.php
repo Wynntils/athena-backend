@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CrashReportResource extends JsonResource
 {
+    public static $wrap = null;
+
     /**
      * @return array{message: string, hash: string}
      */
