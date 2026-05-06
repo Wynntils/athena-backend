@@ -9,6 +9,8 @@ class LeaderboardCacheResource extends JsonResource
 {
     public static $wrap = null;
 
+    public bool $preserveKeys = true;
+
     /**
      * @return array<string, array<string, string>>
      */
