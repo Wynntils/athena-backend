@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 #[Group('Telemetry')]
 class TelemetryController extends Controller
 {
+    /** @deprecated */
     public function sendGatheringSpot(TelemetryRequest $request): JsonResponse
     {
         $gatheringSpot = GatheringSpot::firstOrCreate(

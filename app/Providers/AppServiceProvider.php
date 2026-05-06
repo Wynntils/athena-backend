@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
         'telemetry/',
         'version/',
         'v2/',
+        'api/',
+        'guilds/',
+        'webhook/',
+        'patreon/',
     ];
 
     /**

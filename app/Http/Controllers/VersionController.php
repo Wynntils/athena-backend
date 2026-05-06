@@ -105,6 +105,7 @@ class VersionController extends Controller
         return response()->json($response)->header('Vary', 'User-Agent');
     }
 
+    /** @deprecated */
     public function changelog(Request $request, $version): JsonResponse
     {
         ['client' => $client] = $this->userAgentDetails($request);
@@ -133,6 +134,7 @@ class VersionController extends Controller
         ]);
     }
 
+    /** @deprecated */
     public function download($version, $stream, $modloader = 'fabric'): RedirectResponse|JsonResponse
     {
         $client = 'Artemis';

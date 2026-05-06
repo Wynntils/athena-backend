@@ -6,6 +6,7 @@ namespace App\Http\Libraries\Requests\Cache;
 use App\Models\Guild;
 use Http;
 
+/** @deprecated */
 class TerritoryList implements CacheContract
 {
 

@@ -6,6 +6,7 @@ use http\Env\Response;
 use Illuminate\Http\Request;
 
 class GuildController extends Controller {
+    /** @deprecated */
     public function setColor(Request $request)
     {
         $guild = Guild::findOrFail($request->validated('guild'));

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LegacyApiController extends Controller
 {
+    /** @deprecated */
     public function getUserData(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -18,6 +19,7 @@ class LegacyApiController extends Controller
         return ['result' => collect(new UserResource($user)), 'message' => 'Successfully found user account.'];
     }
 
+    /** @deprecated */
     public function getLinkedUsersData(LegacyApiRequest $request)
     {
         $userList = $this->getLinkedDiscordUsers($request->validated('user'))->map(function ($user) {
@@ -27,6 +29,7 @@ class LegacyApiController extends Controller
         return ['result' => $userList, 'message' => 'Successfully found user accounts.'];
     }
 
+    /** @deprecated */
     public function setAccountType(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -36,6 +39,7 @@ class LegacyApiController extends Controller
         return ['result' => collect(new UserResource($user)), 'message' => 'Successfully updated user account.'];
     }
 
+    /** @deprecated */
     public function updateCosmetics(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -54,6 +58,7 @@ class LegacyApiController extends Controller
         return ['result' => collect(new UserResource($user)), 'message' => 'Updated users cosmetics successfully.'];
     }
 
+    /** @deprecated */
     public function setGuildColor(LegacyApiRequest $request)
     {
         $guild = Guild::findOrFail($request->validated('guild'));
@@ -63,6 +68,7 @@ class LegacyApiController extends Controller
         return ['message' => 'Successfully updated guild.'];
     }
 
+    /** @deprecated */
     public function setUserPassword(LegacyApiRequest $request)
     {
         $user = User::where('auth_token', $request->validated('token'))->firstOrFail();
@@ -72,6 +78,7 @@ class LegacyApiController extends Controller
         return ['result' => collect(new UserResource($user)), 'message' => 'Successfully set user account password.'];
     }
 
+    /** @deprecated */
     public function getUserByPassword(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -82,6 +89,7 @@ class LegacyApiController extends Controller
         return ['message' => 'Invalid password.'];
     }
 
+    /** @deprecated */
     public function getUserConfig(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));

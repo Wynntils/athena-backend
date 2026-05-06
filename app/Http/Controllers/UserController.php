@@ -41,11 +41,13 @@ class UserController extends Controller
         return response()->json($result, 200);
     }
 
+    /** @deprecated */
     public function getConfigs(): JsonResponse
     {
         return response()->json(['configs' => Auth::user()?->getConfigs()], 200);
     }
 
+    /** @deprecated */
     public function getInfo($user): JsonResponse
     {
         $user = $this->getUser($user);
@@ -65,6 +67,7 @@ class UserController extends Controller
         ]);
     }
 
+    /** @deprecated */
     public function getInfoV2(UserRequest $request): JsonResponse
     {
         $user = $this->getUser($request->validated('uuid'));

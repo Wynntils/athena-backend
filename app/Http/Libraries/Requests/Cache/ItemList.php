@@ -8,6 +8,7 @@ use Http;
 use Illuminate\Http\Client\Pool;
 
 
+/** @deprecated */
 class ItemList implements CacheContract
 {
 

@@ -5,6 +5,7 @@ namespace App\Http\Libraries\Requests\Cache;
 use App\Enums\ProfessionType;
 use App\Models\GatheringSpot;
 
+/** @deprecated */
 class GatheringSpots implements CacheContract
 {
 

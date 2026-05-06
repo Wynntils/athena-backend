@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 
 class PatreonController extends Controller
 {
+    /** @deprecated */
     public function webhook(Request $request)
     {
         $payload = $request->getContent();
@@ -139,6 +140,7 @@ class PatreonController extends Controller
         return $wh->addEmbed($embed)->send();
     }
 
+    /** @deprecated */
     public function list(Request $request)
     {
         $api_client = PatreonAPI::getApi();

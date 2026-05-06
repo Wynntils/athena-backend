@@ -4,6 +4,7 @@ namespace App\Http\Libraries\Requests\Cache;
 
 use App\Models\Guild;
 
+/** @deprecated */
 class GuildListWithColors implements CacheContract
 {
 

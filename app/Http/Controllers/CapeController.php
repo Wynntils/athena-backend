@@ -22,6 +22,7 @@ class CapeController extends Controller
         $this->manager = $capeManager;
     }
 
+    /** @deprecated */
     public function getCape($capeId): BinaryFileResponse
     {
         return response()->file($this->manager->getCape($capeId), [
@@ -29,6 +30,7 @@ class CapeController extends Controller
         ]);
     }
 
+    /** @deprecated */
     public function getUserCape($uuid): BinaryFileResponse
     {
         $user = User::findOrFail($uuid);
@@ -38,6 +40,7 @@ class CapeController extends Controller
         ]);
     }
 
+    /** @deprecated */
     public function list(): JsonResponse
     {
         $result = $this->manager->listCapes();
@@ -52,6 +55,7 @@ class CapeController extends Controller
             ->setEtag(md5(serialize($result)));
     }
 
+    /** @deprecated */
     public function queueGetCape($capeId): BinaryFileResponse
     {
         return response()->file($this->manager->getQueuedCape($capeId), [
@@ -59,11 +63,13 @@ class CapeController extends Controller
         ]);
     }
 
+    /** @deprecated */
     public function queueList(): JsonResponse
     {
         return response()->json(['result' => $this->manager->listQueuedCapes()]);
     }
 
+    /** @deprecated */
     public function uploadCape(CapeRequest $request): JsonResponse
     {
         $capePath = $request->validated('cape')?->path();
@@ -87,6 +93,7 @@ class CapeController extends Controller
         };
     }
 
+    /** @deprecated */
     public function approveCape(Request $request): JsonResponse
     {
         $sha = $request->route('sha');
@@ -126,6 +133,7 @@ class CapeController extends Controller
         return response()->json(['message' => 'Successfully approved the cape.']);
     }
 
+    /** @deprecated */
     public function banCape(Request $request): JsonResponse
     {
         $sha1 = $request->route('sha');

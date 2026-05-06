@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 
 class WebhookController extends Controller
 {
+    /** @deprecated */
     public function github(Request $request)
     {
         $payload = $request->getContent();

@@ -46,6 +46,7 @@ class CacheController extends Controller
             ->setEtag(Cache::get($key.'.hash'));
     }
 
+    /** @deprecated */
     public function getHashes(): JsonResponse
     {
         return response()->json(['result' => CacheManager::getHashes(), 'message' => 'Successfully grabbed cache hashes.'], 200);
