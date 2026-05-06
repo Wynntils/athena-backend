@@ -39,6 +39,46 @@ class RefreshCacheJobsTest extends TestCase
         (new RefreshGuildListCache)->handle();
     }
 
+    public function test_refresh_server_list_logs_and_swallows_exception(): void
+    {
+        $this->mock(ServerList::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
+
+        Cache::shouldReceive('forever')->never();
+        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshServerListCache/'));
+
+        (new RefreshServerListCache)->handle();
+    }
+
+    public function test_refresh_item_weights_logs_and_swallows_exception(): void
+    {
+        $this->mock(ItemWeights::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
+
+        Cache::shouldReceive('forever')->never();
+        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshItemWeightsCache/'));
+
+        (new RefreshItemWeightsCache)->handle();
+    }
+
+    public function test_refresh_leaderboard_logs_and_swallows_exception(): void
+    {
+        $this->mock(Leaderboard::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
+
+        Cache::shouldReceive('forever')->never();
+        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshLeaderboardCache/'));
+
+        (new RefreshLeaderboardCache)->handle();
+    }
+
+    public function test_refresh_territory_list_logs_and_swallows_exception(): void
+    {
+        $this->mock(TerritoryList::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
+
+        Cache::shouldReceive('forever')->never();
+        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshTerritoryListCache/'));
+
+        (new RefreshTerritoryListCache)->handle();
+    }
+
     public function test_refresh_server_list_writes_data_and_hash(): void
     {
         $data = ['servers' => ['WC1' => ['firstSeen' => 1000, 'players' => ['Player1']]]];
