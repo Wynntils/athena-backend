@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\Guild;
 use http\Env\Response;
 use Illuminate\Http\Request;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 class GuildController extends Controller {
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function setColor(Request $request)
     {
         $guild = Guild::findOrFail($request->validated('guild'));

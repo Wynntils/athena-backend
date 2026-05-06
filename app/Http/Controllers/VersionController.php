@@ -9,7 +9,7 @@ use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 #[Group('Version')]
 class VersionController extends Controller
 {
@@ -40,6 +40,9 @@ class VersionController extends Controller
         ];
     }
 
+    /**
+     * Get the latest release for a stream
+     */
     public function latest(Request $request, $stream): VersionResource|JsonResponse
     {
         [
@@ -107,7 +110,7 @@ class VersionController extends Controller
         return (new VersionResource($response))->response()->header('Vary', 'User-Agent');
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function changelog(Request $request, $version): JsonResponse
     {
         ['client' => $client] = $this->userAgentDetails($request);
@@ -136,7 +139,7 @@ class VersionController extends Controller
         ]);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function download($version, $stream, $modloader = 'fabric'): RedirectResponse|JsonResponse
     {
         $client = 'Artemis';
@@ -207,6 +210,9 @@ class VersionController extends Controller
         };
     }
 
+    /**
+     * Get changelogs between two versions
+     */
     public function changelogBetween(Request $request, $fromQuery, $toQuery): ChangelogBetweenResource|JsonResponse
     {
         ['client' => $client] = $this->userAgentDetails($request);

@@ -6,11 +6,11 @@ use App\Http\Requests\TelemetryRequest;
 use App\Models\GatheringSpot;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 #[Group('Telemetry')]
 class TelemetryController extends Controller
 {
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function sendGatheringSpot(TelemetryRequest $request): JsonResponse
     {
         $gatheringSpot = GatheringSpot::firstOrCreate(

@@ -19,11 +19,20 @@ use Storage;
 #[Group('Auth')]
 class AuthController extends Controller
 {
+    /**
+     * Get the server's RSA public key
+     */
     public function getPublicKey(): PublicKeyResource
     {
         return new PublicKeyResource(bin2hex(MinecraftFakeAuth::instance()->getPublicKey()));
     }
 
+    /**
+     * Authenticate with Minecraft
+     *
+     * Verifies the Minecraft session, creates or updates the user account,
+     * and returns an auth token, config files, and cache hashes.
+     */
     public function responseEncryption(AuthRequest $request): AuthResponseResource|JsonResponse
     {
         if (config('app.debug') !== false) {

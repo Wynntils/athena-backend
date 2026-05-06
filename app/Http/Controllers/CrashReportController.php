@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 
 class CrashReportController extends Controller
 {
+    /**
+     * Submit a crash report
+     */
     public function report(Request $request): CrashReportResource
     {
         $this->validate($request, [

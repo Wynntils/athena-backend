@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Image;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 #[Group('Cape')]
 class CapeController extends Controller
 {
@@ -22,7 +22,7 @@ class CapeController extends Controller
         $this->manager = $capeManager;
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getCape($capeId): BinaryFileResponse
     {
         return response()->file($this->manager->getCape($capeId), [
@@ -30,7 +30,7 @@ class CapeController extends Controller
         ]);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getUserCape($uuid): BinaryFileResponse
     {
         $user = User::findOrFail($uuid);
@@ -40,7 +40,7 @@ class CapeController extends Controller
         ]);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function list(): JsonResponse
     {
         $result = $this->manager->listCapes();
@@ -55,7 +55,7 @@ class CapeController extends Controller
             ->setEtag(md5(serialize($result)));
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function queueGetCape($capeId): BinaryFileResponse
     {
         return response()->file($this->manager->getQueuedCape($capeId), [
@@ -63,13 +63,13 @@ class CapeController extends Controller
         ]);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function queueList(): JsonResponse
     {
         return response()->json(['result' => $this->manager->listQueuedCapes()]);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function uploadCape(CapeRequest $request): JsonResponse
     {
         $capePath = $request->validated('cape')?->path();
@@ -93,7 +93,7 @@ class CapeController extends Controller
         };
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function approveCape(Request $request): JsonResponse
     {
         $sha = $request->route('sha');
@@ -133,7 +133,7 @@ class CapeController extends Controller
         return response()->json(['message' => 'Successfully approved the cape.']);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function banCape(Request $request): JsonResponse
     {
         $sha1 = $request->route('sha');

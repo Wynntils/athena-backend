@@ -10,10 +10,10 @@ use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 class PatreonController extends Controller
 {
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function webhook(Request $request)
     {
         $payload = $request->getContent();
@@ -140,7 +140,7 @@ class PatreonController extends Controller
         return $wh->addEmbed($embed)->send();
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function list(Request $request)
     {
         $api_client = PatreonAPI::getApi();

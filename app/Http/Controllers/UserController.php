@@ -11,10 +11,13 @@ use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 #[Group('User')]
 class UserController extends Controller
 {
+    /**
+     * Link a Discord account to the authenticated user
+     */
     public function updateDiscord(UserRequest $request): JsonResponse
     {
         \Auth::user()?->updateDiscord($request->validated('id'), $request->validated('username'));
@@ -22,6 +25,9 @@ class UserController extends Controller
         return response()->json(['message' => 'Success'], 200);
     }
 
+    /**
+     * Upload configuration files for the authenticated user
+     */
     public function uploadConfigs(UserRequest $request): JsonResponse
     {
         $result = $uploadResult = [];
@@ -42,13 +48,13 @@ class UserController extends Controller
         return response()->json($result, 200);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getConfigs(): JsonResponse
     {
         return response()->json(['configs' => Auth::user()?->getConfigs()], 200);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getInfo($user): JsonResponse
     {
         $user = $this->getUser($user);
@@ -68,7 +74,7 @@ class UserController extends Controller
         ]);
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getInfoV2(UserRequest $request): JsonResponse
     {
         $user = $this->getUser($request->validated('uuid'));
@@ -97,6 +103,9 @@ class UserController extends Controller
         return response()->json(['user' => $response]);
     }
 
+    /**
+     * Get user account type and cosmetics
+     */
     public function getInfoPost(UserRequest $request): UserResource
     {
         $user = $this->getUser($request->validated('uuid'));

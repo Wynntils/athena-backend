@@ -11,7 +11,7 @@ use App\Http\Resources\Cache\TerritoryListCacheResource;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 #[Group('Cache')]
 class CacheController extends Controller
 {
@@ -26,6 +26,9 @@ class CacheController extends Controller
         'territoryList' => TerritoryListCacheResource::class,
     ];
 
+    /**
+     * Get a named cache dataset
+     */
     public function getCache($cacheName): JsonResponse
     {
         $cache = CacheManager::getCacheClass($cacheName, 'v1');
@@ -51,6 +54,9 @@ class CacheController extends Controller
             ->setEtag(Cache::get($cacheName.'.hash'));
     }
 
+    /**
+     * Get a named v2 cache dataset
+     */
     public function getCacheV2($cacheName): JsonResponse
     {
         $cache = CacheManager::getCacheClass($cacheName, 'v2');
@@ -74,7 +80,7 @@ class CacheController extends Controller
             ->setEtag(Cache::get($key.'.hash'));
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getHashes(): JsonResponse
     {
         return response()->json(['result' => CacheManager::getHashes(), 'message' => 'Successfully grabbed cache hashes.'], 200);

@@ -7,10 +7,10 @@ use App\Http\Requests\LegacyApiRequest;
 use App\Models\Guild;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 class LegacyApiController extends Controller
 {
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getUserData(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -18,7 +18,7 @@ class LegacyApiController extends Controller
         return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully found user account.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getLinkedUsersData(LegacyApiRequest $request)
     {
         $userList = $this->getLinkedDiscordUsers($request->validated('user'))->map(function ($user) {
@@ -28,7 +28,7 @@ class LegacyApiController extends Controller
         return ['result' => $userList, 'message' => 'Successfully found user accounts.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function setAccountType(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -38,7 +38,7 @@ class LegacyApiController extends Controller
         return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully updated user account.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function updateCosmetics(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -57,7 +57,7 @@ class LegacyApiController extends Controller
         return ['result' => $this->toLegacyArray($user), 'message' => 'Updated users cosmetics successfully.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function setGuildColor(LegacyApiRequest $request)
     {
         $guild = Guild::findOrFail($request->validated('guild'));
@@ -67,7 +67,7 @@ class LegacyApiController extends Controller
         return ['message' => 'Successfully updated guild.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function setUserPassword(LegacyApiRequest $request)
     {
         $user = User::where('auth_token', $request->validated('token'))->firstOrFail();
@@ -77,7 +77,7 @@ class LegacyApiController extends Controller
         return ['result' => $this->toLegacyArray($user), 'message' => 'Successfully set user account password.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getUserByPassword(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
@@ -88,7 +88,7 @@ class LegacyApiController extends Controller
         return ['message' => 'Invalid password.'];
     }
 
-    /** @deprecated */
+    #[ExcludeRouteFromDocs]
     public function getUserConfig(LegacyApiRequest $request)
     {
         $user = $this->getUser($request->validated('user'));
