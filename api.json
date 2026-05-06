@@ -1274,26 +1274,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`ChangelogBetweenResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "from": {
-                                            "type": "string"
-                                        },
-                                        "to": {
-                                            "type": "string"
-                                        },
-                                        "changelogs": {
-                                            "type": "string"
+                                        "data": {
+                                            "$ref": "#/components/schemas/ChangelogBetweenResource"
                                         }
                                     },
                                     "required": [
-                                        "from",
-                                        "to",
-                                        "changelogs"
+                                        "data"
                                     ]
                                 }
                             }
@@ -1399,6 +1391,287 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/crash/report": {
+            "post": {
+                "operationId": "crash.report",
+                "tags": [
+                    "CrashReport"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "trace": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "trace"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`CrashReportResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CrashReportResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/crash/view/{crashReport}": {
+            "get": {
+                "operationId": "crash.view",
+                "tags": [
+                    "CrashReport"
+                ],
+                "parameters": [
+                    {
+                        "name": "crashReport",
+                        "in": "path",
+                        "required": true,
+                        "description": "The crash report trace hash",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/crash/{crashReport}/handled": {
+            "put": {
+                "operationId": "crash.handled",
+                "tags": [
+                    "CrashReport"
+                ],
+                "parameters": [
+                    {
+                        "name": "crashReport",
+                        "in": "path",
+                        "required": true,
+                        "description": "The crash report trace hash",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "success"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/crash/{crashReport}/comment": {
+            "put": {
+                "operationId": "crash.comment",
+                "tags": [
+                    "CrashReport"
+                ],
+                "parameters": [
+                    {
+                        "name": "crashReport",
+                        "in": "path",
+                        "required": true,
+                        "description": "The crash report trace hash",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "comment": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "comment"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "comment": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "user": {
+                                                    "type": "string"
+                                                },
+                                                "user_id": {
+                                                    "type": "string"
+                                                },
+                                                "time": {
+                                                    "type": "string"
+                                                },
+                                                "comment": {}
+                                            },
+                                            "required": [
+                                                "id",
+                                                "user",
+                                                "user_id",
+                                                "time",
+                                                "comment"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "comment"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "crash.comment.delete",
+                "tags": [
+                    "CrashReport"
+                ],
+                "parameters": [
+                    {
+                        "name": "crashReport",
+                        "in": "path",
+                        "required": true,
+                        "description": "The crash report trace hash",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "commentId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "comments": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "comments"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -2140,6 +2413,45 @@
                     "hashes"
                 ],
                 "title": "AuthResponseResource"
+            },
+            "ChangelogBetweenResource": {
+                "type": "object",
+                "properties": {
+                    "from": {
+                        "type": "string"
+                    },
+                    "to": {
+                        "type": "string"
+                    },
+                    "changelogs": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "from",
+                    "to",
+                    "changelogs"
+                ],
+                "title": "ChangelogBetweenResource"
+            },
+            "CrashReportResource": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "hash": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message",
+                    "hash"
+                ],
+                "title": "CrashReportResource"
             },
             "PublicKeyResource": {
                 "type": "object",

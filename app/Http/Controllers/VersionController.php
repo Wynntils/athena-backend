@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ChangelogBetweenResource;
+use App\Http\Resources\VersionResource;
 use Dedoc\Scramble\Attributes\Group;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Http\JsonResponse;
@@ -38,7 +40,7 @@ class VersionController extends Controller
         ];
     }
 
-    public function latest(Request $request, $stream): JsonResponse
+    public function latest(Request $request, $stream): VersionResource|JsonResponse
     {
         [
             'client' => $client,
@@ -102,7 +104,7 @@ class VersionController extends Controller
             $response['supportedMcVersion'] = $tagMcVersion;
         }
 
-        return response()->json($response)->header('Vary', 'User-Agent');
+        return (new VersionResource($response))->response()->header('Vary', 'User-Agent');
     }
 
     /** @deprecated */
@@ -205,7 +207,7 @@ class VersionController extends Controller
         };
     }
 
-    public function changelogBetween(Request $request, $fromQuery, $toQuery): JsonResponse
+    public function changelogBetween(Request $request, $fromQuery, $toQuery): ChangelogBetweenResource|JsonResponse
     {
         ['client' => $client] = $this->userAgentDetails($request);
 
@@ -270,9 +272,9 @@ class VersionController extends Controller
             $perVersionChangelogs[$tag] = $body;
         }
 
-        return response()->json([
-            'from' => $from['tag_name'],
-            'to' => $to['tag_name'],
+        return new ChangelogBetweenResource([
+            'from'       => $from['tag_name'],
+            'to'         => $to['tag_name'],
             'changelogs' => $perVersionChangelogs,
         ]);
     }
