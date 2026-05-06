@@ -120,30 +120,28 @@
                 }
             }
         },
-        "/cache/get/{cacheName}": {
+        "/cache/get/guildList": {
             "get": {
-                "operationId": "cache.getCache",
-                "summary": "Get a named cache dataset",
+                "operationId": "cache.cache.guildList",
+                "summary": "Get the guild list",
                 "tags": [
                     "Cache"
                 ],
-                "parameters": [
-                    {
-                        "name": "cacheName",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`JsonResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
                                 }
                             }
                         }
@@ -151,30 +149,115 @@
                 }
             }
         },
-        "/v2/cache/get/{cacheName}": {
+        "/cache/get/serverList": {
             "get": {
-                "operationId": "cache.v2.cache.get",
-                "summary": "Get a named v2 cache dataset",
+                "operationId": "cache.cache.serverList",
+                "summary": "Get the server list",
                 "tags": [
                     "Cache"
                 ],
-                "parameters": [
-                    {
-                        "name": "cacheName",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`JsonResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cache/get/itemWeights": {
+            "get": {
+                "operationId": "cache.cache.itemWeights",
+                "summary": "Get item build weights",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cache/get/leaderboard": {
+            "get": {
+                "operationId": "cache.cache.leaderboard",
+                "summary": "Get the leaderboard",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/cache/get/territoryList": {
+            "get": {
+                "operationId": "cache.v2.cache.territoryList",
+                "summary": "Get the territory list",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
                                 }
                             }
                         }
@@ -538,6 +621,10 @@
                     "hash"
                 ],
                 "title": "CrashReportResource"
+            },
+            "JsonResource": {
+                "type": "string",
+                "title": "JsonResource"
             },
             "PublicKeyResource": {
                 "type": "object",
