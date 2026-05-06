@@ -23,7 +23,6 @@ services:
             - sail
         depends_on:
             - pgsql
-            - mongodb
             - redis
     pgsql:
         image: 'postgres:18-alpine'
@@ -50,25 +49,6 @@ services:
                 - '${DB_USERNAME}'
             retries: 3
             timeout: 5s
-    mongodb:
-        image: 'mongodb/mongodb-atlas-local:latest'
-        environment:
-            - 'MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}'
-            - 'MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}'
-        volumes:
-            - 'sail-mongodb:/data/db'
-        ports:
-            - '${FORWARD_MONGODB_PORT:-27017}:27017'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - mongosh
-                - 'mongodb://localhost:27017/admin'
-                - '--eval=db.runCommand({ping:1})'
-            retries: 3
-            timeout: 5s
     redis:
         image: 'redis:alpine'
         ports:
@@ -89,8 +69,6 @@ networks:
         driver: bridge
 volumes:
     sail-pgsql:
-        driver: local
-    sail-mongodb:
         driver: local
     sail-redis:
         driver: local
