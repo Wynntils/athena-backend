@@ -70,6 +70,21 @@ class CacheControllersTest extends TestCase
         $this->assertStringContainsString('max-age=15', $response->headers->get('Cache-Control'));
     }
 
+    public function test_guild_list_cold_start_dispatches_sync_and_returns_data(): void
+    {
+        Cache::flush();
+
+        $data = [['_id' => 'Wynntils', 'prefix' => 'WYN', 'color' => '#ffffff']];
+
+        $this->mock(\App\Http\Libraries\Requests\Cache\GuildList::class, function ($mock) use ($data) {
+            $mock->shouldReceive('generate')->once()->andReturn($data);
+        });
+
+        $response = $this->getJson('/cache/get/guildList');
+
+        $response->assertStatus(200)->assertJson($data);
+    }
+
     public function test_hashes_returns_flat_map(): void
     {
         Cache::put('cache.guildList.hash', 'gh');

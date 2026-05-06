@@ -24,11 +24,17 @@ class TerritoryListController extends Controller
             $data = Cache::get('cache.territoryList');
         }
 
+        if ($data === null) {
+            return response()->json(['error' => 'Cache unavailable'], 503);
+        }
+
+        $hash = Cache::get('cache.territoryList.hash');
+
         return (new TerritoryListCacheResource($data))
             ->response()
             ->header('timestamp', currentTimeMillis())
             ->setCache(['max_age' => 15, 's_maxage' => 15, 'public' => true])
             ->setExpires(now()->addSeconds(15))
-            ->setEtag(Cache::get('cache.territoryList.hash'));
+            ->setEtag($hash);
     }
 }

@@ -24,11 +24,17 @@ class ServerListController extends Controller
             $data = Cache::get('cache.serverList');
         }
 
+        if ($data === null) {
+            return response()->json(['error' => 'Cache unavailable'], 503);
+        }
+
+        $hash = Cache::get('cache.serverList.hash');
+
         return (new ServerListCacheResource($data))
             ->response()
             ->header('timestamp', currentTimeMillis())
             ->setCache(['max_age' => 30, 's_maxage' => 30, 'public' => true])
             ->setExpires(now()->addSeconds(30))
-            ->setEtag(Cache::get('cache.serverList.hash'));
+            ->setEtag($hash);
     }
 }

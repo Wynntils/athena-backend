@@ -24,11 +24,17 @@ class ItemWeightsController extends Controller
             $data = Cache::get('cache.itemWeights');
         }
 
+        if ($data === null) {
+            return response()->json(['error' => 'Cache unavailable'], 503);
+        }
+
+        $hash = Cache::get('cache.itemWeights.hash');
+
         return (new ItemWeightsCacheResource($data))
             ->response()
             ->header('timestamp', currentTimeMillis())
             ->setCache(['max_age' => 3600, 's_maxage' => 3600, 'public' => true])
             ->setExpires(now()->addSeconds(3600))
-            ->setEtag(Cache::get('cache.itemWeights.hash'));
+            ->setEtag($hash);
     }
 }

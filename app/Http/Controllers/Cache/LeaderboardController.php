@@ -24,11 +24,17 @@ class LeaderboardController extends Controller
             $data = Cache::get('cache.leaderboard');
         }
 
+        if ($data === null) {
+            return response()->json(['error' => 'Cache unavailable'], 503);
+        }
+
+        $hash = Cache::get('cache.leaderboard.hash');
+
         return (new LeaderboardCacheResource($data))
             ->response()
             ->header('timestamp', currentTimeMillis())
             ->setCache(['max_age' => 600, 's_maxage' => 600, 'public' => true])
             ->setExpires(now()->addSeconds(600))
-            ->setEtag(Cache::get('cache.leaderboard.hash'));
+            ->setEtag($hash);
     }
 }
