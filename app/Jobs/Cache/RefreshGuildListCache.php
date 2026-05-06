@@ -27,7 +27,7 @@ class RefreshGuildListCache implements ShouldQueue
             Cache::forever('cache.guildList', $data);
             Cache::forever('cache.guildList.hash', hash('sha512', serialize($data)));
         } catch (\Throwable $e) {
-            Log::error('RefreshGuildListCache failed: ' . $e->getMessage());
+            Log::error('RefreshGuildListCache failed', ['exception' => $e]);
         }
     }
 }

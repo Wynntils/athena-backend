@@ -27,7 +27,7 @@ class RefreshLeaderboardCache implements ShouldQueue
             Cache::forever('cache.leaderboard', $data);
             Cache::forever('cache.leaderboard.hash', hash('sha512', serialize($data)));
         } catch (\Throwable $e) {
-            Log::error('RefreshLeaderboardCache failed: ' . $e->getMessage());
+            Log::error('RefreshLeaderboardCache failed', ['exception' => $e]);
         }
     }
 }

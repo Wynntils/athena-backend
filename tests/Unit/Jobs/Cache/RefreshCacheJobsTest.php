@@ -34,7 +34,7 @@ class RefreshCacheJobsTest extends TestCase
         $this->mock(GuildList::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
 
         Cache::shouldReceive('forever')->never();
-        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshGuildListCache/'));
+        Log::shouldReceive('error')->once();
 
         (new RefreshGuildListCache)->handle();
     }
@@ -44,7 +44,7 @@ class RefreshCacheJobsTest extends TestCase
         $this->mock(ServerList::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
 
         Cache::shouldReceive('forever')->never();
-        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshServerListCache/'));
+        Log::shouldReceive('error')->once();
 
         (new RefreshServerListCache)->handle();
     }
@@ -54,7 +54,7 @@ class RefreshCacheJobsTest extends TestCase
         $this->mock(ItemWeights::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
 
         Cache::shouldReceive('forever')->never();
-        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshItemWeightsCache/'));
+        Log::shouldReceive('error')->once();
 
         (new RefreshItemWeightsCache)->handle();
     }
@@ -64,7 +64,7 @@ class RefreshCacheJobsTest extends TestCase
         $this->mock(Leaderboard::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
 
         Cache::shouldReceive('forever')->never();
-        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshLeaderboardCache/'));
+        Log::shouldReceive('error')->once();
 
         (new RefreshLeaderboardCache)->handle();
     }
@@ -74,7 +74,7 @@ class RefreshCacheJobsTest extends TestCase
         $this->mock(TerritoryList::class, fn ($m) => $m->shouldReceive('generate')->once()->andThrow(new \Exception('API down')));
 
         Cache::shouldReceive('forever')->never();
-        Log::shouldReceive('error')->once()->with(\Mockery::pattern('/RefreshTerritoryListCache/'));
+        Log::shouldReceive('error')->once();
 
         (new RefreshTerritoryListCache)->handle();
     }

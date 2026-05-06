@@ -27,7 +27,7 @@ class RefreshServerListCache implements ShouldQueue
             Cache::forever('cache.serverList', $data);
             Cache::forever('cache.serverList.hash', hash('sha512', serialize($data)));
         } catch (\Throwable $e) {
-            Log::error('RefreshServerListCache failed: ' . $e->getMessage());
+            Log::error('RefreshServerListCache failed', ['exception' => $e]);
         }
     }
 }

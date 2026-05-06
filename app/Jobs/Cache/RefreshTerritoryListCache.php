@@ -27,7 +27,7 @@ class RefreshTerritoryListCache implements ShouldQueue
             Cache::forever('cache.territoryList', $data);
             Cache::forever('cache.territoryList.hash', hash('sha512', serialize($data)));
         } catch (\Throwable $e) {
-            Log::error('RefreshTerritoryListCache failed: ' . $e->getMessage());
+            Log::error('RefreshTerritoryListCache failed', ['exception' => $e]);
         }
     }
 }

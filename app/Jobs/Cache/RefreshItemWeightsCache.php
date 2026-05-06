@@ -27,7 +27,7 @@ class RefreshItemWeightsCache implements ShouldQueue
             Cache::forever('cache.itemWeights', $data);
             Cache::forever('cache.itemWeights.hash', hash('sha512', serialize($data)));
         } catch (\Throwable $e) {
-            Log::error('RefreshItemWeightsCache failed: ' . $e->getMessage());
+            Log::error('RefreshItemWeightsCache failed', ['exception' => $e]);
         }
     }
 }
