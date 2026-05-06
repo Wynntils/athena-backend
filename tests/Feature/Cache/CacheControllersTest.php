@@ -83,6 +83,22 @@ class CacheControllersTest extends TestCase
         $response = $this->getJson('/cache/get/guildList');
 
         $response->assertStatus(200)->assertJson($data);
+
+        $expectedHash = hash('sha512', serialize($data));
+        $this->assertSame('"' . $expectedHash . '"', $response->headers->get('ETag'));
+    }
+
+    public function test_guild_list_returns_503_when_cold_start_job_fails(): void
+    {
+        Cache::flush();
+
+        $this->mock(\App\Http\Libraries\Requests\Cache\GuildList::class, function ($mock) {
+            $mock->shouldReceive('generate')->once()->andThrow(new \RuntimeException('Upstream API down'));
+        });
+
+        $response = $this->getJson('/cache/get/guildList');
+
+        $response->assertStatus(503)->assertJson(['error' => 'Cache unavailable']);
     }
 
     public function test_hashes_returns_flat_map(): void
