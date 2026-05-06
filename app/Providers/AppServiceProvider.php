@@ -24,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         'auth/',
         'cache/',
         'capes/',
+        'crash/',
         'user/',
         'telemetry/',
         'version/',
