@@ -10,7 +10,7 @@ class GuildListCacheResource extends JsonResource
     public static $wrap = null;
 
     /**
-     * @return array<int, array{_id: string, prefix: string, color: string}>
+     * @return array<int, array{_id: string, prefix: string, color: string|null}>
      */
     public function toArray(Request $request): array
     {
