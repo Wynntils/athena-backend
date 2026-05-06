@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Auth;
 use Dedoc\Scramble\Attributes\Group;
@@ -96,21 +97,11 @@ class UserController extends Controller
         return response()->json(['user' => $response]);
     }
 
-    public function getInfoPost(UserRequest $request): JsonResponse
+    public function getInfoPost(UserRequest $request): UserResource
     {
         $user = $this->getUser($request->validated('uuid'));
 
-        return response()->json([
-            'user' => [
-                'accountType' => $user->account_type,
-                'cosmetics' => [
-                    'hasCape' => $user->hasCape(),
-                    'hasElytra' => $user->hasElytra(),
-                    'hasEars' => $user->hasPart('ears'),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true),
-                ],
-            ],
-        ]);
+        return new UserResource($user);
     }
 
     private function getUser($user): User
