@@ -4,13 +4,8 @@ namespace App\Http\Libraries\Requests\Cache;
 
 use App\Models\Guild;
 
-class GuildList implements CacheContract
+class GuildList
 {
-
-    public function refreshRate(): int
-    {
-        return 3600;
-    }
 
     public function generate(): array
     {
