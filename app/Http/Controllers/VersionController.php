@@ -93,7 +93,7 @@ class VersionController extends Controller
         $latestTag = str($latest['tag_name']);
 
         $response = [
-            'version' => $latestTag,
+            'version' => (string) $latestTag,
             'url' => $asset['browser_download_url'],
             'md5' => $assetMd5[$asset['name']] ?? null,
             'changelog' => route('version.changelog', [$latest['tag_name']]),

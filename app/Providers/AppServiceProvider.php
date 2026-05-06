@@ -80,9 +80,13 @@ class AppServiceProvider extends ServiceProvider
         // Prevent Scramble from registering its default /docs/api and /docs/api.json routes.
         Scramble::ignoreDefaultRoutes();
 
-        // Custom route resolver: only include routes whose URI starts with an allowed prefix.
+        // Custom route resolver: only include API middleware routes whose URI starts with an allowed prefix.
         Scramble::configure()
             ->routes(function (Route $route) {
+                if (! in_array('api', $route->middleware())) {
+                    return false;
+                }
+
                 foreach (self::DOCUMENTED_ROUTE_PREFIXES as $prefix) {
                     if (str_starts_with($route->uri, $prefix)) {
                         return true;
