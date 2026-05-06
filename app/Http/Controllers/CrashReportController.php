@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Libraries\Notifications;
+use App\Http\Resources\CrashReportResource;
 use App\Models\CrashReport;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Http\Request;
 
 class CrashReportController extends Controller
 {
-    public function report(Request $request)
+    /**
+     * Submit a crash report
+     */
+    public function report(Request $request): CrashReportResource
     {
         $this->validate($request, [
             'trace' => 'required|string',
@@ -73,7 +77,10 @@ class CrashReportController extends Controller
             }
         }
 
-        return response()->json(['message' => 'Crash report logged successfully.', 'hash' => $crashReport->trace_hash]);
+        return new CrashReportResource([
+            'message' => 'Crash report logged successfully.',
+            'hash'    => $crashReport->trace_hash,
+        ]);
     }
 
     public function setHandled(Request $request, CrashReport $crashReport)

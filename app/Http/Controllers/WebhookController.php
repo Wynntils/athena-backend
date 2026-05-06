@@ -7,9 +7,10 @@ use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 class WebhookController extends Controller
 {
+    #[ExcludeRouteFromDocs]
     public function github(Request $request)
     {
         $payload = $request->getContent();

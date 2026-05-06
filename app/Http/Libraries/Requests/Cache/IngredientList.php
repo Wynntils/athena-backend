@@ -5,6 +5,7 @@ namespace App\Http\Libraries\Requests\Cache;
 use App\Http\Libraries\IngredientManager;
 use Http;
 
+/** @deprecated */
 class IngredientList implements CacheContract
 {
 

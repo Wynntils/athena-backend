@@ -2,40 +2,28 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Libraries\CapeManager;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /** @mixin \App\Models\User */
 class UserResource extends JsonResource
 {
+    public static $wrap = null;
     /**
-     * @param  Request  $request
-     * @return array
+     * @return array{user: array{accountType: string, cosmetics: array{hasCape: bool, hasElytra: bool, hasEars: bool, texture: string}}}
      */
-    public function toArray($request)
+    public function toArray(Request $request): array
     {
-        $discordInfo = $this->discord_info ?? [];
-        $cosmeticInfo = $this->cosmetic_info ?? [];
-
         return [
-            'uuid' => $this->id,
-            'username' => $this->username,
-            'accountType' => $this->account_type,
-            'authToken' => $this->auth_token,
-            'versions' => [
-                'latest' => $this->latest_version,
-                'used' => $this->used_versions ?? [],
-            ],
-            'discord' => [
-                'username' => $discordInfo['username'] ?? null,
-                'id' => $discordInfo['id'] ?? null,
-            ],
-            'cosmetics' => [
-                'texture' => $cosmeticInfo['capeTexture'] ?? '',
-                'isElytra' => $cosmeticInfo['elytraEnabled'] ?? false,
-                'maxResolution' => $cosmeticInfo['maxResolution'] ?? '0x0',
-                'allowAnimated' => $cosmeticInfo['allowAnimated'] ?? false,
-                'parts' => $cosmeticInfo['parts'] ?? [],
+            'user' => [
+                'accountType' => $this->account_type->value,
+                'cosmetics'   => [
+                    'hasCape'   => $this->hasCape(),
+                    'hasElytra' => $this->hasElytra(),
+                    'hasEars'   => $this->hasPart('ears'),
+                    'texture'   => CapeManager::instance()->getCapeAsBase64($this->getFormattedTexture(), true),
+                ],
             ],
         ];
     }

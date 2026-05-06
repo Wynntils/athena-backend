@@ -6,6 +6,7 @@ namespace App\Http\Libraries\Requests\Cache;
 use Http;
 use Illuminate\Http\Client\Pool;
 
+/** @deprecated */
 class MapLocations implements CacheContract
 {
 

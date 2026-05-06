@@ -4,21 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Auth;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+#[Group('User')]
 class UserController extends Controller
 {
-    public function updateDiscord(UserRequest $request): \Illuminate\Http\JsonResponse
+    /**
+     * Link a Discord account to the authenticated user
+     */
+    public function updateDiscord(UserRequest $request): JsonResponse
     {
         \Auth::user()?->updateDiscord($request->validated('id'), $request->validated('username'));
 
         return response()->json(['message' => 'Success'], 200);
     }
 
-    public function uploadConfigs(UserRequest $request): \Illuminate\Http\JsonResponse
+    /**
+     * Upload configuration files for the authenticated user
+     */
+    public function uploadConfigs(UserRequest $request): JsonResponse
     {
         $result = $uploadResult = [];
         $result['results'] = &$uploadResult;
@@ -38,12 +48,14 @@ class UserController extends Controller
         return response()->json($result, 200);
     }
 
-    public function getConfigs(): \Illuminate\Http\JsonResponse
+    #[ExcludeRouteFromDocs]
+    public function getConfigs(): JsonResponse
     {
         return response()->json(['configs' => Auth::user()?->getConfigs()], 200);
     }
 
-    public function getInfo($user): \Illuminate\Http\JsonResponse
+    #[ExcludeRouteFromDocs]
+    public function getInfo($user): JsonResponse
     {
         $user = $this->getUser($user);
 
@@ -62,7 +74,8 @@ class UserController extends Controller
         ]);
     }
 
-    public function getInfoV2(UserRequest $request): \Illuminate\Http\JsonResponse
+    #[ExcludeRouteFromDocs]
+    public function getInfoV2(UserRequest $request): JsonResponse
     {
         $user = $this->getUser($request->validated('uuid'));
 
@@ -90,21 +103,14 @@ class UserController extends Controller
         return response()->json(['user' => $response]);
     }
 
-    public function getInfoPost(UserRequest $request): \Illuminate\Http\JsonResponse
+    /**
+     * Get user account type and cosmetics
+     */
+    public function getInfoPost(UserRequest $request): UserResource
     {
         $user = $this->getUser($request->validated('uuid'));
 
-        return response()->json([
-            'user' => [
-                'accountType' => $user->account_type,
-                'cosmetics' => [
-                    'hasCape' => $user->hasCape(),
-                    'hasElytra' => $user->hasElytra(),
-                    'hasEars' => $user->hasPart('ears'),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true),
-                ],
-            ],
-        ]);
+        return new UserResource($user);
     }
 
     private function getUser($user): User

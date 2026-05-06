@@ -8,19 +8,32 @@ use App\Events\SignUpEvent;
 use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Http\Requests\AuthRequest;
+use App\Http\Resources\AuthResponseResource;
+use App\Http\Resources\PublicKeyResource;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Ramsey\Uuid\Uuid;
 use Storage;
 
+#[Group('Auth')]
 class AuthController extends Controller
 {
-    public function getPublicKey(): JsonResponse
+    /**
+     * Get the server's RSA public key
+     */
+    public function getPublicKey(): PublicKeyResource
     {
-        return response()->json(['publicKeyIn' => bin2hex(MinecraftFakeAuth::instance()->getPublicKey())]);
+        return new PublicKeyResource(bin2hex(MinecraftFakeAuth::instance()->getPublicKey()));
     }
 
-    public function responseEncryption(AuthRequest $request): JsonResponse
+    /**
+     * Authenticate with Minecraft
+     *
+     * Verifies the Minecraft session, creates or updates the user account,
+     * and returns an auth token, config files, and cache hashes.
+     */
+    public function responseEncryption(AuthRequest $request): AuthResponseResource|JsonResponse
     {
         if (config('app.debug') !== false) {
             // Useful for debugging requests
@@ -73,6 +86,6 @@ class AuthController extends Controller
         $response['configFiles'] = $user->getConfigs();
         $response['hashes'] = CacheManager::getHashes();
 
-        return response()->json($response);
+        return new AuthResponseResource($response);
     }
 }

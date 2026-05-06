@@ -29,7 +29,3 @@ Route::controller(LegacyApiController::class)
 Route::get('/health', function () {
     return ['result' => 'ok'];
 })->name('health');
-
-Route::get('/docs', function () {
-    return view('docs');
-})->name('docs');

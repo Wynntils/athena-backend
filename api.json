@@ -1,0 +1,768 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Athena API Documentation",
+        "version": "1.0.0",
+        "description": "Athena Backend API"
+    },
+    "servers": [
+        {
+            "url": "https://athena.wynntils.com",
+            "description": "Production"
+        },
+        {
+            "url": "http://127.0.0.1",
+            "description": "Localhost"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Auth"
+        },
+        {
+            "name": "Cache"
+        },
+        {
+            "name": "User"
+        },
+        {
+            "name": "Version"
+        }
+    ],
+    "security": [
+        {
+            "AuthToken": []
+        }
+    ],
+    "paths": {
+        "/auth/getPublicKey": {
+            "get": {
+                "operationId": "auth.api.getPublicKey",
+                "summary": "Get the server's RSA public key",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PublicKeyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicKeyResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/responseEncryption": {
+            "post": {
+                "operationId": "auth.api.responseEncryption",
+                "description": "Verifies the Minecraft session, creates or updates the user account,\nand returns an auth token, config files, and cache hashes.",
+                "summary": "Authenticate with Minecraft",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AuthResponseResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponseResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Notifications::log('<@&980223126619176960>', \"Unknown Profile for `{$request->validated('username')}`\", \"```json\\n\" . json_encode($profile, JSON_PRETTY_PRINT) . '```');",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "The provided username or key is invalid"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/cache/get/guildList": {
+            "get": {
+                "operationId": "cache.cache.guildList",
+                "summary": "Get the guild list",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cache/get/serverList": {
+            "get": {
+                "operationId": "cache.cache.serverList",
+                "summary": "Get the server list",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cache/get/itemWeights": {
+            "get": {
+                "operationId": "cache.cache.itemWeights",
+                "summary": "Get item build weights",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cache/get/leaderboard": {
+            "get": {
+                "operationId": "cache.cache.leaderboard",
+                "summary": "Get the leaderboard",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/cache/get/territoryList": {
+            "get": {
+                "operationId": "cache.v2.cache.territoryList",
+                "summary": "Get the territory list",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/uploadConfigs": {
+            "post": {
+                "operationId": "user.uploadConfigs",
+                "summary": "Upload configuration files for the authenticated user",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "minItems": 0,
+                                    "maxItems": 0,
+                                    "additionalItems": false
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/user/updateDiscord": {
+            "post": {
+                "operationId": "user.updateDiscord",
+                "summary": "Link a Discord account to the authenticated user",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Success"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/user/getInfo": {
+            "post": {
+                "operationId": "user.getInfoLegacy",
+                "summary": "Get user account type and cosmetics",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/version/latest/{stream}": {
+            "get": {
+                "operationId": "version.latest",
+                "summary": "Get the latest release for a stream",
+                "tags": [
+                    "Version"
+                ],
+                "parameters": [
+                    {
+                        "name": "stream",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`VersionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VersionResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "No release found for this stream"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "error"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/version/changelog/{fromQuery}/{toQuery}": {
+            "get": {
+                "operationId": "version.changelogBetween",
+                "summary": "Get changelogs between two versions",
+                "tags": [
+                    "Version"
+                ],
+                "parameters": [
+                    {
+                        "name": "fromQuery",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "toQuery",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ChangelogBetweenResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChangelogBetweenResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "No release found for the to version"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "error"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/health": {
+            "get": {
+                "operationId": "health",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "enum": [
+                                                "ok"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "result"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/crash/report": {
+            "post": {
+                "operationId": "crash.report",
+                "summary": "Submit a crash report",
+                "tags": [
+                    "CrashReport"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "trace": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "trace"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`CrashReportResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrashReportResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "AuthToken": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "authToken"
+            }
+        },
+        "schemas": {
+            "AuthResponseResource": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "authToken": {
+                        "type": "string"
+                    },
+                    "configFiles": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "hashes": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "message",
+                    "authToken",
+                    "configFiles",
+                    "hashes"
+                ],
+                "title": "AuthResponseResource"
+            },
+            "ChangelogBetweenResource": {
+                "type": "object",
+                "properties": {
+                    "from": {
+                        "type": "string"
+                    },
+                    "to": {
+                        "type": "string"
+                    },
+                    "changelogs": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "from",
+                    "to",
+                    "changelogs"
+                ],
+                "title": "ChangelogBetweenResource"
+            },
+            "CrashReportResource": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "hash": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message",
+                    "hash"
+                ],
+                "title": "CrashReportResource"
+            },
+            "JsonResource": {
+                "type": "string",
+                "title": "JsonResource"
+            },
+            "PublicKeyResource": {
+                "type": "object",
+                "properties": {
+                    "publicKeyIn": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "publicKeyIn"
+                ],
+                "title": "PublicKeyResource"
+            },
+            "UserResource": {
+                "type": "object",
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "accountType": {
+                                "type": "string"
+                            },
+                            "cosmetics": {
+                                "type": "object",
+                                "properties": {
+                                    "hasCape": {
+                                        "type": "boolean"
+                                    },
+                                    "hasElytra": {
+                                        "type": "boolean"
+                                    },
+                                    "hasEars": {
+                                        "type": "boolean"
+                                    },
+                                    "texture": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "hasCape",
+                                    "hasElytra",
+                                    "hasEars",
+                                    "texture"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "accountType",
+                            "cosmetics"
+                        ]
+                    }
+                },
+                "required": [
+                    "user"
+                ],
+                "title": "UserResource"
+            },
+            "VersionResource": {
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "md5": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "changelog": {
+                        "type": "string"
+                    },
+                    "supportedMcVersion": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "version",
+                    "url",
+                    "md5",
+                    "changelog"
+                ],
+                "title": "VersionResource"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthenticationException": {
+                "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
