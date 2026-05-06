@@ -53,15 +53,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/PublicKeyResource"
-                                        }
-                                    },
-                                    "required": [
-                                        "data"
-                                    ]
+                                    "$ref": "#/components/schemas/PublicKeyResource"
                                 }
                             }
                         }
@@ -81,15 +73,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/AuthResponseResource"
-                                        }
-                                    },
-                                    "required": [
-                                        "data"
-                                    ]
+                                    "$ref": "#/components/schemas/AuthResponseResource"
                                 }
                             }
                         }
@@ -1076,15 +1060,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/VersionResource"
-                                        }
-                                    },
-                                    "required": [
-                                        "data"
-                                    ]
+                                    "$ref": "#/components/schemas/VersionResource"
                                 }
                             }
                         }
@@ -1278,15 +1254,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/ChangelogBetweenResource"
-                                        }
-                                    },
-                                    "required": [
-                                        "data"
-                                    ]
+                                    "$ref": "#/components/schemas/ChangelogBetweenResource"
                                 }
                             }
                         }
@@ -1343,58 +1311,6 @@
                 }
             }
         },
-        "/auth/logout": {
-            "post": {
-                "operationId": "auth.logout",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    }
-                }
-            }
-        },
-        "/api/docs": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/docs.json": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/crash/report": {
             "post": {
                 "operationId": "crash.report",
@@ -1425,253 +1341,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/CrashReportResource"
-                                        }
-                                    },
-                                    "required": [
-                                        "data"
-                                    ]
+                                    "$ref": "#/components/schemas/CrashReportResource"
                                 }
                             }
                         }
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
-                    }
-                }
-            }
-        },
-        "/crash/view/{crashReport}": {
-            "get": {
-                "operationId": "crash.view",
-                "tags": [
-                    "CrashReport"
-                ],
-                "parameters": [
-                    {
-                        "name": "crashReport",
-                        "in": "path",
-                        "required": true,
-                        "description": "The crash report trace hash",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    }
-                }
-            }
-        },
-        "/crash/{crashReport}/handled": {
-            "put": {
-                "operationId": "crash.handled",
-                "tags": [
-                    "CrashReport"
-                ],
-                "parameters": [
-                    {
-                        "name": "crashReport",
-                        "in": "path",
-                        "required": true,
-                        "description": "The crash report trace hash",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    "required": [
-                                        "success"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    }
-                }
-            }
-        },
-        "/crash/{crashReport}/comment": {
-            "put": {
-                "operationId": "crash.comment",
-                "tags": [
-                    "CrashReport"
-                ],
-                "parameters": [
-                    {
-                        "name": "crashReport",
-                        "in": "path",
-                        "required": true,
-                        "description": "The crash report trace hash",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "comment": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "comment"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "comment": {
-                                            "type": "object",
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string"
-                                                },
-                                                "user": {
-                                                    "type": "string"
-                                                },
-                                                "user_id": {
-                                                    "type": "string"
-                                                },
-                                                "time": {
-                                                    "type": "string"
-                                                },
-                                                "comment": {}
-                                            },
-                                            "required": [
-                                                "id",
-                                                "user",
-                                                "user_id",
-                                                "time",
-                                                "comment"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "comment"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/ValidationException"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    }
-                }
-            },
-            "delete": {
-                "operationId": "crash.comment.delete",
-                "tags": [
-                    "CrashReport"
-                ],
-                "parameters": [
-                    {
-                        "name": "crashReport",
-                        "in": "path",
-                        "required": true,
-                        "description": "The crash report trace hash",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "commentId",
-                        "in": "query",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "comments": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "comments"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/ValidationException"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -2295,27 +1971,6 @@
                                         "error",
                                         "data"
                                     ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "get": {
-                "operationId": "auth.login",
-                "summary": "Invoke the controller method",
-                "tags": [
-                    "View"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
                                 }
                             }
                         }
