@@ -6,9 +6,13 @@ use App\Enums\MaskType;
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Image;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+#[Group('Cape')]
 class CapeController extends Controller
 {
     protected CapeManager $manager;
@@ -18,14 +22,14 @@ class CapeController extends Controller
         $this->manager = $capeManager;
     }
 
-    public function getCape($capeId)
+    public function getCape($capeId): BinaryFileResponse
     {
         return response()->file($this->manager->getCape($capeId), [
             'Content-Type' => 'image/png',
         ]);
     }
 
-    public function getUserCape($uuid)
+    public function getUserCape($uuid): BinaryFileResponse
     {
         $user = User::findOrFail($uuid);
 
@@ -34,7 +38,7 @@ class CapeController extends Controller
         ]);
     }
 
-    public function list(): \Illuminate\Http\JsonResponse
+    public function list(): JsonResponse
     {
         $result = $this->manager->listCapes();
 
@@ -48,19 +52,19 @@ class CapeController extends Controller
             ->setEtag(md5(serialize($result)));
     }
 
-    public function queueGetCape($capeId)
+    public function queueGetCape($capeId): BinaryFileResponse
     {
         return response()->file($this->manager->getQueuedCape($capeId), [
             'Content-Type' => 'image/png',
         ]);
     }
 
-    public function queueList(): \Illuminate\Http\JsonResponse
+    public function queueList(): JsonResponse
     {
         return response()->json(['result' => $this->manager->listQueuedCapes()]);
     }
 
-    public function uploadCape(CapeRequest $request): \Illuminate\Http\JsonResponse
+    public function uploadCape(CapeRequest $request): JsonResponse
     {
         $capePath = $request->validated('cape')?->path();
         $username = $request->validated('username');
@@ -83,7 +87,7 @@ class CapeController extends Controller
         };
     }
 
-    public function approveCape(Request $request): \Illuminate\Http\JsonResponse
+    public function approveCape(Request $request): JsonResponse
     {
         $sha = $request->route('sha');
         $type = MaskType::tryFrom($request->route('type')) ?? MaskType::FULL;
@@ -122,7 +126,7 @@ class CapeController extends Controller
         return response()->json(['message' => 'Successfully approved the cape.']);
     }
 
-    public function banCape(Request $request): \Illuminate\Http\JsonResponse
+    public function banCape(Request $request): JsonResponse
     {
         $sha1 = $request->route('sha');
 

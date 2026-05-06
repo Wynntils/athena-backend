@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Dedoc\Scramble\Attributes\Group;
 use GrahamCampbell\GitHub\GitHubManager;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
+#[Group('Version')]
 class VersionController extends Controller
 {
-    public function __construct(public GitHubManager $github)
-    {
-    }
+    public function __construct(public GitHubManager $github) {}
 
-    private function userAgentDetails(Request $request) {
+    private function userAgentDetails(Request $request)
+    {
         // Semver User Agent: Wynntils Artemis\\v0.0.4+MC-1.20.2 (client) FABRIC
         // BETA User Agent : Wynntils Artemis\\v0.0.4-beta.71+MC-1.20.2 (client) FABRIC
         // DEV User Agent: Wynntils Artemis\\v0.0.4-SNAPSHOT+MC-1.20.2 (dev) FABRIC
@@ -35,7 +38,7 @@ class VersionController extends Controller
         ];
     }
 
-    public function latest(Request $request, $stream)
+    public function latest(Request $request, $stream): JsonResponse
     {
         [
             'client' => $client,
@@ -51,10 +54,10 @@ class VersionController extends Controller
         $releases = $this->getReleases($client, $stream, 1, $requestedMcVersion);
 
         $latest = $releases->first(function ($release) {
-            return !empty($release['assets']); // Filter out releases without assets
+            return ! empty($release['assets']); // Filter out releases without assets
         });
 
-        if (!$latest) {
+        if (! $latest) {
             return response()->json(['error' => 'No release found for this stream'], 404)
                 ->header('Vary', 'User-Agent');
         }
@@ -69,18 +72,18 @@ class VersionController extends Controller
                 return false;
             }
 
-            if (!$name->contains($modloader)) {
+            if (! $name->contains($modloader)) {
                 return false;
             }
 
-            if (!$requestedMcVersion) {
+            if (! $requestedMcVersion) {
                 return true;
             }
 
             return $this->assetMinecraftVersion($asset['name']) === $requestedMcVersion;
         });
 
-        if (!$asset) {
+        if (! $asset) {
             return response()->json(['error' => 'No release found for this stream'], 404)
                 ->header('Vary', 'User-Agent');
         }
@@ -94,7 +97,6 @@ class VersionController extends Controller
             'changelog' => route('version.changelog', [$latest['tag_name']]),
         ];
 
-
         if (str($asset['name'])->contains('+MC-')) {
             $tagMcVersion = (string) str($asset['name'])->after('+MC-')->before('.jar');
             $response['supportedMcVersion'] = $tagMcVersion;
@@ -103,7 +105,7 @@ class VersionController extends Controller
         return response()->json($response)->header('Vary', 'User-Agent');
     }
 
-    public function changelog(Request $request, $version)
+    public function changelog(Request $request, $version): JsonResponse
     {
         ['client' => $client] = $this->userAgentDetails($request);
         $stream = str($version)->contains(['alpha', 'beta']) ? 'ce' : 're';
@@ -115,7 +117,7 @@ class VersionController extends Controller
 
         $release = $releases->firstWhere('tag_name', $version);
 
-        if (!$release) {
+        if (! $release) {
             return response()->json(['error' => 'No release found for this version'], 404);
         }
 
@@ -131,7 +133,7 @@ class VersionController extends Controller
         ]);
     }
 
-    public function download($version, $stream, $modloader = 'fabric')
+    public function download($version, $stream, $modloader = 'fabric'): RedirectResponse|JsonResponse
     {
         $client = 'Artemis';
         $modloader = $this->normalizeModloader(strtolower($modloader));
@@ -139,7 +141,7 @@ class VersionController extends Controller
 
         $latest = $releases->first();
 
-        if (!$latest) {
+        if (! $latest) {
             return response()->json(['error' => 'No release found for this version'], 404);
         }
 
@@ -150,7 +152,7 @@ class VersionController extends Controller
                 && str_contains(strtolower($name), strtolower((string) $modloader));
         });
 
-        if (!$asset) {
+        if (! $asset) {
             return response()->json(['error' => 'No release found for this version'], 404);
         }
 
@@ -167,7 +169,7 @@ class VersionController extends Controller
 
     private function assetMinecraftVersion(string $assetName): ?string
     {
-        if (!preg_match('/\+MC-([0-9]+(?:\.[0-9]+)*)/i', $assetName, $matches)) {
+        if (! preg_match('/\+MC-([0-9]+(?:\.[0-9]+)*)/i', $assetName, $matches)) {
             return null;
         }
 
@@ -201,7 +203,7 @@ class VersionController extends Controller
         };
     }
 
-    public function changelogBetween(Request $request, $fromQuery, $toQuery)
+    public function changelogBetween(Request $request, $fromQuery, $toQuery): JsonResponse
     {
         ['client' => $client] = $this->userAgentDetails($request);
 
@@ -211,7 +213,7 @@ class VersionController extends Controller
 
         // Find the "from" and "to" releases, with pagination fallback
         $from = $releases->firstWhere('tag_name', $fromQuery);
-        $to   = $releases->firstWhere('tag_name', $toQuery);
+        $to = $releases->firstWhere('tag_name', $toQuery);
 
         if (! $from || ! $to) {
             $page = 1;
@@ -229,9 +231,10 @@ class VersionController extends Controller
             if (! $from || ! $to) {
                 match (true) {
                     ! $from && ! $to => $error = 'No releases found for these versions',
-                    ! $from          => $error = 'No release found for the from version',
-                    ! $to            => $error = 'No release found for the to version',
+                    ! $from => $error = 'No release found for the from version',
+                    ! $to => $error = 'No release found for the to version',
                 };
+
                 return response()->json(['error' => $error], 404);
             }
         }
@@ -266,18 +269,17 @@ class VersionController extends Controller
         }
 
         return response()->json([
-            'from'       => $from['tag_name'],
-            'to'         => $to['tag_name'],
+            'from' => $from['tag_name'],
+            'to' => $to['tag_name'],
             'changelogs' => $perVersionChangelogs,
         ]);
     }
-
 
     private function getReleases($repo, $stream, $page = 1, $mcVersion = null): \Illuminate\Support\Collection
     {
         $stream = $this->normalizeReleaseStream($stream);
 
-        if (!in_array($stream, [
+        if (! in_array($stream, [
             'ce', 'pre-alpha', 'alpha', 'beta', 'rc', 'release',
         ])) {
             throw new \InvalidArgumentException('Invalid stream');
@@ -286,15 +288,15 @@ class VersionController extends Controller
         // Cache this for 5 minutes
         /** @var \Illuminate\Support\Collection $cache */
         try {
-            $cache = \Cache::remember('releases.' . $repo . '-' . $page, 300, function () use ($page, $repo) {
+            $cache = \Cache::remember('releases.'.$repo.'-'.$page, 300, function () use ($page, $repo) {
                 return collect($this->github->repo()->releases()->all('Wynntils', $repo, [
                     'per_page' => 100, // 100 is the maximum
                     'page' => $page,
                 ]));
             });
-            \Cache::put('releases.' . $repo . '.backup', $cache);
+            \Cache::put('releases.'.$repo.'.backup', $cache);
         } catch (\Exception $e) {
-            $cache = \Cache::get('releases.' . $repo . '.backup', collect());
+            $cache = \Cache::get('releases.'.$repo.'.backup', collect());
         }
 
         // filter then return in semver order
@@ -318,14 +320,15 @@ class VersionController extends Controller
                     return false;
                 }
             }
+
             return $release['draft'] === false && match ($stream) {
                 'release' => $release['prerelease'] === false,
                 'ce' => $release['prerelease'] === true,
                 'pre-alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'pre-alpha'),
-                'alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'alpha') && !str_contains($release['tag_name'], 'pre-alpha'),
+                'alpha' => $release['prerelease'] === true && str_contains($release['tag_name'], 'alpha') && ! str_contains($release['tag_name'], 'pre-alpha'),
                 'beta' => $release['prerelease'] === true && str_contains($release['tag_name'], 'beta'),
                 'rc' => $release['prerelease'] === true && str_contains($release['tag_name'], 'rc'),
-            } && !str($release['tag_name'])->upper()->contains('+MC-');
+            } && ! str($release['tag_name'])->upper()->contains('+MC-');
         })->sort(function ($a, $b) {
             return version_compare($b['tag_name'], $a['tag_name']);
         });

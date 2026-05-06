@@ -6,19 +6,22 @@ use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Auth;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 
+#[Group('User')]
 class UserController extends Controller
 {
-    public function updateDiscord(UserRequest $request): \Illuminate\Http\JsonResponse
+    public function updateDiscord(UserRequest $request): JsonResponse
     {
         \Auth::user()?->updateDiscord($request->validated('id'), $request->validated('username'));
 
         return response()->json(['message' => 'Success'], 200);
     }
 
-    public function uploadConfigs(UserRequest $request): \Illuminate\Http\JsonResponse
+    public function uploadConfigs(UserRequest $request): JsonResponse
     {
         $result = $uploadResult = [];
         $result['results'] = &$uploadResult;
@@ -38,12 +41,12 @@ class UserController extends Controller
         return response()->json($result, 200);
     }
 
-    public function getConfigs(): \Illuminate\Http\JsonResponse
+    public function getConfigs(): JsonResponse
     {
         return response()->json(['configs' => Auth::user()?->getConfigs()], 200);
     }
 
-    public function getInfo($user): \Illuminate\Http\JsonResponse
+    public function getInfo($user): JsonResponse
     {
         $user = $this->getUser($user);
 
@@ -62,7 +65,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function getInfoV2(UserRequest $request): \Illuminate\Http\JsonResponse
+    public function getInfoV2(UserRequest $request): JsonResponse
     {
         $user = $this->getUser($request->validated('uuid'));
 
@@ -90,7 +93,7 @@ class UserController extends Controller
         return response()->json(['user' => $response]);
     }
 
-    public function getInfoPost(UserRequest $request): \Illuminate\Http\JsonResponse
+    public function getInfoPost(UserRequest $request): JsonResponse
     {
         $user = $this->getUser($request->validated('uuid'));
 

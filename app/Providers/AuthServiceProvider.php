@@ -8,6 +8,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,12 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        // Allow unauthenticated public access to Scramble API documentation.
+        // Nullable ?User parameter ensures the gate passes for guests.
+        Gate::define('viewApiDocs', function (?User $user) {
+            return true;
+        });
 
         Auth::viaRequest('apiKey', static function (Request $request) {
             return ApiKey::findOrFail($request->header('apiKey') ?? $request->route('apiKey'))->first();

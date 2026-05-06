@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TelemetryRequest;
 use App\Models\GatheringSpot;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\JsonResponse;
 
+#[Group('Telemetry')]
 class TelemetryController extends Controller
 {
-    public function sendGatheringSpot(TelemetryRequest $request): \Illuminate\Http\JsonResponse
+    public function sendGatheringSpot(TelemetryRequest $request): JsonResponse
     {
         $gatheringSpot = GatheringSpot::firstOrCreate(
             ['_id' => $request->validated('spot.x').':'.$request->validated('spot.y').':'.$request->validated('spot.z')],

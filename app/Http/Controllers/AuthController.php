@@ -9,10 +9,12 @@ use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Ramsey\Uuid\Uuid;
 use Storage;
 
+#[Group('Auth')]
 class AuthController extends Controller
 {
     public function getPublicKey(): JsonResponse
