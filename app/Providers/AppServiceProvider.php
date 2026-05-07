@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Extensions\SecurityOperationExtension;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -98,14 +99,17 @@ class AppServiceProvider extends ServiceProvider
             ->expose(
                 ui: 'api/docs',
                 document: 'api/docs.json',
-            );
+            )
+            ->withOperationTransformers([
+                SecurityOperationExtension::class,
+            ]);
 
-        // Register the AuthToken apiKey security scheme (header-based).
-        // This matches the scheme previously defined in app/Docs/OpenAPI.php.
+        // Register the AuthToken apiKey security scheme in components only — no global security.
+        // Per-route security is applied by SecurityOperationExtension based on middleware.
         Scramble::afterOpenApiGenerated(function (OpenApi $openApi) {
-            $openApi->secure(
-                SecurityScheme::apiKey('header', 'authToken')
-                    ->as('AuthToken')
+            $openApi->components->addSecurityScheme(
+                'AuthToken',
+                SecurityScheme::apiKey('header', 'authToken')->as('AuthToken')
             );
         });
     }

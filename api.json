@@ -29,11 +29,6 @@
             "name": "Version"
         }
     ],
-    "security": [
-        {
-            "AuthToken": []
-        }
-    ],
     "paths": {
         "/auth/getPublicKey": {
             "get": {
@@ -53,7 +48,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/auth/responseEncryption": {
@@ -117,7 +113,8 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/cache/get/guildList": {
@@ -159,7 +156,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/cache/get/serverList": {
@@ -201,7 +199,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/cache/get/itemWeights": {
@@ -243,7 +242,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/cache/get/leaderboard": {
@@ -285,7 +285,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/cache/get/territoryList": {
@@ -327,7 +328,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/cache/getHashes": {
@@ -348,7 +350,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/user/uploadConfigs": {
@@ -381,7 +384,12 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ]
             }
         },
         "/user/updateDiscord": {
@@ -419,7 +427,12 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ]
             }
         },
         "/user/getInfo": {
@@ -443,7 +456,8 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/version/latest/{stream}": {
@@ -495,7 +509,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/v2/version/changelog/{fromQuery}/{toQuery}": {
@@ -555,7 +570,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/api/health": {
@@ -583,7 +599,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/crash/report": {
@@ -625,7 +642,8 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         }
     },
