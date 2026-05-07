@@ -6,6 +6,7 @@ use App\Enums\MaskType;
 use App\Http\Traits\Singleton;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Imagick;
 use Intervention\Image\Facades\Image as ImageFactory;
@@ -16,21 +17,25 @@ class CapeManager
     // TODO: If special cape doesn't exist, fallback on the users cape, also a setting to toggle this on the website.
     // array for special occasions on specific dates
     private array $specialCapes = [
-        //'01-01' => 'newYears',
-        //'04-01' => 'aprilFools',
-        //'07-04' => 'independenceDay',
+        // '01-01' => 'newYears',
+        // '04-01' => 'aprilFools',
+        // '07-04' => 'independenceDay',
         // '10-31' => 'halloween',
-        //'12-24' => 'christmasEve',
+        // '12-24' => 'christmasEve',
         // '12-25' => 'christmas',
-        //'12-31' => 'newYearsEve',
+        // '12-31' => 'newYearsEve',
     ];
 
     use Singleton;
 
     private \Illuminate\Contracts\Filesystem\Filesystem $queue;
+
     private \Illuminate\Contracts\Filesystem\Filesystem $banned;
+
     private \Illuminate\Contracts\Filesystem\Filesystem $approved;
+
     private \Illuminate\Contracts\Filesystem\Filesystem $special;
+
     private string $token;
 
     public function __construct()
@@ -89,21 +94,27 @@ class CapeManager
             return base64_encode($this->getSpecialCape());
         }
 
-        if($omitDefaultCape) {
-            return base64_encode($this->approved->get($capeId));
-        }
+        $cacheKey = 'cape-texture-'.$capeId.'-'.($omitDefaultCape ? '1' : '0');
 
-        return base64_encode($this->approved->get($capeId) ?? $this->special->get('defaultCape'));
+        return Cache::remember($cacheKey, 2592000, function () use ($capeId, $omitDefaultCape) {
+            if ($omitDefaultCape) {
+                return base64_encode($this->approved->get($capeId));
+            }
+
+            return base64_encode($this->approved->get($capeId) ?? $this->special->get('defaultCape'));
+        });
     }
 
     public function listCapes(): array
     {
         ini_set('memory_limit', '-1');
+
         return collect($this->approved->files())->filter(static function ($item) {
             return $item !== '.gitignore';
         })->map(function ($item) {
             try {
                 $image = ImageFactory::make($this->approved->path($item));
+
                 return ['sha' => $item, 'width' => $image->getWidth(), 'height' => $image->getHeight()];
             } catch (\Throwable $e) {
                 return ['sha' => $item, 'width' => 0, 'height' => 0];
@@ -125,7 +136,7 @@ class CapeManager
 
     public function getSha(Image $image): string
     {
-        $imagick = new Imagick();
+        $imagick = new Imagick;
 
         $image->encode('png');
 
@@ -142,7 +153,7 @@ class CapeManager
 
         if ($notify) {
             Notifications::cape(
-                title: "A new cape needs approval!",
+                title: 'A new cape needs approval!',
                 description: sprintf("**Uploaded by:** %s\n➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
                     $username,
                     route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
@@ -160,7 +171,7 @@ class CapeManager
 
     public function approveCape(string $capeId): void
     {
-        if (!$this->isQueued($capeId)) {
+        if (! $this->isQueued($capeId)) {
             return;
         }
 
@@ -168,7 +179,7 @@ class CapeManager
         $this->queue->delete($capeId);
 
         Notifications::cape(
-            title: "A cape was approved",
+            title: 'A cape was approved',
             description: "➡️ **SHA-1**: $capeId",
             color: EmbedColor::GREEN,
             imageUrl: url("capes/get/$capeId")
@@ -190,7 +201,7 @@ class CapeManager
         $this->deleteCape($capeId);
 
         Notifications::cape(
-            title: "A cape was banned",
+            title: 'A cape was banned',
             description: "➡️ **SHA-1**: $capeId",
             color: EmbedColor::RED,
             imageUrl: url("capes/queue/get/$capeId")
@@ -217,14 +228,14 @@ class CapeManager
 
         $mask = ImageFactory::make($maskImage);
 
-        if(
+        if (
             $mask->width() !== $image->width()
             && $mask->height() !== $image->height()
         ) {
             $mask->resize($image->width(), $image->width() / 2);
         }
 
-        if($image->height() !== $image->width() / 2) {
+        if ($image->height() !== $image->width() / 2) {
             $mask = ImageFactory::canvas($image->width(), $image->height())->fill($mask);
         }
 
