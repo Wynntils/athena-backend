@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Http\Extensions\SecurityOperationExtension;
+use App\Models\User;
+use App\Observers\UserObserver;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -54,6 +56,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        User::observe(UserObserver::class);
+
         Paginator::useBootstrapFive();
 
         Http::macro('wynn', function () {

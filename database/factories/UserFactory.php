@@ -14,10 +14,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'id'            => Str::uuid()->toString(),
-            'username'      => $this->faker->userName(),
-            'account_type'  => AccountType::NORMAL,
-            'auth_token'    => Str::uuid()->toString(),
+            'id' => Str::uuid()->toString(),
+            'username' => 'user_'.Str::random(8),
+            'account_type' => AccountType::NORMAL,
+            'auth_token' => Str::uuid()->toString(),
             'cosmetic_info' => [],
         ];
     }
