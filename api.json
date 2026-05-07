@@ -129,18 +129,31 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`JsonResource`",
+                        "description": "`GuildListCacheResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuildListCacheResource"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/JsonResource"
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Cache unavailable"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "error"
                                     ]
                                 }
                             }
@@ -158,18 +171,31 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`JsonResource`",
+                        "description": "`ServerListCacheResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerListCacheResource"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/JsonResource"
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Cache unavailable"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "error"
                                     ]
                                 }
                             }
@@ -187,18 +213,31 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`JsonResource`",
+                        "description": "`ItemWeightsCacheResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ItemWeightsCacheResource"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/JsonResource"
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Cache unavailable"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "error"
                                     ]
                                 }
                             }
@@ -216,18 +255,31 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`JsonResource`",
+                        "description": "`LeaderboardCacheResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LeaderboardCacheResource"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/JsonResource"
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Cache unavailable"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "error"
                                     ]
                                 }
                             }
@@ -236,28 +288,62 @@
                 }
             }
         },
-        "/v2/cache/get/territoryList": {
+        "/cache/get/territoryList": {
             "get": {
-                "operationId": "cache.v2.cache.territoryList",
+                "operationId": "cache.cache.territoryList",
                 "summary": "Get the territory list",
                 "tags": [
                     "Cache"
                 ],
                 "responses": {
                     "200": {
-                        "description": "`JsonResource`",
+                        "description": "`TerritoryListCacheResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TerritoryListCacheResource"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/JsonResource"
+                                        "error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Cache unavailable"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "error"
                                     ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cache/getHashes": {
+            "get": {
+                "operationId": "cache.cache.getHashes",
+                "summary": "Get hashes for all active caches",
+                "tags": [
+                    "Cache"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`HashesResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HashesResource"
                                 }
                             }
                         }
@@ -622,9 +708,112 @@
                 ],
                 "title": "CrashReportResource"
             },
-            "JsonResource": {
-                "type": "string",
-                "title": "JsonResource"
+            "GuildListCacheResource": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string"
+                        },
+                        "prefix": {
+                            "type": "string"
+                        },
+                        "color": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "_id",
+                        "prefix",
+                        "color"
+                    ]
+                },
+                "title": "GuildListCacheResource"
+            },
+            "HashesResource": {
+                "type": "object",
+                "properties": {
+                    "guildList": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "serverList": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "itemWeights": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "leaderboard": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "territoryList": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "guildList",
+                    "serverList",
+                    "itemWeights",
+                    "leaderboard",
+                    "territoryList"
+                ],
+                "title": "HashesResource"
+            },
+            "ItemWeightsCacheResource": {
+                "type": "object",
+                "properties": {
+                    "wynnpool": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "nori": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "wynnpool",
+                    "nori"
+                ],
+                "title": "ItemWeightsCacheResource"
+            },
+            "LeaderboardCacheResource": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "title": "LeaderboardCacheResource"
             },
             "PublicKeyResource": {
                 "type": "object",
@@ -637,6 +826,118 @@
                     "publicKeyIn"
                 ],
                 "title": "PublicKeyResource"
+            },
+            "ServerListCacheResource": {
+                "type": "object",
+                "properties": {
+                    "servers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "firstSeen": {
+                                    "type": "integer"
+                                },
+                                "players": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "firstSeen",
+                                "players"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "servers"
+                ],
+                "title": "ServerListCacheResource"
+            },
+            "TerritoryListCacheResource": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "guild": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "prefix": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "color": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "prefix",
+                                "color"
+                            ]
+                        },
+                        "acquired": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "object",
+                            "properties": {
+                                "start": {
+                                    "type": "array",
+                                    "prefixItems": [
+                                        {
+                                            "type": "integer"
+                                        },
+                                        {
+                                            "type": "integer"
+                                        }
+                                    ],
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "additionalItems": false
+                                },
+                                "end": {
+                                    "type": "array",
+                                    "prefixItems": [
+                                        {
+                                            "type": "integer"
+                                        },
+                                        {
+                                            "type": "integer"
+                                        }
+                                    ],
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "additionalItems": false
+                                }
+                            },
+                            "required": [
+                                "start",
+                                "end"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "guild",
+                        "acquired",
+                        "location"
+                    ]
+                },
+                "title": "TerritoryListCacheResource"
             },
             "UserResource": {
                 "type": "object",
