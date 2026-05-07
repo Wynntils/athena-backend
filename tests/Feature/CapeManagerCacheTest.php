@@ -11,6 +11,12 @@ beforeEach(function () {
     Storage::fake('special');
 });
 
+afterEach(function () {
+    $reflection = new ReflectionProperty(CapeManager::class, 'instance');
+    $reflection->setAccessible(true);
+    $reflection->setValue(null, null);
+});
+
 it('caches the cape base64 result with a 30-day TTL', function () {
     Storage::disk('approved')->put('sha1hash', 'raw_image_data');
 

@@ -178,6 +178,9 @@ class CapeManager
         $this->approved->put($capeId, $this->queue->get($capeId));
         $this->queue->delete($capeId);
 
+        Cache::forget("cape-texture-{$capeId}-1");
+        Cache::forget("cape-texture-{$capeId}-0");
+
         Notifications::cape(
             title: 'A cape was approved',
             description: "➡️ **SHA-1**: $capeId",
@@ -199,6 +202,9 @@ class CapeManager
 
         $this->banned->put($capeId, $this->getCape($capeId));
         $this->deleteCape($capeId);
+
+        Cache::forget("cape-texture-{$capeId}-1");
+        Cache::forget("cape-texture-{$capeId}-0");
 
         Notifications::cape(
             title: 'A cape was banned',
