@@ -123,7 +123,7 @@ class UserController extends Controller
     private function getUser($user): User
     {
         $user = Cache::remember("user-{$user}", 3600, function () use ($user) {
-            return User::where('id', $user)->first();
+            return User::find($user);
         });
 
         if (! $user) {
