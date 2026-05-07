@@ -111,7 +111,7 @@ class UserController extends Controller
     {
         $user = $this->getUser($request->validated('uuid'));
 
-        $etag = md5($user->account_type->value.json_encode($user->cosmetic_info));
+        $etag = '"'.md5($user->account_type->value.json_encode($user->cosmetic_info)).'"';
 
         if ($request->header('If-None-Match') === $etag) {
             return response('', 304);

@@ -21,7 +21,7 @@ it('returns an ETag header with a successful user info response', function () {
 it('returns 304 when If-None-Match matches the current ETag', function () {
     $user = User::factory()->create();
 
-    $etag = md5($user->account_type->value.json_encode($user->cosmetic_info));
+    $etag = '"'.md5($user->account_type->value.json_encode($user->cosmetic_info)).'"';
 
     $this->withHeaders(['If-None-Match' => $etag])
         ->postJson('/user/getInfo', ['uuid' => $user->id])
