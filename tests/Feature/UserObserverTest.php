@@ -49,3 +49,14 @@ it('does not clear caches when unrelated fields change', function () {
 
     expect(Cache::has("user-{$user->id}"))->toBeTrue();
 });
+
+it('does not clear cape texture cache when only account_type changes', function () {
+    $texture = 'abc123';
+    $user = User::factory()->create(['cosmetic_info' => ['capeTexture' => $texture]]);
+    Cache::put("cape-texture-{$texture}-1", 'base64data', 2592000);
+
+    $user->account_type = AccountType::DONATOR;
+    $user->save();
+
+    expect(Cache::has("cape-texture-{$texture}-1"))->toBeTrue();
+});

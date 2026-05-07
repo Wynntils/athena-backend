@@ -18,10 +18,12 @@ class UserObserver
 
         Cache::forget("user-{$user->id}");
 
-        $oldCosmeticInfo = $user->getOriginal('cosmetic_info') ?? [];
-        $oldTexture = $oldCosmeticInfo['capeTexture'] ?? 'defaultCape';
+        if ($user->isDirty('cosmetic_info')) {
+            $oldCosmeticInfo = $user->getOriginal('cosmetic_info') ?? [];
+            $oldTexture = $oldCosmeticInfo['capeTexture'] ?? 'defaultCape';
 
-        Cache::forget("cape-texture-{$oldTexture}-1");
-        Cache::forget("cape-texture-{$oldTexture}-0");
+            Cache::forget("cape-texture-{$oldTexture}-1");
+            Cache::forget("cape-texture-{$oldTexture}-0");
+        }
     }
 }
