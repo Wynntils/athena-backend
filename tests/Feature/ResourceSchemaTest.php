@@ -18,8 +18,14 @@ class ResourceSchemaTest extends TestCase
         $user->id = '00000000-0000-0000-0000-000000000001';
 
         Cache::shouldReceive('remember')
+            ->with('user-00000000-0000-0000-0000-000000000001', \Mockery::any(), \Mockery::any())
             ->once()
             ->andReturn($user);
+
+        Cache::shouldReceive('remember')
+            ->with(\Mockery::on(fn ($key) => str_starts_with($key, 'cape-texture-')), \Mockery::any(), \Mockery::any())
+            ->zeroOrMoreTimes()
+            ->andReturn(null);
 
         $response = $this->withHeaders([
             'User-Agent' => 'Wynntils Artemis Test',

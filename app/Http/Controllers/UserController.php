@@ -7,11 +7,12 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Auth;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+
 #[Group('User')]
 class UserController extends Controller
 {
@@ -106,18 +107,23 @@ class UserController extends Controller
     /**
      * Get user account type and cosmetics
      */
-    public function getInfoPost(UserRequest $request): UserResource
+    public function getInfoPost(UserRequest $request): UserResource|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
     {
         $user = $this->getUser($request->validated('uuid'));
 
-        return new UserResource($user);
+        $etag = '"'.md5($user->account_type->value.json_encode($user->cosmetic_info)).'"';
+
+        if ($request->header('If-None-Match') === $etag) {
+            return response('', 304);
+        }
+
+        return (new UserResource($user))->response()->header('ETag', $etag);
     }
 
     private function getUser($user): User
     {
-        // -- TTL 10 min
-        $user = Cache::remember("user-{$user}", 600, function () use ($user) {
-            return User::where('id', $user)->first();
+        $user = Cache::remember("user-{$user}", 3600, function () use ($user) {
+            return User::find($user);
         });
 
         if (! $user) {
