@@ -43,18 +43,6 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
-        'mongodb' => [
-            'driver' => 'mongodb',
-            'host' => env('MONGODB_HOST', env('DB_HOST', '127.0.0.1')),
-            'port' => env('MONGODB_PORT', env('DB_PORT', 27017)),
-            'database' => env('MONGODB_DATABASE', env('DB_DATABASE', 'athena')),
-            'username' => env('MONGODB_USERNAME', env('DB_USERNAME')),
-            'password' => env('MONGODB_PASSWORD', env('DB_PASSWORD')),
-            'options' => [
-                'database' => env('MONGODB_AUTH_DATABASE', 'admin'),
-            ],
-        ],
-
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),

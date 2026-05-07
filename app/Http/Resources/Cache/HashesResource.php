@@ -5,14 +5,12 @@ namespace App\Http\Resources\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class LeaderboardCacheResource extends JsonResource
+class HashesResource extends JsonResource
 {
     public static $wrap = null;
 
-    public bool $preserveKeys = true;
-
     /**
-     * @return array<string, array<string, string>>
+     * @return array{guildList: string|null, serverList: string|null, itemWeights: string|null, leaderboard: string|null, territoryList: string|null}
      */
     public function toArray(Request $request): array
     {

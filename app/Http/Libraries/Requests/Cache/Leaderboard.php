@@ -3,17 +3,11 @@
 namespace App\Http\Libraries\Requests\Cache;
 
 use Http;
-use http\Client\Response;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Cache;
 
-class Leaderboard implements CacheContract
+class Leaderboard
 {
-    public function refreshRate(): int
-    {
-        return 600;
-    }
-
     public function generate(): array
     {
         $types = $this->getTypes();
@@ -46,13 +40,9 @@ class Leaderboard implements CacheContract
         foreach ($responses as $type => $resp) {
             if (!$resp->successful()) {
                 throw new \Exception('Failed to fetch leaderboard type ' . $resp);
-                continue;
             }
 
             $entries = $resp->json();
-            if (!is_array($entries)) {
-                $entries = $resp->json();
-            }
             if (!is_array($entries)) {
                 continue;
             }

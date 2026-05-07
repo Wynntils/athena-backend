@@ -15,8 +15,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         // TODO: Fix this patreon update command
-         // $schedule->command('patreon:update')->daily();
+        $schedule->job(new \App\Jobs\Cache\RefreshServerListCache)->everyThirtySeconds()->onOneServer();
+        $schedule->job(new \App\Jobs\Cache\RefreshTerritoryListCache)->everyFifteenSeconds()->onOneServer();
+        $schedule->job(new \App\Jobs\Cache\RefreshLeaderboardCache)->everyTenMinutes()->onOneServer();
+        $schedule->job(new \App\Jobs\Cache\RefreshGuildListCache)->hourly()->onOneServer();
+        $schedule->job(new \App\Jobs\Cache\RefreshItemWeightsCache)->hourly()->onOneServer();
     }
 
     /**

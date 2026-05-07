@@ -8,13 +8,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 // TODO: Add a way to dynamically filter out items if one of the weights fail to calculate due to an item change.
-class ItemWeights implements CacheContract
+class ItemWeights
 {
-    public function refreshRate(): int
-    {
-        return 3600;
-    }
-
     public function generate(): array
     {
         /** @var Response[] $responses */

@@ -3,18 +3,12 @@
 namespace App\Http\Libraries\Requests\Cache\v2;
 
 
-use App\Http\Libraries\Requests\Cache\CacheContract;
 use App\Models\Guild;
 use Http;
 use Illuminate\Support\Facades\Cache;
 
-class TerritoryList implements CacheContract
+class TerritoryList
 {
-
-    public function refreshRate(): int
-    {
-        return 15;
-    }
 
     /**
      * @throws \Exception

@@ -6,13 +6,8 @@ namespace App\Http\Libraries\Requests\Cache;
 use App\Models\Server;
 use Http;
 
-class ServerList implements CacheContract
+class ServerList
 {
-
-    public function refreshRate(): int
-    {
-        return 30;
-    }
 
     public function generate(): array
     {

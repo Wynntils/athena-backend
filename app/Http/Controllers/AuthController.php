@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\AccountType;
 use App\Events\LoginEvent;
 use App\Events\SignUpEvent;
-use App\Http\Libraries\CacheManager;
 use App\Http\Libraries\MinecraftFakeAuth;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\AuthRequest;
 use App\Http\Resources\AuthResponseResource;
 use App\Http\Resources\PublicKeyResource;
@@ -84,7 +84,13 @@ class AuthController extends Controller
         $response['message'] = 'Authentication code generated.';
         $response['authToken'] = $user->auth_token;
         $response['configFiles'] = $user->getConfigs();
-        $response['hashes'] = CacheManager::getHashes();
+        $response['hashes'] = [
+            'guildList'     => Cache::get('cache.guildList.hash'),
+            'serverList'    => Cache::get('cache.serverList.hash'),
+            'itemWeights'   => Cache::get('cache.itemWeights.hash'),
+            'leaderboard'   => Cache::get('cache.leaderboard.hash'),
+            'territoryList' => Cache::get('cache.territoryList.hash'),
+        ];
 
         return new AuthResponseResource($response);
     }
