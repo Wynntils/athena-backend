@@ -2,9 +2,10 @@
 
 use App\Events\CapeSubmittedEvent;
 use App\Jobs\SendGoogleAnalyticsEvent;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 
-uses(Tests\TestCase::class);
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 it('queues a SendGoogleAnalyticsEvent job with cape_submitted event', function () {
     Queue::fake();
