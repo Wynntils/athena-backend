@@ -11,7 +11,7 @@ beforeEach(function () {
 });
 
 it('rejects invalid hex color', function () {
-    Guild::create(['id' => 'TestGuild', 'prefix' => 'TG', 'color' => '#ffffff']);
+    Guild::factory()->create(['id' => 'TestGuild', 'prefix' => 'TG', 'color' => '#ffffff']);
 
     $response = $this->postJson('/guilds/setColor/testkey', [
         'guild' => 'TestGuild',
@@ -31,7 +31,7 @@ it('rejects non-existent guild', function () {
 });
 
 it('accepts valid guild and hex color', function () {
-    Guild::create(['id' => 'TestGuild', 'prefix' => 'TG', 'color' => '#ffffff']);
+    Guild::factory()->create(['id' => 'TestGuild', 'prefix' => 'TG', 'color' => '#ffffff']);
 
     $response = $this->postJson('/guilds/setColor/testkey', [
         'guild' => 'TestGuild',
