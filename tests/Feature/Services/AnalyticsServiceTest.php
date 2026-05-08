@@ -140,6 +140,17 @@ it('sets userId when authToken resolves', function () {
     expect($baseRequest->getUserId())->toBe($user->id);
 });
 
+it('sets wynntils_version, mc_version, and modloader params when a Wynntils UA is present', function () {
+    $service = app(AnalyticsService::class);
+    $request = Request::create('/api/test');
+    $request->headers->set('User-Agent', 'Wynntils Artemis\\v0.0.4+MC-1.21.4 (client) FABRIC');
+    $baseRequest = $service->buildPageViewRequest($request);
+    $event = $baseRequest->getEvents()->getEventList()[0];
+    expect($event->getParamValue('wynntils_version'))->toBe('0.0.4')
+        ->and($event->getParamValue('mc_version'))->toBe('1.21.4')
+        ->and($event->getParamValue('modloader'))->toBe('fabric');
+});
+
 // buildCapeSubmittedRequest
 
 it('returns a request with cape_submitted event and correct client_id', function () {
@@ -147,5 +158,6 @@ it('returns a request with cape_submitted event and correct client_id', function
     $baseRequest = $service->buildCapeSubmittedRequest('SomePlayer');
     $event = $baseRequest->getEvents()->getEventList()[0];
     expect($baseRequest->getClientId())->toBe(md5('SomePlayer'))
-        ->and($event->getName())->toBe('cape_submitted');
+        ->and($event->getName())->toBe('cape_submitted')
+        ->and($event->getParamValue('username'))->toBe('SomePlayer');
 });
