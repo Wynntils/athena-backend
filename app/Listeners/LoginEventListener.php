@@ -20,7 +20,7 @@ class LoginEventListener
 
         // Create base request
         $baseRequest = new BaseRequest;
-        $baseRequest->setClientId($event->userAgent);
+        $baseRequest->setClientId($event->user->id);
         $baseRequest->setUserId($event->user->id);
         $baseRequest->setUserProperties(new UserProperties([
             new UserProperty('version', $event->user->latest_version),
