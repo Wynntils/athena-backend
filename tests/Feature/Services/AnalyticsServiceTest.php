@@ -2,10 +2,11 @@
 
 use App\Models\User;
 use App\Services\AnalyticsService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
-uses(Tests\TestCase::class, \Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 // shouldSkip
 
@@ -84,6 +85,18 @@ it('returns user uuid when authToken resolves', function () {
     $request = Request::create('/api/test');
     $request->headers->set('authToken', 'my-valid-token');
     expect($service->resolveUserId($request))->toBe($user->id);
+});
+
+it('returns the apiKey route parameter when no authToken header is present', function () {
+    $service = app(AnalyticsService::class);
+    $request = Request::create('/test/my-api-key');
+    $request->setRouteResolver(function () use ($request) {
+        $route = new \Illuminate\Routing\Route('POST', '/test/{apiKey}', []);
+        $route->bind($request);
+
+        return $route;
+    });
+    expect($service->resolveUserId($request))->toBe('my-api-key');
 });
 
 // resolveClientId

@@ -55,6 +55,7 @@ class AnalyticsService
             return $userId;
         }
 
+        /** Internal API calls use the apiKey route parameter as a stable identity. */
         return $request->route('apiKey');
     }
 
@@ -81,7 +82,7 @@ class AnalyticsService
 
         if ($ua->contains('+')) {
             $wynntilsVersion = (string) str($rawUa)->after('\\v')->before('+') ?: null;
-            $mcVersion = (string) $ua->upper()->after('+MC-')->before(' ') ?: null;
+            $mcVersion = (string) str($rawUa)->after('+MC-')->before(' ')->lower() ?: null;
         }
 
         return [
