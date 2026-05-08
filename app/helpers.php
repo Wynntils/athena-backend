@@ -1,24 +1,25 @@
 <?php
+
 /**
  * Custom helpers
  */
 
-
 use App\Models\Guild;
 
-if (!function_exists('cleanNull')) {
+if (! function_exists('cleanNull')) {
     function cleanNull(?array $array): ?object
     {
-        if($array === null) {
+        if ($array === null) {
             return null;
         }
+
         return (object) array_filter($array, static function ($a) {
-            return !is_null($a);
+            return ! is_null($a);
         });
     }
 }
 
-if (!function_exists('getStatusType')) {
+if (! function_exists('getStatusType')) {
     function getStatusType(?string $raw): string
     {
         return match (true) {
@@ -31,7 +32,7 @@ if (!function_exists('getStatusType')) {
     }
 }
 
-if (!function_exists('ignoreZero')) {
+if (! function_exists('ignoreZero')) {
     function ignoreZero($input)
     {
         if ($input === null) {
@@ -47,13 +48,15 @@ if (!function_exists('ignoreZero')) {
         if (is_array($input) && count($input) === 2 && isset($input['min'], $input['max'])) {
             return "{$input['min']}-{$input['max']}";
         }
+
         return $input;
     }
 }
 
-if (!function_exists('rangeToAverage')) {
-    function rangeToAverage($range) {
-        if(!is_array($range) && !isset($range['min'], $range['max'])) {
+if (! function_exists('rangeToAverage')) {
+    function rangeToAverage($range)
+    {
+        if (! is_array($range) && ! isset($range['min'], $range['max'])) {
             return $range;
         }
 
@@ -61,33 +64,35 @@ if (!function_exists('rangeToAverage')) {
     }
 }
 
-if (!function_exists('currentTimeMillis')) {
+if (! function_exists('currentTimeMillis')) {
     function currentTimeMillis(): int
     {
         return (int) \Carbon\Carbon::now()->getPreciseTimestamp(3);
     }
 }
 
-if (!function_exists('humanFileSize')) {
+if (! function_exists('humanFileSize')) {
     function humanFileSize($bytes, $decimals = 2): string
     {
         $size = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        $factor = floor((strlen($bytes) - 1) / 3);
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+        $factor = (int) floor((strlen($bytes) - 1) / 3);
+
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)).($size[$factor] ?? '');
     }
 }
 
-if(!function_exists("hsvToRgb")) {
-    function hsvToRgb(float $h, float $s, float $v) {
+if (! function_exists('hsvToRgb')) {
+    function hsvToRgb(float $h, float $s, float $v)
+    {
         // com.wynntils.utils.colors.CustomColor#fromHSV(float,float,float,float)
         if ($v <= 0) {
-            return array(0, 0, 0);
+            return [0, 0, 0];
         }
         if ($v > 1) {
             $v = 1;
         }
         if ($s <= 0) {
-            return array($v, $v, $v);
+            return [$v, $v, $v];
         }
         if ($s > 1) {
             $s = 1;
@@ -102,34 +107,36 @@ if(!function_exists("hsvToRgb")) {
 
         switch ($vi) {
             case 0:
-                return array($v, $v3, $v1);
+                return [$v, $v3, $v1];
             case 1:
-                return array($v2, $v, $v1);
+                return [$v2, $v, $v1];
             case 2:
-                return array($v1, $v, $v3);
+                return [$v1, $v, $v3];
             case 3:
-                return array($v1, $v2, $v);
+                return [$v1, $v2, $v];
             case 4:
-                return array($v3, $v1, $v);
+                return [$v3, $v1, $v];
             case 5:
-                return array($v, $v1, $v2);
+                return [$v, $v1, $v2];
         }
     }
 }
 
-
-if(!function_exists("randomFloat")) {
-    function randomFloat() {
+if (! function_exists('randomFloat')) {
+    function randomFloat()
+    {
         return random_int(0, mt_getrandmax() - 1) / mt_getrandmax();
     }
 }
 
-if(!function_exists("colourFromName")) {
-    function colourFromName(string $name) {
+if (! function_exists('colourFromName')) {
+    function colourFromName(string $name)
+    {
         $minS = .5;
         $minV = .75;
-        $seed = hexdec(hash("crc32", $name));
+        $seed = hexdec(hash('crc32', $name));
         mt_srand($seed);
+
         return hsvToRgb(
             randomFloat(),
             $minS + (1 - $minS) * randomFloat(),
@@ -138,16 +145,17 @@ if(!function_exists("colourFromName")) {
     }
 }
 
-if(!function_exists("rgbFloatsToHex")) {
-    function rgbFloatsToHex(array $rgb) {
-        return "#" . dechex(round($rgb[0] * 255)) . dechex(round($rgb[1] * 255)) . dechex(round($rgb[2] * 255));
+if (! function_exists('rgbFloatsToHex')) {
+    function rgbFloatsToHex(array $rgb)
+    {
+        return '#'.dechex((int) round($rgb[0] * 255)).dechex((int) round($rgb[1] * 255)).dechex((int) round($rgb[2] * 255));
     }
 }
 
-if(!function_exists("generateColorAndUpdate")) {
+if (! function_exists('generateColorAndUpdate')) {
     function generateColorAndUpdate(Guild $guild): string
     {
-        $crc32Value = crc32(time());
+        $crc32Value = crc32((string) time());
         $random = random_int(1, $crc32Value);
         $minS = 0.5;
         $minV = 0.75;

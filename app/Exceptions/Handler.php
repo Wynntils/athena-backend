@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
             $method = $request->method();
             try {
                 Notifications::log(
-                    title: "An exception occured" . (app()->environment('production') ? '' : sprintf(" (%s)", app()->environment())),
+                    title: 'An exception occured'.(app()->environment('production') ? '' : sprintf(' (%s)', app()->environment())),
                     description: sprintf(
                         "`Routes -> %s -> /%s`\n**%s** ```%s```",
                         $method,
@@ -68,7 +68,6 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Throwable
@@ -88,6 +87,8 @@ class Handler extends ExceptionHandler
             // Ignore the following versions for specific validation errors.
             $versionString = str($request->userAgent());
             $usingArtemis = $versionString->contains('Artemis');
+            $version = null;
+            $build = null;
 
             if ($versionString->contains('/')) {
                 $versionString = $versionString->replace('WynntilsClient v', '');
@@ -109,8 +110,9 @@ class Handler extends ExceptionHandler
                 $modloader = $versionInfoSplit->get(2);
             }
 
-            if (!isset($version, $build) && !$versionString->contains('PHP')) {
-                \Log::error('Invalid user agent: ' . $request->userAgent());
+            if (! isset($version, $build) && ! $versionString->contains('PHP')) {
+                \Log::error('Invalid user agent: '.$request->userAgent());
+
                 return parent::render($request, $exception);
             }
 
@@ -122,7 +124,7 @@ class Handler extends ExceptionHandler
                 $user = \App\Models\User::where('auth_token', $request->input('authToken'))->first(['username']);
             }
             \Log::error(
-                sprintf("(%s) %s %s: %s", $request->userAgent(), $request->method(), $request->path(), $exception->getMessage()),
+                sprintf('(%s) %s %s: %s', $request->userAgent(), $request->method(), $request->path(), $exception->getMessage()),
                 [
                     'user' => $user->username ?? null,
                     'version' => [
@@ -144,37 +146,37 @@ class Handler extends ExceptionHandler
                             ];
                         })
                         ->toArray(),
-                    'errors' => $exception->errors()
+                    'errors' => $exception->errors(),
                 ]
             );
 
-//            if ($usingArtemis) {
-//                Notifications::log(
-//                    content: "An exception occured while using Artemis ({$request->userAgent()})",
-//                    title: "An exception occured",
-//                    description: sprintf(
-//                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
-//                        $request->method(),
-//                        $request->path(),
-//                        $exception->getMessage(),
-//                        json_encode($exception->errors(), JSON_PRETTY_PRINT)
-//                    ),
-//                    color: EmbedColor::RED
-//                );
-//            }
+            //            if ($usingArtemis) {
+            //                Notifications::log(
+            //                    content: "An exception occured while using Artemis ({$request->userAgent()})",
+            //                    title: "An exception occured",
+            //                    description: sprintf(
+            //                        "`Routes -> %s -> /%s`\n**%s** ```%s```",
+            //                        $request->method(),
+            //                        $request->path(),
+            //                        $exception->getMessage(),
+            //                        json_encode($exception->errors(), JSON_PRETTY_PRINT)
+            //                    ),
+            //                    color: EmbedColor::RED
+            //                );
+            //            }
         }
 
         if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
             return response()->json([
                 'message' => 'Could not connect to External API Provider.',
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ], 500);
         }
 
         if ($exception instanceof \InvalidArgumentException) {
             return response()->json([
                 'message' => 'Invalid argument provided.',
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ], 400);
         }
 

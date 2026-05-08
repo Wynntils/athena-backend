@@ -32,7 +32,7 @@ class TerritoryListController extends Controller
 
         return (new TerritoryListCacheResource($data))
             ->response()
-            ->header('timestamp', currentTimeMillis())
+            ->header('timestamp', (string) currentTimeMillis())
             ->setCache(['max_age' => 15, 's_maxage' => 15, 'public' => true])
             ->setExpires(now()->addSeconds(15))
             ->setEtag($hash);

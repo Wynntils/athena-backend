@@ -19,7 +19,10 @@ class StaffRoute
             return response()->json(['error' => 'You are not logged in.']);
         }
 
-        if (! in_array(\Auth::user()->account_type, [AccountType::MODERATOR, AccountType::HELPER], true)) {
+        /** @var \App\Models\User $authUser */
+        $authUser = \Auth::user();
+
+        if (! in_array($authUser->account_type, [AccountType::MODERATOR, AccountType::HELPER], true)) {
             return response()->json(['error' => 'You do not have the required permissions.']);
         }
 

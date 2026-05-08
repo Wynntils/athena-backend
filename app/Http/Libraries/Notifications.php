@@ -6,10 +6,8 @@ use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 
-
 class Notifications
 {
-
     /**
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -17,7 +15,7 @@ class Notifications
     public static function cape(
         $title = null,
         $description = null,
-        EmbedColor $color = null,
+        ?EmbedColor $color = null,
         $imageUrl = null,
         $footer = null
     ): void {
@@ -35,7 +33,7 @@ class Notifications
         $content = null,
         $title = null,
         $description = null,
-        EmbedColor $color = null,
+        ?EmbedColor $color = null,
         $imageUrl = null,
         $footer = null
     ): void {
@@ -55,7 +53,7 @@ class Notifications
         $content = null,
         $title = null,
         $description = null,
-        EmbedColor $color = null,
+        ?EmbedColor $color = null,
         $imageUrl = null,
         $footer = null,
     ) {
@@ -66,7 +64,7 @@ class Notifications
             $wh->setMessage($content);
         }
 
-        $embed = (new Embed())
+        $embed = (new Embed)
             ->setTitle($title)
             ->setDescription($description);
 
@@ -75,11 +73,11 @@ class Notifications
         }
 
         if ($imageUrl !== null) {
-            $embed->setImage((new Embed\Image())->setUrl($imageUrl));
+            $embed->setImage((new Embed\Image)->setUrl($imageUrl));
         }
 
         if ($footer !== null) {
-            $embed->setFooter((new Embed\Footer())->setText($footer));
+            $embed->setFooter((new Embed\Footer)->setText($footer));
         }
 
         $wh->addEmbed($embed)->send();
@@ -89,7 +87,7 @@ class Notifications
         $content = null,
         $title = null,
         $description = null,
-        EmbedColor $color = null,
+        ?EmbedColor $color = null,
         $imageUrl = null,
         $footer = null
     ): void {

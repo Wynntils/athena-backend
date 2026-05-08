@@ -7,7 +7,6 @@ use App\Http\Traits\Singleton;
 
 class ItemManager
 {
-
     use Singleton;
 
     private \Illuminate\Support\Collection $itemDB;
@@ -17,7 +16,6 @@ class ItemManager
         $itemDB = \Storage::get('item-data.json');
         $this->itemDB = collect(json_decode($itemDB));
     }
-
 
     public static function convertItem(array $item): object
     {
@@ -40,7 +38,7 @@ class ItemManager
         $result['tier'] = strtoupper($input['tier']);
         $result['identified'] = $input->get('identified', false);
         $result['powderAmount'] = $input->get('powderSlots');
-        $result['attackSpeed'] = !empty($input->get('attackSpeed')) ? strtoupper($input->get('attackSpeed')) : null;
+        $result['attackSpeed'] = ! empty($input->get('attackSpeed')) ? strtoupper($input->get('attackSpeed')) : null;
 
         $result['itemInfo'] = &$itemInfo;
         $itemInfo['type'] = strtoupper($input->get('type', $input->get('accessoryType')));
@@ -52,7 +50,7 @@ class ItemManager
         $result['requirements'] = &$requirements;
         $itemReqs = collect($input->get('requirements'));
         $requirements['quest'] = $itemReqs->get('quest');
-        $requirements['classType'] = !empty($itemReqs->get('classRequirement')) ? strtoupper($itemReqs->get('classRequirement')) : null;
+        $requirements['classType'] = ! empty($itemReqs->get('classRequirement')) ? strtoupper($itemReqs->get('classRequirement')) : null;
         $requirements['level'] = $itemReqs->get('level', 0);
         $requirements['strength'] = $itemReqs->get('strength', 0);
         $requirements['dexterity'] = $itemReqs->get('dexterity', 0);
@@ -80,7 +78,7 @@ class ItemManager
         $result['statuses'] = &$statuses;
 
         $itemIdentifications = collect($input->get('identifications'));
-        foreach($itemIdentifications as $key => $value) {
+        foreach ($itemIdentifications as $key => $value) {
             $translatedName = self::translateStatusName($key);
             if ($translatedName === null) {
                 $translatedName = $key; // v3 fix
@@ -92,17 +90,18 @@ class ItemManager
         }
 
         $result['majorIds'] = $input->get('majorIds');
-        $result['restriction'] = !empty($input->get('restrictions')) ? ucfirst($input->get('restrictions')) : null;
+        $result['restriction'] = ! empty($input->get('restrictions')) ? ucfirst($input->get('restrictions')) : null;
         $result['lore'] = $input->get('addedLore');
 
         foreach ($item as $key => $value) {
 
             if ($key === 'armorType') {
-                $itemInfo['material'] = str_replace('chain', 'chainmail', strtolower("minecraft:{$value}_{$itemInfo["type"]}"));
+                $itemInfo['material'] = str_replace('chain', 'chainmail', strtolower("minecraft:{$value}_{$itemInfo['type']}"));
+
                 continue;
             }
 
-            if ($key === 'material' && $value !== null && !is_array($value)) {
+            if ($key === 'material' && $value !== null && ! is_array($value)) {
                 $itemInfo['material'] = $value;
             }
         }
@@ -117,9 +116,9 @@ class ItemManager
         $damageTypes = cleanNull($damageTypes);
         $defenseTypes = cleanNull($defenseTypes);
         $statuses = cleanNull($statuses);
+
         return cleanNull($result);
     }
-
 
     public static function getIdentificationOrder(): array
     {
@@ -137,7 +136,7 @@ class ItemManager
             'rawIntelligence',
             'rawDefence',
             'rawAgility',
-            //second group {attack stuff}
+            // second group {attack stuff}
             'attackSpeed',
             'rawMainAttackDamage',
             'mainAttackDamage',
@@ -171,14 +170,14 @@ class ItemManager
             'airSpellDamage',
             'rawElementalSpellDamage',
             'elementalSpellDamage',
-            //third group {health/mana stuff}
+            // third group {health/mana stuff}
             'rawHealth',
             'rawHealthRegen',
             'healthRegen',
             'lifeSteal',
             'manaRegen',
             'manaSteal',
-            //fourth group {damage stuff}
+            // fourth group {damage stuff}
             'rawDamage',
             'damage',
             'rawNeutralDamage',
@@ -195,23 +194,23 @@ class ItemManager
             'airDamage',
             'rawElementalDamage',
             'elementalDamage',
-            //fifth group {defence stuff}
+            // fifth group {defence stuff}
             'earthDefence',
             'thunderDefence',
             'waterDefence',
             'fireDefence',
             'airDefence',
-            //sixth group {passive damage}
+            // sixth group {passive damage}
             'exploding',
             'poison',
             'thorns',
             'reflection',
-            //seventh group {movement stuff}
+            // seventh group {movement stuff}
             'walkSpeed',
             'sprint',
             'sprintRegen',
             'rawJumpHeight',
-            //eigth group {XP/Gathering stuff}
+            // eigth group {XP/Gathering stuff}
             'soulPointRegen',
             'lootBonus',
             'lootQuality',
@@ -219,7 +218,7 @@ class ItemManager
             'xpBonus',
             'gatherXpBonus',
             'gatherSpeed',
-            //ninth group {spell stuff}
+            // ninth group {spell stuff}
             'raw1stSpellCost',
             '1stSpellCost',
             'raw2ndSpellCost',
@@ -229,7 +228,7 @@ class ItemManager
             'raw4thSpellCost',
             '4thSpellCost',
         ])->mapWithKeys(
-            fn($value, $key) => [$value => $key + 1]
+            fn ($value, $key) => [$value => $key + 1]
         )->toArray();
 
         $groups = &$result['groups'];
@@ -254,7 +253,6 @@ class ItemManager
         $inverted[] = 'raw2ndSpellCost';
         $inverted[] = 'raw3rdSpellCost';
         $inverted[] = 'raw4thSpellCost';
-
 
         return $result;
     }
@@ -345,11 +343,11 @@ class ItemManager
         // eighth group {xp/gathering stuff}
         $result['SOULPOINTS'] = 'soulPointRegen';
         $result['LOOTBONUS'] = 'lootBonus';
-          // lootQuality is not here because it only exists on crafted items
+        // lootQuality is not here because it only exists on crafted items
         $result['EMERALDSTEALING'] = 'stealing';
         $result['XPBONUS'] = 'xpBonus';
-          // gatherXpBonus is not here because it only exists on crafted items
-          // gatherSpeed is not here because it only exists on crafted items
+        // gatherXpBonus is not here because it only exists on crafted items
+        // gatherSpeed is not here because it only exists on crafted items
         // ninth group {spell stuff}
         $result['SPELL_COST_RAW_1'] = 'raw1stSpellCost';
         $result['SPELL_COST_PCT_1'] = '1stSpellCost';
@@ -363,13 +361,14 @@ class ItemManager
         return $result;
     }
 
-    public static function getMajorIdentifications(): array {
+    public static function getMajorIdentifications(): array
+    {
         $result = [];
 
         foreach (MajorIdentifications::cases() as $enum) {
             $result[$enum->name] = [
                 'name' => $enum->displayName(),
-                'description' => $enum->description()
+                'description' => $enum->description(),
             ];
         }
 
@@ -480,7 +479,8 @@ class ItemManager
         };
     }
 
-    public static function enhanceWithNewMaterial($material, &$itemInfo) {
+    public static function enhanceWithNewMaterial($material, &$itemInfo)
+    {
         if (is_array($material)) {
             // Weird bug in v3 API
             return;
@@ -494,11 +494,12 @@ class ItemManager
         }
     }
 
-    public function convertMaterial($material) {
+    public function convertMaterial($material)
+    {
         if (str($material)->startsWith('minecraft:')) {
             return [
                 'name' => $material,
-                'damage' => null
+                'damage' => null,
             ];
         }
 
@@ -509,11 +510,11 @@ class ItemManager
         }
 
         if ($item === null) {
-            throw new \Exception('Unknown material: ' . $material);
+            throw new \Exception('Unknown material: '.$material);
         }
 
         return [
-            'name' => 'minecraft:' . $item?->name ?? 'unknown',
+            'name' => 'minecraft:'.($item?->name ?? 'unknown'),
             'damage' => $lookup[1] ?? null,
         ];
     }

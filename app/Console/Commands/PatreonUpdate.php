@@ -28,6 +28,10 @@ class PatreonUpdate extends Command
 
     const PATREON_CAMPAGIN_ID = '2422432';
 
+    private \Patreon\API $api;
+
+    private \Illuminate\Support\Collection $tierData;
+
     public function __construct()
     {
         parent::__construct();
@@ -82,7 +86,7 @@ class PatreonUpdate extends Command
 
         // Loop through all current donators, and check if they are still donators
         $currentDonators->each(function ($item) use ($tierData, $patreonMembers, $currentDonators, &$removedDonators, &$errorDonators) {
-            if ($item->donator_type === DonatorType::SPECIAL->value) {
+            if ($item->donator_type === DonatorType::SPECIAL) {
                 // Skip special donators (they are not patreon donators)
                 return;
             }
@@ -129,9 +133,9 @@ class PatreonUpdate extends Command
                     // check if the donator type is correct
                     $donatorTier = $tierData[$item['tier_id']];
                     $donatorType = DonatorType::fromPatreonLevel($donatorTier['title']);
-                    if ($user->donatorType !== $donatorType) {
+                    if ($user->donator_type !== $donatorType) {
                         $this->warn(sprintf('Donator %s (%s) has the wrong donator type', $user->username, $discordId));
-                        $user->donatorType = $donatorType;
+                        $user->donator_type = $donatorType;
                         $user->save();
                     } else {
                         $this->info(sprintf('Donator %s (%s) is already a donator', $user->username, $discordId));

@@ -54,8 +54,7 @@ class Analytics
         if ($request->hasHeader('authToken')) {
             $authToken = $request->header('authToken');
 
-            // Skip if auth token is empty or invalid
-            if (empty($authToken) || ! is_string($authToken)) {
+            if (empty($authToken)) {
                 return 'unknown';
             }
 
@@ -64,6 +63,7 @@ class Analytics
                 "analytics_user_id:{$authToken}",
                 300,
                 function () use ($authToken) {
+                    /** @var \App\Models\User|null $user */
                     $user = \App\Models\User::where('auth_token', $authToken)
                         ->select('id')
                         ->first();

@@ -32,7 +32,7 @@ class ServerListController extends Controller
 
         return (new ServerListCacheResource($data))
             ->response()
-            ->header('timestamp', currentTimeMillis())
+            ->header('timestamp', (string) currentTimeMillis())
             ->setCache(['max_age' => 30, 's_maxage' => 30, 'public' => true])
             ->setExpires(now()->addSeconds(30))
             ->setEtag($hash);

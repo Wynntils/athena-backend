@@ -32,7 +32,7 @@ class LeaderboardController extends Controller
 
         return (new LeaderboardCacheResource($data))
             ->response()
-            ->header('timestamp', currentTimeMillis())
+            ->header('timestamp', (string) currentTimeMillis())
             ->setCache(['max_age' => 600, 's_maxage' => 600, 'public' => true])
             ->setExpires(now()->addSeconds(600))
             ->setEtag($hash);

@@ -64,7 +64,7 @@ class UserController extends Controller
             'user' => [
                 'uuid' => $user->id,
                 'username' => $user->username,
-                'accountType' => $user->accountType,
+                'accountType' => $user->account_type,
                 'cosmetics' => [
                     'hasCape' => $user->hasCape(),
                     'hasElytra' => $user->hasElytra(),
@@ -86,7 +86,7 @@ class UserController extends Controller
         $response = [
             'uuid' => $user->id,
             'username' => $user->username,
-            'accountType' => $user->accountType,
+            'accountType' => $user->account_type,
         ];
 
         // Conditionally add cosmetics info

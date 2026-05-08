@@ -32,7 +32,7 @@ class ItemWeightsController extends Controller
 
         return (new ItemWeightsCacheResource($data))
             ->response()
-            ->header('timestamp', currentTimeMillis())
+            ->header('timestamp', (string) currentTimeMillis())
             ->setCache(['max_age' => 3600, 's_maxage' => 3600, 'public' => true])
             ->setExpires(now()->addSeconds(3600))
             ->setEtag($hash);

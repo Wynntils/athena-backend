@@ -12,13 +12,15 @@ use Illuminate\Database\Eloquent\Model;
 class Guild extends Model
 {
     public $timestamps = false;
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
         'id',
         'prefix',
-        'color'
+        'color',
     ];
 
     private static function normalizeGuildData(array $guild): ?array
@@ -32,7 +34,7 @@ class Guild extends Model
             ];
         }
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return null;
         }
 
@@ -54,10 +56,10 @@ class Guild extends Model
         $normalized = self::normalizeGuildData($guild);
 
         if ($normalized === null) {
-            return new Guild(['id' => 'None', 'prefix' => 'NONE', 'color' => '#ffffff']);
+            return new static(['id' => 'None', 'prefix' => 'NONE', 'color' => '#ffffff']);
         }
 
-        /** @var Guild $result */
+        /** @var static $result */
         $result = Guild::updateOrCreate(
             ['id' => $normalized['name']],
             ['prefix' => $normalized['prefix']]
@@ -65,5 +67,4 @@ class Guild extends Model
 
         return $result;
     }
-
 }

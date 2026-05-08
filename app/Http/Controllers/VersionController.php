@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ChangelogBetweenResource;
 use App\Http\Resources\VersionResource;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Dedoc\Scramble\Attributes\Group;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+
 #[Group('Version')]
 class VersionController extends Controller
 {
@@ -155,7 +156,7 @@ class VersionController extends Controller
         $asset = collect($latest['assets'])->first(function ($asset) use ($modloader) {
             $name = (string) $asset['name'];
 
-            return !$this->isSourceJar($name)
+            return ! $this->isSourceJar($name)
                 && str_contains(strtolower($name), strtolower((string) $modloader));
         });
 
@@ -279,8 +280,8 @@ class VersionController extends Controller
         }
 
         return new ChangelogBetweenResource([
-            'from'       => $from['tag_name'],
-            'to'         => $to['tag_name'],
+            'from' => $from['tag_name'],
+            'to' => $to['tag_name'],
             'changelogs' => $perVersionChangelogs,
         ]);
     }
@@ -296,7 +297,6 @@ class VersionController extends Controller
         }
 
         // Cache this for 5 minutes
-        /** @var \Illuminate\Support\Collection $cache */
         try {
             $cache = \Cache::remember('releases.'.$repo.'-'.$page, 300, function () use ($page, $repo) {
                 return collect($this->github->repo()->releases()->all('Wynntils', $repo, [
