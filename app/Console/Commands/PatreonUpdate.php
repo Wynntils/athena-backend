@@ -151,7 +151,7 @@ class PatreonUpdate extends Command
         $patreonMembers->each(function ($item) use ($tierData, $patreonMembers, &$newDonators, &$unhandledDonators) {
             $discordId = $item['social_connections']['discord']['user_id'];
 
-            $users = User::whereRaw("discord_info->>'id' = ?", [$discordId]);
+            $users = User::byDiscordId($discordId);
 
             if ($users->count() > 1) {
                 $this->error(sprintf('Patreon Donator %s (%s) discord id has multiple Wynntils Users', $item['attributes']['full_name'], $discordId));

@@ -8,6 +8,7 @@ use ArrayObject;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
@@ -152,6 +153,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return collect($configs->files($this->id))->map(function ($file) {
             return basename($file);
         })->toArray();
+    }
+
+    public function scopeByDiscordId(Builder $query, string $id): void
+    {
+        $query->whereRaw("discord_info->>'id' = ?", [$id]);
+    }
+
+    public function scopeByCapeTexture(Builder $query, string $sha): void
+    {
+        $query->whereRaw("cosmetic_info->>'capeTexture' = ?", [$sha]);
     }
 
     // Cosmetic Info Helper Methods

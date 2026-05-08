@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Enums\AccountType;
 use App\Models\PatreonAPI;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+
 class PatreonController extends Controller
 {
     #[ExcludeRouteFromDocs]
@@ -216,7 +217,7 @@ class PatreonController extends Controller
             $item = collect($item);
             $discordId = $item->pull('attributes.social_connections.discord.user_id');
             if (! empty($discordId)) {
-                $user = User::whereRaw("discord_info->>'id' = ?", [$discordId])->get();
+                $user = User::byDiscordId($discordId)->get();
             } else {
                 $user = collect([]);
             }

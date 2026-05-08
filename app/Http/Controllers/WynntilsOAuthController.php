@@ -9,7 +9,6 @@ use Laravel\Socialite\Facades\Socialite;
 
 class WynntilsOAuthController
 {
-
     public function redirectToProvider($provider)
     {
         switch ($provider) {
@@ -54,14 +53,14 @@ class WynntilsOAuthController
 
         switch ($provider) {
             case 'discord':
-                $user = User::whereRaw("discord_info->>'id' = ?", [$socialiteUser->id])->first();
-                if (!$user) {
+                $user = User::byDiscordId($socialiteUser->id)->first();
+                if (! $user) {
                     return redirect()->route('auth.login')->withErrors('No Wynntils account is linked to this Discord account.');
                 }
                 break;
             case 'minecraft':
                 $user = User::find($socialiteUser->uuid);
-                if (!$user) {
+                if (! $user) {
                     return redirect()->route('auth.login')->withErrors('No Wynntils account is linked to this Minecraft account.');
                 }
                 break;
@@ -73,5 +72,4 @@ class WynntilsOAuthController
 
         return redirect()->route('crash.index');
     }
-
 }

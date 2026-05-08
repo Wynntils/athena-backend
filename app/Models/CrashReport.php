@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -53,5 +54,10 @@ class CrashReport extends Model
     public function getRouteKeyName(): string
     {
         return 'trace_hash';
+    }
+
+    public function scopeUnhandled(Builder $query): void
+    {
+        $query->where('handled', false);
     }
 }

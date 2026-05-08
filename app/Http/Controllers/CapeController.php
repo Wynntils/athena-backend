@@ -6,12 +6,13 @@ use App\Enums\MaskType;
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Image;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+
 #[Group('Cape')]
 class CapeController extends Controller
 {
@@ -118,7 +119,7 @@ class CapeController extends Controller
                 $this->manager->deleteQueuedCape($originalSha);
 
                 // Set users who had the cape to have the new cape
-                foreach (User::whereRaw("cosmetic_info->>'capeTexture' = ?", [$originalSha])->get() as $user) {
+                foreach (User::byCapeTexture($originalSha)->get() as $user) {
                     $cosmeticInfo = $user->cosmetic_info;
                     $cosmeticInfo['capeTexture'] = $sha;
                     $user->cosmetic_info = $cosmeticInfo;

@@ -6,8 +6,9 @@ use App\Enums\AccountType;
 use App\Http\Requests\LegacyApiRequest;
 use App\Models\Guild;
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class LegacyApiController extends Controller
 {
     #[ExcludeRouteFromDocs]
@@ -120,24 +121,24 @@ class LegacyApiController extends Controller
         $cosmeticInfo = $user->cosmetic_info ?? [];
 
         return [
-            'uuid'        => $user->id,
-            'username'    => $user->username,
+            'uuid' => $user->id,
+            'username' => $user->username,
             'accountType' => $user->account_type->value,
-            'authToken'   => $user->auth_token,
-            'versions'    => [
+            'authToken' => $user->auth_token,
+            'versions' => [
                 'latest' => $user->latest_version,
-                'used'   => $user->used_versions ?? [],
+                'used' => $user->used_versions ?? [],
             ],
-            'discord'     => [
+            'discord' => [
                 'username' => $discordInfo['username'] ?? null,
-                'id'       => $discordInfo['id'] ?? null,
+                'id' => $discordInfo['id'] ?? null,
             ],
-            'cosmetics'   => [
-                'texture'       => $cosmeticInfo['capeTexture'] ?? '',
-                'isElytra'      => $cosmeticInfo['elytraEnabled'] ?? false,
+            'cosmetics' => [
+                'texture' => $cosmeticInfo['capeTexture'] ?? '',
+                'isElytra' => $cosmeticInfo['elytraEnabled'] ?? false,
                 'maxResolution' => $cosmeticInfo['maxResolution'] ?? '0x0',
                 'allowAnimated' => $cosmeticInfo['allowAnimated'] ?? false,
-                'parts'         => $cosmeticInfo['parts'] ?? [],
+                'parts' => $cosmeticInfo['parts'] ?? [],
             ],
         ];
     }
@@ -149,7 +150,7 @@ class LegacyApiController extends Controller
     {
         return match (true) {
             str($user)->startsWith('uuid-') => User::findOrFail(substr($user, strlen('uuid-'))),
-            str($user)->startsWith('<@') => User::whereRaw("discord_info->>'id' = ?", [str_replace(['<@!', '<@', '>'], '', $user)])->firstOrFail(),
+            str($user)->startsWith('<@') => User::byDiscordId(str_replace(['<@!', '<@', '>'], '', $user))->firstOrFail(),
             str($user)->match('/[a-zA-Z0-9_]{1,16}/')->isNotEmpty() => User::where('username',
                 $user)->firstOrFail(),
             default => User::where('auth_token', $user)->firstOrFail()
@@ -158,6 +159,6 @@ class LegacyApiController extends Controller
 
     private function getLinkedDiscordUsers($discordId): \Illuminate\Support\Collection
     {
-        return User::whereRaw("discord_info->>'id' = ?", [str_replace(['<@!', '<@', '>'], '', $discordId)])->get();
+        return User::byDiscordId(str_replace(['<@!', '<@', '>'], '', $discordId))->get();
     }
 }

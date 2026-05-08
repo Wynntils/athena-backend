@@ -51,7 +51,7 @@ class CrashReportController extends Controller
         ]);
 
         // If the error report already existed, update its attributes
-        if (!$crashReport->wasRecentlyCreated) {
+        if (! $crashReport->wasRecentlyCreated) {
             $crashReport->occurrences = array_merge($crashReport->occurrences, [
                 [
                     'version' => $version,
@@ -64,7 +64,7 @@ class CrashReportController extends Controller
             if (app()->environment('production')) {
                 // If the error report was just created, log it
                 Notifications::crash(
-                    title: "A new crash report was logged",
+                    title: 'A new crash report was logged',
                     description: sprintf(
                         "**[%s](%s)**\n ```%s```",
                         $crashReport->trace_hash,
@@ -79,7 +79,7 @@ class CrashReportController extends Controller
 
         return new CrashReportResource([
             'message' => 'Crash report logged successfully.',
-            'hash'    => $crashReport->trace_hash,
+            'hash' => $crashReport->trace_hash,
         ]);
     }
 
@@ -103,7 +103,7 @@ class CrashReportController extends Controller
         // remove any on handler attributes
         $request->merge(['comment' => str($request->input('comment'))->replaceMatches('/on[A-z]+="[^"]+"/', '')]);
 
-        if (!isset($crashReport->comments)) {
+        if (! isset($crashReport->comments)) {
             $crashReport->comments = [];
         }
 
@@ -131,7 +131,7 @@ class CrashReportController extends Controller
 
         $commentId = $request->input('commentId');
 
-        if (!isset($crashReport->comments)) {
+        if (! isset($crashReport->comments)) {
             $crashReport->comments = [];
         }
 
@@ -163,8 +163,8 @@ class CrashReportController extends Controller
 
         $crashReports = CrashReport::query();
 
-        if (!$showHandled) {
-            $crashReports->whereRaw('"handled" IS FALSE');
+        if (! $showHandled) {
+            $crashReports->unhandled();
         }
 
         if ($search = $request->input('search')) {
