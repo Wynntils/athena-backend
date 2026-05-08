@@ -12,9 +12,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    $reflection = new ReflectionProperty(CapeManager::class, 'instance');
-    $reflection->setAccessible(true);
-    $reflection->setValue(null, null);
+    app()->forgetInstance(CapeManager::class);
 });
 
 it('caches the cape base64 result with a 30-day TTL', function () {
@@ -22,7 +20,7 @@ it('caches the cape base64 result with a 30-day TTL', function () {
 
     Cache::spy();
 
-    CapeManager::instance()->getCapeAsBase64('sha1hash', true);
+    app(CapeManager::class)->getCapeAsBase64('sha1hash', true);
 
     Cache::shouldHaveReceived('remember')
         ->withArgs(fn ($key, $ttl) => $key === 'cape-texture-sha1hash-1' && $ttl === 2592000)
@@ -35,7 +33,7 @@ it('uses a different cache key for omitDefaultCape false', function () {
 
     Cache::spy();
 
-    CapeManager::instance()->getCapeAsBase64('sha1hash', false);
+    app(CapeManager::class)->getCapeAsBase64('sha1hash', false);
 
     Cache::shouldHaveReceived('remember')
         ->withArgs(fn ($key, $ttl) => $key === 'cape-texture-sha1hash-0' && $ttl === 2592000)

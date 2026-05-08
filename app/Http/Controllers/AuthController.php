@@ -6,25 +6,27 @@ use App\Enums\AccountType;
 use App\Events\LoginEvent;
 use App\Events\SignUpEvent;
 use App\Http\Libraries\MinecraftFakeAuth;
-use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\AuthRequest;
 use App\Http\Resources\AuthResponseResource;
 use App\Http\Resources\PublicKeyResource;
 use App\Models\User;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Ramsey\Uuid\Uuid;
 use Storage;
 
 #[Group('Auth')]
 class AuthController extends Controller
 {
+    public function __construct(private MinecraftFakeAuth $auth) {}
+
     /**
      * Get the server's RSA public key
      */
     public function getPublicKey(): PublicKeyResource
     {
-        return new PublicKeyResource(bin2hex(MinecraftFakeAuth::instance()->getPublicKey()));
+        return new PublicKeyResource(bin2hex($this->auth->getPublicKey()));
     }
 
     /**
@@ -41,7 +43,7 @@ class AuthController extends Controller
         }
 
         try {
-            [$profile, $sharedKey, $publicKey, $serverId] = MinecraftFakeAuth::instance()->getGameProfile($request->validated('username'), $request->validated('key'));
+            [$profile, $sharedKey, $publicKey, $serverId] = $this->auth->getGameProfile($request->validated('username'), $request->validated('key'));
 
             // Store request, profile and serverId
         } catch (\Exception $e) {
@@ -85,10 +87,10 @@ class AuthController extends Controller
         $response['authToken'] = $user->auth_token;
         $response['configFiles'] = $user->getConfigs();
         $response['hashes'] = [
-            'guildList'     => Cache::get('cache.guildList.hash'),
-            'serverList'    => Cache::get('cache.serverList.hash'),
-            'itemWeights'   => Cache::get('cache.itemWeights.hash'),
-            'leaderboard'   => Cache::get('cache.leaderboard.hash'),
+            'guildList' => Cache::get('cache.guildList.hash'),
+            'serverList' => Cache::get('cache.serverList.hash'),
+            'itemWeights' => Cache::get('cache.itemWeights.hash'),
+            'leaderboard' => Cache::get('cache.leaderboard.hash'),
             'territoryList' => Cache::get('cache.territoryList.hash'),
         ];
 

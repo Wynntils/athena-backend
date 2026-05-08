@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 
 class CapeTokenMiddleware
 {
+    public function __construct(private CapeManager $capeManager) {}
+
     public function handle(Request $request, Closure $next)
     {
         $token = $request->header('token') ?? $request->route('token');
-        if ($token === config('athena.general.apiKey') || $token === CapeManager::instance()->getToken()) {
+        if ($token === config('athena.general.apiKey') || $token === $this->capeManager->getToken()) {
             return $next($request);
         }
 

@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserResource extends JsonResource
 {
     public static $wrap = null;
+
     /**
      * @return array{user: array{accountType: string, cosmetics: array{hasCape: bool, hasElytra: bool, hasEars: bool, texture: string}}}
      */
@@ -18,11 +19,11 @@ class UserResource extends JsonResource
         return [
             'user' => [
                 'accountType' => $this->account_type->value,
-                'cosmetics'   => [
-                    'hasCape'   => $this->hasCape(),
+                'cosmetics' => [
+                    'hasCape' => $this->hasCape(),
                     'hasElytra' => $this->hasElytra(),
-                    'hasEars'   => $this->hasPart('ears'),
-                    'texture'   => CapeManager::instance()->getCapeAsBase64($this->getFormattedTexture(), true),
+                    'hasEars' => $this->hasPart('ears'),
+                    'texture' => app(CapeManager::class)->getCapeAsBase64($this->getFormattedTexture(), true),
                 ],
             ],
         ];

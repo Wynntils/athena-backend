@@ -3,12 +3,9 @@
 namespace App\Http\Libraries;
 
 use App\Enums\MajorIdentifications;
-use App\Http\Traits\Singleton;
 
 class ItemManager
 {
-    use Singleton;
-
     private \Illuminate\Support\Collection $itemDB;
 
     public function __construct()
@@ -486,7 +483,7 @@ class ItemManager
             return;
         }
         try {
-            $newMaterial = self::instance()->convertMaterial($material);
+            $newMaterial = app(self::class)->convertMaterial($material);
             $itemInfo['name'] = $newMaterial['name'];
             $itemInfo['damage'] = $newMaterial['damage'];
         } catch (\Exception $e) {

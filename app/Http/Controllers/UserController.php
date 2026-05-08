@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Cache;
 #[Group('User')]
 class UserController extends Controller
 {
+    public function __construct(private CapeManager $capeManager) {}
+
     /**
      * Link a Discord account to the authenticated user
      */
@@ -69,7 +71,7 @@ class UserController extends Controller
                     'hasCape' => $user->hasCape(),
                     'hasElytra' => $user->hasElytra(),
                     'hasEars' => $user->hasPart('ears'),
-                    'texture' => CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true),
+                    'texture' => $this->capeManager->getCapeAsBase64($user->getFormattedTexture(), true),
                 ],
             ],
         ]);
@@ -92,7 +94,7 @@ class UserController extends Controller
         // Conditionally add cosmetics info
         if ($cosmetics) {
 
-            $texture = CapeManager::instance()->getCapeAsBase64($user->getFormattedTexture(), true);
+            $texture = $this->capeManager->getCapeAsBase64($user->getFormattedTexture(), true);
             $response['cosmetics'] = [
                 'hasCape' => $user->hasCape(),
                 'hasElytra' => $user->hasElytra(),

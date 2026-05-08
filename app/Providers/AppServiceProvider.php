@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Http\Extensions\SecurityOperationExtension;
+use App\Http\Libraries\CapeManager;
+use App\Http\Libraries\ItemManager;
+use App\Http\Libraries\MinecraftFakeAuth;
 use App\Models\User;
 use App\Observers\UserObserver;
 use Dedoc\Scramble\Scramble;
@@ -43,6 +46,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(CapeManager::class);
+        $this->app->singleton(ItemManager::class);
+        $this->app->singleton(MinecraftFakeAuth::class);
+
         //        Sanctum::ignoreMigrations();
 
         if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {

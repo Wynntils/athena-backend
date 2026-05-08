@@ -157,7 +157,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     // Cosmetic Info Helper Methods
     public function hasCape(): bool
     {
-        if (\App\Http\Libraries\CapeManager::instance()->isSpecialDate()) {
+        if (app(\App\Http\Libraries\CapeManager::class)->isSpecialDate()) {
             return true;
         }
 
@@ -185,7 +185,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function hasElytra(): bool
     {
-        if (\App\Http\Libraries\CapeManager::instance()->isSpecialDate()) {
+        if (app(\App\Http\Libraries\CapeManager::class)->isSpecialDate()) {
             return false;
         }
 

@@ -3,7 +3,6 @@
 namespace App\Http\Libraries;
 
 use App\Enums\MaskType;
-use App\Http\Traits\Singleton;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Support\Facades\Cache;
@@ -25,8 +24,6 @@ class CapeManager
         // '12-25' => 'christmas',
         // '12-31' => 'newYearsEve',
     ];
-
-    use Singleton;
 
     private \Illuminate\Contracts\Filesystem\Filesystem $queue;
 
