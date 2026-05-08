@@ -1,0 +1,271 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property App\\Console\\Commands\\PatreonUpdate\:\:\$api\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Console/Commands/PatreonUpdate.php
+
+		-
+			message: '#^Access to an undefined property App\\Console\\Commands\\PatreonUpdate\:\:\$tierData\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Console/Commands/PatreonUpdate.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$donatorType\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Console/Commands/PatreonUpdate.php
+
+		-
+			message: '#^Anonymous function has an unused use \$errorDonators\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: app/Console/Commands/PatreonUpdate.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between App\\Enums\\DonatorType and ''Special'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Console/Commands/PatreonUpdate.php
+
+		-
+			message: '#^Variable \$version might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: app/Exceptions/Handler.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Http\\JsonResponse\:\:header\(\) expects array\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Cache/GuildListController.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Http\\JsonResponse\:\:header\(\) expects array\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Cache/ItemWeightsController.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Http\\JsonResponse\:\:header\(\) expects array\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Cache/LeaderboardController.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Http\\JsonResponse\:\:header\(\) expects array\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Cache/ServerListController.php
+
+		-
+			message: '#^Parameter \#2 \$values of method Illuminate\\Http\\JsonResponse\:\:header\(\) expects array\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Cache/TerritoryListController.php
+
+		-
+			message: '#^Parameter \#2 \$username of method App\\Http\\Libraries\\CapeManager\:\:queueCape\(\) expects string, false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/CapeController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Http\\Request\:\:validated\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/GuildController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$accountType\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/UserController.php
+
+		-
+			message: '#^Variable \$cache in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: app/Http/Controllers/VersionController.php
+
+		-
+			message: '#^Access to an undefined property Laravel\\Socialite\\Contracts\\User\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/WynntilsOAuthController.php
+
+		-
+			message: '#^Access to an undefined property Laravel\\Socialite\\Contracts\\User\:\:\$uuid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/WynntilsOAuthController.php
+
+		-
+			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:setScopes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/WynntilsOAuthController.php
+
+		-
+			message: '#^Method App\\Http\\Libraries\\CapeManager\:\:instance\(\) should return static\(App\\Http\\Libraries\\CapeManager\) but returns App\\Http\\Libraries\\CapeManager\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Libraries/CapeManager.php
+
+		-
+			message: '#^PHPDoc tag @return with type App\\Http\\Libraries\\CapeManager is not subtype of native type static\(App\\Http\\Libraries\\CapeManager\)\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Http/Libraries/CapeManager.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Http/Libraries/CapeManager.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Http/Libraries/ItemManager.php
+
+		-
+			message: '#^Method App\\Http\\Libraries\\ItemManager\:\:instance\(\) should return static\(App\\Http\\Libraries\\ItemManager\) but returns App\\Http\\Libraries\\ItemManager\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Libraries/ItemManager.php
+
+		-
+			message: '#^PHPDoc tag @return with type App\\Http\\Libraries\\ItemManager is not subtype of native type static\(App\\Http\\Libraries\\ItemManager\)\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Http/Libraries/ItemManager.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Http/Libraries/ItemManager.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type mixed\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Libraries/ItemManager.php
+
+		-
+			message: '#^Method App\\Http\\Libraries\\MinecraftFakeAuth\:\:instance\(\) should return static\(App\\Http\\Libraries\\MinecraftFakeAuth\) but returns App\\Http\\Libraries\\MinecraftFakeAuth\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Libraries/MinecraftFakeAuth.php
+
+		-
+			message: '#^PHPDoc tag @return with type App\\Http\\Libraries\\MinecraftFakeAuth is not subtype of native type static\(App\\Http\\Libraries\\MinecraftFakeAuth\)\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Http/Libraries/MinecraftFakeAuth.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Http/Libraries/MinecraftFakeAuth.php
+
+		-
+			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$color \(DiscordWebhook\\EmbedColor\) is implicitly nullable via default value null\.$#'
+			identifier: parameter.implicitlyNullable
+			count: 1
+			path: app/Http/Libraries/Notifications.php
+
+		-
+			message: '#^Deprecated in PHP 8\.4\: Parameter \#4 \$color \(DiscordWebhook\\EmbedColor\) is implicitly nullable via default value null\.$#'
+			identifier: parameter.implicitlyNullable
+			count: 2
+			path: app/Http/Libraries/Notifications.php
+
+		-
+			message: '#^Deprecated in PHP 8\.4\: Parameter \#5 \$color \(DiscordWebhook\\EmbedColor\) is implicitly nullable via default value null\.$#'
+			identifier: parameter.implicitlyNullable
+			count: 1
+			path: app/Http/Libraries/Notifications.php
+
+		-
+			message: '#^Call to function is_string\(\) with non\-falsy\-string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Middleware/Analytics.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/Analytics.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\Authenticate\:\:redirectTo\(\) should return string\|null but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Middleware/Authenticate.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-string\|false and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Middleware/DebugMiddleware.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-string\|false and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Middleware/Monitor.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$account_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/StaffRoute.php
+
+		-
+			message: '#^Method App\\Models\\Guild\:\:gather\(\) should return static\(App\\Models\\Guild\) but returns App\\Models\\Guild\.$#'
+			identifier: return.type
+			count: 2
+			path: app/Models/Guild.php
+
+		-
+			message: '#^ArrayObject\<\*NEVER\*, \*NEVER\*\> does not accept string\|false\.$#'
+			identifier: offsetAssign.valueType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Invalid array key type float\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: app/helpers.php
+
+		-
+			message: '#^Parameter \#1 \$num of function dechex expects int, float given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/helpers.php
+
+		-
+			message: '#^Parameter \#1 \$string of function crc32 expects string, int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/helpers.php

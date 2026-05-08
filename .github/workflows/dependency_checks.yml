@@ -1,0 +1,53 @@
+name: Dependency Checks
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Every Monday at midnight
+  workflow_dispatch:
+
+jobs:
+  composer-outdated:
+    name: Check Outdated Composer Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+
+      - name: Check for outdated packages
+        run: composer outdated --direct --strict
+
+      - name: Create or update issue for outdated packages
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Outdated Composer Dependencies Detected';
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['dependencies', 'maintenance'],
+            });
+
+            const existing = issues.find(i => i.title === title);
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Automated weekly check still found outdated Composer packages as of ${new Date().toISOString().split('T')[0]}. Run \`composer outdated\` locally to see details.`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: 'Automated check found outdated Composer packages. Run `composer outdated` locally to see details.',
+                labels: ['dependencies', 'maintenance'],
+              });
+            }

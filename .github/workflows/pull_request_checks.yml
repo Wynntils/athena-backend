@@ -1,0 +1,88 @@
+name: Pull Request Checks
+
+on:
+  workflow_run:
+    workflows: ["Auto Format Code"]
+    types:
+      - completed
+
+jobs:
+  code-quality:
+    name: Code Style (Pint)
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup PHP and dependencies
+        uses: ./.github/actions/setup-php
+
+      - name: Cache Pint results
+        uses: actions/cache@v4
+        with:
+          path: .pint.cache
+          key: pint-${{ github.event.workflow_run.head_sha }}
+          restore-keys: pint-
+
+      - name: Run Laravel Pint
+        run: ./vendor/bin/pint --test
+
+  static-analysis:
+    name: Static Analysis (Larastan)
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup PHP and dependencies
+        uses: ./.github/actions/setup-php
+
+      - name: Run Larastan
+        run: ./vendor/bin/phpstan analyse --no-progress
+
+  tests:
+    name: Tests (Pest)
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup PHP and dependencies
+        uses: ./.github/actions/setup-php
+
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Run Pest tests
+        run: php artisan test --compact
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup PHP and dependencies
+        uses: ./.github/actions/setup-php
+
+      - name: Security audit
+        run: composer audit
