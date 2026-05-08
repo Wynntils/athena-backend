@@ -31,3 +31,13 @@ it('queues a job with user_id set correctly', function () {
         return $job->baseRequest->getUserId() === $user->id;
     });
 });
+
+it('does not queue a job when GA4 is not configured', function () {
+    Queue::fake();
+    config(['ga4.measurement_id' => null, 'ga4.secret' => null]);
+
+    $user = User::factory()->create();
+    LoginEvent::dispatch($user, 'Wynntils Artemis\\v0.0.4+MC-1.21.4 (client) FABRIC', 'Minecraft');
+
+    Queue::assertNotPushed(SendGoogleAnalyticsEvent::class);
+});
