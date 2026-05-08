@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\CapeSubmittedEvent;
 use App\Events\LoginEvent;
 use App\Events\SignUpEvent;
+use App\Listeners\CapeSubmittedListener;
 use App\Listeners\ConnectionFailedListener;
 use App\Listeners\LoginEventListener;
 use App\Listeners\SignUpEventListener;
@@ -34,6 +36,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         SignUpEvent::class => [
             SignUpEventListener::class,
+        ],
+        CapeSubmittedEvent::class => [
+            CapeSubmittedListener::class,
         ],
     ];
 

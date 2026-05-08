@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\MaskType;
+use App\Events\CapeSubmittedEvent;
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
 use App\Models\User;
@@ -86,12 +87,22 @@ class CapeController extends Controller
 
         $hash = $this->manager->getSha($image);
 
-        return match (true) {
-            $this->manager->isApproved($hash) => response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $hash], 400),
-            $this->manager->isQueued($hash) => response()->json(['message' => 'The provided cape is already queued.', 'sha-1' => $hash], 400),
-            $this->manager->isBanned($hash) => response()->json(['message' => 'The provided cape is banned.', 'sha-1' => $hash], 400),
-            default => response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $this->manager->queueCape($image, $username)]),
-        };
+        if ($this->manager->isApproved($hash)) {
+            return response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $hash], 400);
+        }
+
+        if ($this->manager->isQueued($hash)) {
+            return response()->json(['message' => 'The provided cape is already queued.', 'sha-1' => $hash], 400);
+        }
+
+        if ($this->manager->isBanned($hash)) {
+            return response()->json(['message' => 'The provided cape is banned.', 'sha-1' => $hash], 400);
+        }
+
+        $sha = $this->manager->queueCape($image, $username);
+        CapeSubmittedEvent::dispatch($username);
+
+        return response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $sha]);
     }
 
     #[ExcludeRouteFromDocs]
