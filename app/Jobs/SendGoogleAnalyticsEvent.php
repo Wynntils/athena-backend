@@ -13,6 +13,11 @@ class SendGoogleAnalyticsEvent implements ShouldQueue
 {
     use Queueable;
 
+    public int $tries = 3;
+
+    /** @var int[] Seconds to wait before each retry attempt */
+    public array $backoff = [10, 30];
+
     /**
      * Create a new job instance.
      */
@@ -30,7 +35,6 @@ class SendGoogleAnalyticsEvent implements ShouldQueue
         try {
             $ga4Service->send($this->baseRequest);
         } catch (HydrationException|ValidationException $e) {
-            // Log the error silently if needed
         }
     }
 }
