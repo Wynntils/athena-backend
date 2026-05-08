@@ -3,14 +3,14 @@
 namespace Tests\Unit\Jobs\Cache;
 
 use App\Http\Libraries\Requests\Cache\GuildList;
-use App\Http\Libraries\Requests\Cache\ServerList;
 use App\Http\Libraries\Requests\Cache\ItemWeights;
 use App\Http\Libraries\Requests\Cache\Leaderboard;
+use App\Http\Libraries\Requests\Cache\ServerList;
 use App\Http\Libraries\Requests\Cache\v2\TerritoryList;
 use App\Jobs\Cache\RefreshGuildListCache;
-use App\Jobs\Cache\RefreshServerListCache;
 use App\Jobs\Cache\RefreshItemWeightsCache;
 use App\Jobs\Cache\RefreshLeaderboardCache;
+use App\Jobs\Cache\RefreshServerListCache;
 use App\Jobs\Cache\RefreshTerritoryListCache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -121,5 +121,30 @@ class RefreshCacheJobsTest extends TestCase
         Cache::shouldReceive('forever')->once()->with('cache.territoryList.hash', hash('sha512', serialize($data)));
 
         (new RefreshTerritoryListCache)->handle();
+    }
+
+    public function test_refresh_guild_list_implements_should_be_unique(): void
+    {
+        expect(new RefreshGuildListCache)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldBeUnique::class);
+    }
+
+    public function test_refresh_server_list_implements_should_be_unique(): void
+    {
+        expect(new RefreshServerListCache)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldBeUnique::class);
+    }
+
+    public function test_refresh_item_weights_implements_should_be_unique(): void
+    {
+        expect(new RefreshItemWeightsCache)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldBeUnique::class);
+    }
+
+    public function test_refresh_leaderboard_implements_should_be_unique(): void
+    {
+        expect(new RefreshLeaderboardCache)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldBeUnique::class);
+    }
+
+    public function test_refresh_territory_list_implements_should_be_unique(): void
+    {
+        expect(new RefreshTerritoryListCache)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldBeUnique::class);
     }
 }
