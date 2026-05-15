@@ -19,7 +19,7 @@ it('returns token and user on valid credentials', function () {
     $response->assertOk()
         ->assertJsonStructure([
             'token',
-            'user' => ['uuid', 'username', 'accountType', 'discord'],
+            'user' => ['uuid', 'username', 'accountType', 'discord' => ['id', 'username']],
         ])
         ->assertJsonPath('user.username', 'TestPlayer')
         ->assertJsonPath('user.uuid', $user->id);
@@ -63,6 +63,22 @@ it('returns 422 when password is missing', function () {
 it('returns 422 when username is missing', function () {
     $response = $this->postJson('/auth/login', ['password' => 'secret123']);
     $response->assertUnprocessable();
+});
+
+it('returns null discord fields when user has no linked discord', function () {
+    $user = User::factory()->create([
+        'username' => 'TestPlayer',
+        'password' => \Hash::make('secret123'),
+    ]);
+
+    $response = $this->postJson('/auth/login', [
+        'username' => 'TestPlayer',
+        'password' => 'secret123',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('user.discord.id', null)
+        ->assertJsonPath('user.discord.username', null);
 });
 
 it('accepts the remember field without error', function () {
