@@ -8,6 +8,7 @@ use App\Http\Controllers\Cache\ServerListController;
 use App\Http\Controllers\Cache\TerritoryListController;
 
 Route::get('get/guildList', GuildListController::class)->name('cache.guildList');
+Route::redirect('get/guildListWithColors', '/cache/get/guildList', 301);
 Route::get('get/serverList', ServerListController::class)->name('cache.serverList');
 Route::get('get/itemWeights', ItemWeightsController::class)->name('cache.itemWeights');
 Route::get('get/leaderboard', LeaderboardController::class)->name('cache.leaderboard');
