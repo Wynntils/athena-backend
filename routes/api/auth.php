@@ -10,4 +10,4 @@ Route::controller(AuthController::class)
         Route::post('responseEncryption', 'responseEncryption')->name('responseEncryption');
     });
 
-Route::post('login', [WebAuthController::class, 'login'])->name('login');
+Route::post('login', [WebAuthController::class, 'login']);
