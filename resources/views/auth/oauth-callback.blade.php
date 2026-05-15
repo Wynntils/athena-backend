@@ -11,7 +11,7 @@
         var payload = {
             type: 'wynntils_oauth_callback',
             success: true,
-            token: '{{ $token }}',
+            token: {!! json_encode($token, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
             accountLinked: true
         };
         if (window.opener) {
@@ -23,7 +23,7 @@
     })();
     @else
     (function () {
-        var message = '{{ addslashes($message) }}';
+        var message = {!! json_encode($message ?? '', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
         var payload = {
             type: 'wynntils_oauth_callback',
             success: false,
