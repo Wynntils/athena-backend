@@ -24,52 +24,56 @@ class WynntilsOAuthController
     public function handleProviderCallback(Request $request, $provider)
     {
         if ($request->has('error')) {
-            return redirect()->route('auth.login')->withErrors($request->input('error'));
+            return view('auth.oauth-callback', ['message' => $request->input('error')]);
         }
 
         try {
             $socialiteUser = Socialite::driver($provider)->user();
         } catch (ClientException $e) {
             if ($e->getCode() === 401) {
-                return redirect()->route('auth.login')->withErrors('Invalid credentials');
+                return view('auth.oauth-callback', ['message' => 'Invalid credentials']);
             }
 
-            $uniqueErrorId = uniqid('', true); // Generate a unique ID for this error to help us debug
+            $uniqueErrorId = uniqid('', true);
 
-            \Log::error("Error while logging in with $provider: $uniqueErrorId", [
-                'exception' => $e,
+            \Log::error("Error while logging in with $provider: $uniqueErrorId", ['exception' => $e]);
+
+            return view('auth.oauth-callback', [
+                'message' => "An error occurred while logging in. Please try again later. Error ID: $uniqueErrorId",
             ]);
+        } catch (\Exception $e) {
+            $uniqueErrorId = uniqid('', true);
 
-            return redirect()->route('auth.login')->withErrors("An error occurred while logging in. Please try again later. Error ID: $uniqueErrorId");
-        } catch (\Exception $e) { // This is a catch-all for any other exceptions
-            $uniqueErrorId = uniqid('', true); // Generate a unique ID for this error to help us debug
+            \Log::error("Error while logging in with $provider: $uniqueErrorId", ['exception' => $e]);
 
-            \Log::error("Error while logging in with $provider: $uniqueErrorId", [
-                'exception' => $e,
+            return view('auth.oauth-callback', [
+                'message' => "An error occurred while logging in. Please try again later. Error ID: $uniqueErrorId",
             ]);
-
-            return redirect()->route('auth.login')->withErrors("An error occurred while logging in. Please try again later. Error ID: $uniqueErrorId");
         }
 
         switch ($provider) {
             case 'discord':
                 $user = User::byDiscordId($socialiteUser->id)->first();
                 if (! $user) {
-                    return redirect()->route('auth.login')->withErrors('No Wynntils account is linked to this Discord account.');
+                    return view('auth.oauth-callback', [
+                        'message' => 'No Wynntils account is linked to this Discord account.',
+                    ]);
                 }
                 break;
             case 'minecraft':
                 $user = User::find($socialiteUser->uuid);
                 if (! $user) {
-                    return redirect()->route('auth.login')->withErrors('No Wynntils account is linked to this Minecraft account.');
+                    return view('auth.oauth-callback', [
+                        'message' => 'No Wynntils account is linked to this Minecraft account.',
+                    ]);
                 }
                 break;
             default:
-                return redirect()->route('auth.login')->withErrors('Invalid provider');
+                return view('auth.oauth-callback', ['message' => 'Invalid provider']);
         }
 
         auth()->login($user, true);
 
-        return redirect()->route('crash.index');
+        return view('auth.oauth-callback', ['token' => $user->auth_token]);
     }
 }
