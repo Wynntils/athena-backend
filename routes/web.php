@@ -51,5 +51,5 @@ Route::prefix('auth')->name('auth.')->group(static function () {
 });
 
 Route::fallback(static function () {
-    return redirect('https://wynntils.com');
+    return response()->json(['message' => 'Not found.'], 404);
 });
