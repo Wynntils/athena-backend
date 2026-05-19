@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AccountType;
 use App\Models\PatreonAPI;
 use App\Models\User;
+use App\Services\PatreonMemberService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
@@ -14,6 +14,8 @@ use Illuminate\Support\Collection;
 
 class PatreonController extends Controller
 {
+    public function __construct(private readonly PatreonMemberService $patreonMemberService) {}
+
     #[ExcludeRouteFromDocs]
     public function webhook(Request $request)
     {
@@ -29,14 +31,14 @@ class PatreonController extends Controller
         return $this->processEvent($request->header('X-Patreon-Event'), $data);
     }
 
-    private function verifySignature($payload, $signature)
+    private function verifySignature($payload, $signature): bool
     {
         $secret = config('services.patreon.webhook_secret');
 
         return hash_equals(hash_hmac('md5', $payload, $secret), $signature);
     }
 
-    private function processEvent($event, Collection $data): bool
+    private function processEvent(string $event, Collection $data): bool
     {
         $includedData = collect($data->get('included'));
         $eventData = collect($data->get('data'));
@@ -59,13 +61,14 @@ class PatreonController extends Controller
         $campaignAttributes = collect($campaignData->get('attributes'));
         $tierAttributes = collect($tierData->get('attributes'));
 
-        $tier = $tierAttributes->get('title');
-
+        $tier = $tierAttributes->get('title') ?: null;
         $patronUrl = $userAttributes->get('url');
         $patronImage = $userAttributes->get('image_url');
         $patronFullName = $userAttributes->get('full_name');
         $discord = $userAttributes->pull('social_connections.discord.user_id');
         $patronCount = $campaignAttributes->get('patron_count');
+
+        $syncResult = $this->patreonMemberService->syncMember($event, $discord, $tier, $pledgeStatus);
 
         return $this->sendDiscordMessage(
             $event,
@@ -77,22 +80,24 @@ class PatreonController extends Controller
             $patronImage,
             $pledgeAmount,
             $pledgeStatus,
-            $patronCount
+            $patronCount,
+            $syncResult
         );
     }
 
     private function sendDiscordMessage(
-        $eventType,
-        $message,
-        $fullName,
-        $tier,
-        $pledgeMonths,
-        $patronUrl,
-        $patronImage,
-        $pledgeAmount,
-        $pledgeStatus,
-        $patronCount
-    ) {
+        string $eventType,
+        ?string $message,
+        ?string $fullName,
+        ?string $tier,
+        mixed $pledgeMonths,
+        ?string $patronUrl,
+        ?string $patronImage,
+        mixed $pledgeAmount,
+        ?string $pledgeStatus,
+        mixed $patronCount,
+        array $syncResult
+    ): bool {
         $color = match ($eventType) {
             'members:create', 'members:pledge:create' => EmbedColor::GREEN,
             'members:delete', 'members:pledge:delete' => EmbedColor::RED,
@@ -126,9 +131,10 @@ class PatreonController extends Controller
                 ->setName('Months')
                 ->setValue((string) ($pledgeMonths ?? 0))
                 ->setIsInline(true)
-        )->setFooter((new Embed\Footer)
-            ->setText($eventType.' | Total Patrons: '.$patronCount)
+        )->setFooter(
+            (new Embed\Footer)->setText($eventType.' | Total Patrons: '.$patronCount)
         );
+
         if ($tier !== null) {
             $embed->addField(
                 (new Embed\Field)
@@ -138,7 +144,29 @@ class PatreonController extends Controller
             );
         }
 
-        return $wh->addEmbed($embed)->send();
+        $dbUpdateValue = match ($syncResult['outcome']) {
+            'granted' => '✓ Donator granted ('.$syncResult['user']->username.')',
+            'revoked' => '✓ Donator revoked ('.$syncResult['user']->username.')',
+            'tier_updated' => '✓ Tier updated ('.$syncResult['user']->username.')',
+            'unhandled' => '⚠ Unhandled: '.$syncResult['reason'],
+            'skipped' => '— Skipped: '.$syncResult['reason'],
+            default => '? Unknown outcome',
+        };
+
+        $embed->addField(
+            (new Embed\Field)
+                ->setName('DB Update')
+                ->setValue($dbUpdateValue)
+                ->setIsInline(false)
+        );
+
+        try {
+            return $wh->addEmbed($embed)->send();
+        } catch (\Throwable $e) {
+            \Log::error('Patreon Discord webhook send failed', ['error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     #[ExcludeRouteFromDocs]
@@ -147,7 +175,7 @@ class PatreonController extends Controller
         $api_client = PatreonAPI::getApi();
         $campaign_id = '2422432';
 
-        $currentDonators = User::where('account_type', AccountType::DONATOR->value)->get();
+        $currentDonators = User::where('account_type', \App\Enums\AccountType::DONATOR->value)->get();
 
         $queryData = [
             'page' => [
@@ -229,7 +257,7 @@ class PatreonController extends Controller
             });
 
             foreach ($user as $usr) {
-                if ($usr->accountType === AccountType::DONATOR) {
+                if ($usr->accountType === \App\Enums\AccountType::DONATOR) {
                     $user = collect([$usr]);
                     break;
                 }
