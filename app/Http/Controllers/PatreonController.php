@@ -31,7 +31,7 @@ class PatreonController extends Controller
         return $this->processEvent($request->header('X-Patreon-Event'), $data);
     }
 
-    private function verifySignature($payload, $signature): bool
+    private function verifySignature(string $payload, ?string $signature): bool
     {
         $secret = config('services.patreon.webhook_secret');
 
@@ -119,7 +119,7 @@ class PatreonController extends Controller
         )->addField(
             (new Embed\Field)
                 ->setName('Amount')
-                ->setValue(number_format(($pledgeAmount / 100), 2, '.', ' '))
+                ->setValue(number_format((($pledgeAmount ?? 0) / 100), 2, '.', ' '))
                 ->setIsInline(true)
         )->addField(
             (new Embed\Field)
@@ -145,11 +145,11 @@ class PatreonController extends Controller
         }
 
         $dbUpdateValue = match ($syncResult['outcome']) {
-            'granted' => '✓ Donator granted ('.$syncResult['user']->username.')',
-            'revoked' => '✓ Donator revoked ('.$syncResult['user']->username.')',
-            'tier_updated' => '✓ Tier updated ('.$syncResult['user']->username.')',
-            'unhandled' => '⚠ Unhandled: '.$syncResult['reason'],
-            'skipped' => '— Skipped: '.$syncResult['reason'],
+            'granted' => '✓ Donator granted ('.($syncResult['user']?->username ?? 'unknown').')',
+            'revoked' => '✓ Donator revoked ('.($syncResult['user']?->username ?? 'unknown').')',
+            'tier_updated' => '✓ Tier updated ('.($syncResult['user']?->username ?? 'unknown').')',
+            'unhandled' => '⚠ Unhandled: '.($syncResult['reason'] ?? 'no reason given'),
+            'skipped' => '— Skipped: '.($syncResult['reason'] ?? 'no reason given'),
             default => '? Unknown outcome',
         };
 
