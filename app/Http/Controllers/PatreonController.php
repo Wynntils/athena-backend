@@ -33,6 +33,10 @@ class PatreonController extends Controller
 
     private function verifySignature(string $payload, ?string $signature): bool
     {
+        if ($signature === null) {
+            return false;
+        }
+
         $secret = config('services.patreon.webhook_secret');
 
         return hash_equals(hash_hmac('md5', $payload, $secret), $signature);

@@ -78,6 +78,17 @@ it('rejects requests with an invalid signature', function () {
     $response->assertForbidden();
 });
 
+it('rejects requests with a missing signature header', function () {
+    $body = json_encode(patreonPayload('111'));
+
+    $response = $this->call('POST', '/patreon/webhook', [], [], [], [
+        'HTTP_X_PATREON_EVENT' => 'members:create',
+        'CONTENT_TYPE' => 'application/json',
+    ], $body);
+
+    $response->assertForbidden();
+});
+
 it('grants donator status on a create event with a matching user', function () {
     $user = User::factory()->create([
         'discord_info' => ['id' => '111', 'username' => 'tester'],

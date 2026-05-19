@@ -18,8 +18,8 @@ enum DonatorType: string
         return (int) str_replace('Patreon Level ', '', $this->value);
     }
 
-    public static function fromPatreonLevel(string $level): self
+    public static function fromPatreonLevel(string $level): ?self
     {
-        return self::from('Patreon ' . $level);
+        return self::tryFrom('Patreon '.$level);
     }
 }
