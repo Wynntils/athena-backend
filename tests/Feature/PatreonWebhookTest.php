@@ -115,3 +115,18 @@ it('handles unhandled outcome without crashing', function () {
 
     postWebhook($this, 'members:create', patreonPayload('999'))->assertSuccessful();
 });
+
+it('returns a successful response even when the discord webhook send fails', function () {
+    $user = User::factory()->create([
+        'discord_info' => ['id' => '333', 'username' => 'tester'],
+    ]);
+
+    $this->mock(PatreonMemberService::class)
+        ->shouldReceive('syncMember')
+        ->once()
+        ->andReturn(['outcome' => 'granted', 'user' => $user, 'reason' => null]);
+
+    // The discord_webhook URL is set to a non-existent host in beforeEach,
+    // so Guzzle throws — the try/catch must absorb it without crashing.
+    postWebhook($this, 'members:create', patreonPayload('333'))->assertSuccessful();
+});
