@@ -119,12 +119,12 @@ class PatreonController extends Controller
         )->addField(
             (new Embed\Field)
                 ->setName('Payment Status')
-                ->setValue($pledgeStatus)
+                ->setValue($pledgeStatus ?? 'Unknown')
                 ->setIsInline(true)
         )->addField(
             (new Embed\Field)
                 ->setName('Months')
-                ->setValue($pledgeMonths)
+                ->setValue((string) ($pledgeMonths ?? 0))
                 ->setIsInline(true)
         )->setFooter((new Embed\Footer)
             ->setText($eventType.' | Total Patrons: '.$patronCount)
