@@ -56,7 +56,10 @@ class CapeManager
     public function deleteCape(string $capeId): bool
     {
         if ($this->isApproved($capeId)) {
-            return $this->approved->delete($capeId);
+            $result = $this->approved->delete($capeId);
+            Cache::forget('capes.list');
+
+            return $result;
         }
 
         if ($this->isQueued($capeId)) {
@@ -104,19 +107,24 @@ class CapeManager
 
     public function listCapes(): array
     {
-        ini_set('memory_limit', '-1');
-
-        return collect($this->approved->files())->filter(static function ($item) {
-            return $item !== '.gitignore';
-        })->map(function ($item) {
-            try {
-                $image = ImageFactory::make($this->approved->path($item));
-
-                return ['sha' => $item, 'width' => $image->getWidth(), 'height' => $image->getHeight()];
-            } catch (\Throwable $e) {
-                return ['sha' => $item, 'width' => 0, 'height' => 0];
-            }
-        })->values()->toArray();
+        return Cache::remember('capes.list', 86400, function () {
+            return collect($this->approved->files())->map(function ($item) {
+                if ($item === '.gitignore') return null;
+                try {
+                    $image = ImageFactory::make($this->approved->path($item));
+                    $width  = $image->getWidth();
+                    $height = $image->getHeight();
+                    return [
+                        'sha'      => $item,
+                        'width'    => $width,
+                        'height'   => $height,
+                        'animated' => $height > ($width / 2),
+                    ];
+                } catch (\Throwable) {
+                    return null;
+                }
+            })->filter()->values()->toArray();
+        });
     }
 
     public function getQueuedCape($capeId): ?string
@@ -177,6 +185,7 @@ class CapeManager
 
         Cache::forget("cape-texture-{$capeId}-1");
         Cache::forget("cape-texture-{$capeId}-0");
+        Cache::forget('capes.list');
 
         Notifications::cape(
             title: 'A cape was approved',
@@ -202,6 +211,7 @@ class CapeManager
 
         Cache::forget("cape-texture-{$capeId}-1");
         Cache::forget("cape-texture-{$capeId}-0");
+        Cache::forget('capes.list');
 
         Notifications::cape(
             title: 'A cape was banned',

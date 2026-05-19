@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountType;
+use App\Events\CapeSubmittedEvent;
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
@@ -12,6 +14,8 @@ use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image as ImageFactory;
 
 #[Group('User')]
 class UserController extends Controller
@@ -120,6 +124,142 @@ class UserController extends Controller
         }
 
         return (new UserResource($user))->response()->header('ETag', $etag);
+    }
+
+    /**
+     * Upload a cape for the authenticated user
+     */
+    public function uploadCapeWeb(UserRequest $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = \Auth::user();
+
+        if ($user->account_type === AccountType::BANNED) {
+            return response()->json(['message' => 'Your account has been banned.'], 403);
+        }
+
+        $capePath = $request->validated('cape')?->path();
+        $image = ImageFactory::make($capePath);
+
+        $width = $image->width();
+        $height = $image->height();
+
+        if ($width % 64 !== 0 || $height % ($width / 2) !== 0) {
+            return response()->json(['message' => 'Image dimensions must be a multiple of 64×32.'], 400);
+        }
+
+        $animated = $height > ($width / 2);
+
+        // Determine tier limits
+        $tier = $user->account_type;
+        $isUnlimited = in_array($tier, [AccountType::MODERATOR], true);
+        $isDonatorTier = in_array($tier, [AccountType::DONATOR, AccountType::CONTENT_TEAM], true);
+        $isNormalTier = in_array($tier, [AccountType::NORMAL, AccountType::HELPER], true);
+
+        // Check animated permission first
+        $canAnimate = $isDonatorTier || $isUnlimited;
+        if ($animated && !$canAnimate) {
+            return response()->json(['message' => 'Animated capes require a Donator account or higher.'], 400);
+        }
+
+        // Check resolution limits
+        if (!$isUnlimited) {
+            if ($isNormalTier && ($width > 64 || $height > 32)) {
+                return response()->json(['message' => 'Resolution exceeds your account tier.'], 400);
+            }
+
+            if ($isDonatorTier && ($width > 256 || $height > 128)) {
+                return response()->json(['message' => 'Resolution exceeds your account tier.'], 400);
+            }
+        }
+
+        $this->capeManager->maskCapeImage($image);
+
+        $sha = $this->capeManager->getSha($image);
+
+        if ($this->capeManager->isApproved($sha)) {
+            return response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $sha], 400);
+        }
+
+        if ($this->capeManager->isQueued($sha)) {
+            return response()->json(['message' => 'The provided cape is already queued.', 'sha-1' => $sha], 400);
+        }
+
+        if ($this->capeManager->isBanned($sha)) {
+            return response()->json(['message' => 'The provided cape is banned.', 'sha-1' => $sha], 400);
+        }
+
+        $sha = $this->capeManager->queueCape($image, $user->username);
+        CapeSubmittedEvent::dispatch($user->username);
+
+        Cache::forget('capes.list');
+
+        return response()->json([
+            'message' => 'The cape has been queued for approval.',
+            'sha-1' => $sha,
+            'animated' => $animated,
+        ], 200);
+    }
+
+    /**
+     * Set or clear the active cape for the authenticated user
+     */
+    public function selectCape(UserRequest $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->account_type === AccountType::BANNED) {
+            return response()->json(['message' => 'Your account has been banned.'], 403);
+        }
+
+        $sha  = $request->validated('sha');
+
+        if ($sha === '' || $sha === null) {
+            $cosmeticInfo                = $user->cosmetic_info ?? [];
+            $cosmeticInfo['capeTexture'] = '';
+            $user->cosmetic_info         = $cosmeticInfo;
+            $user->save();
+
+            return response()->json(['message' => 'Cape cleared.']);
+        }
+
+        if (! $this->capeManager->isApproved($sha)) {
+            return response()->json(['message' => 'That cape is no longer available.'], 404);
+        }
+
+        // Check animated flag from cache, fall back to file read
+        $capeList = Cache::get('capes.list', []);
+        $capeMeta = collect($capeList)->firstWhere('sha', $sha);
+
+        if ($capeMeta !== null) {
+            $animated = $capeMeta['animated'];
+        } else {
+            try {
+                $path     = Storage::disk('approved')->path($sha);
+                $image    = ImageFactory::make($path);
+                $animated = $image->height() > ($image->width() / 2);
+            } catch (\Throwable) {
+                $animated = false;
+            }
+        }
+
+        $canAnimate = in_array($user->account_type, [
+            AccountType::DONATOR,
+            AccountType::CONTENT_TEAM,
+            AccountType::MODERATOR,
+        ], true);
+
+        if ($animated && !$canAnimate) {
+            return response()->json(['message' => 'Animated capes require a Donator account or higher.'], 403);
+        }
+
+        $cosmeticInfo                = $user->cosmetic_info ?? [];
+        $cosmeticInfo['capeTexture'] = $sha;
+        $user->cosmetic_info         = $cosmeticInfo;
+        $user->save();
+
+        return response()->json(['message' => 'Cape updated.']);
     }
 
     private function getUser($user): User

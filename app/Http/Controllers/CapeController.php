@@ -11,6 +11,7 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Image;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -43,18 +44,34 @@ class CapeController extends Controller
     }
 
     #[ExcludeRouteFromDocs]
-    public function list(): JsonResponse
+    public function list(Request $request): JsonResponse|Response
     {
-        $result = $this->manager->listCapes();
+        $page    = max(1, (int) $request->query('page', 1));
+        $perPage = min(100, max(1, (int) $request->query('per_page', 50)));
 
-        return response()->json(['result' => $result])
-            ->setCache([
-                'max_age' => 60,
-                's_maxage' => 60,
-                'public' => true,
-            ])
-            ->setExpires(now()->addSeconds(60))
-            ->setEtag(md5(serialize($result)));
+        $all   = $this->manager->listCapes();
+        $total = count($all);
+
+        $data     = array_slice($all, ($page - 1) * $perPage, $perPage);
+        $lastPage = max(1, (int) ceil($total / $perPage));
+
+        $etag = md5("{$total}-{$page}-{$perPage}");
+
+        $response = response()->json([
+            'data'      => array_values($data),
+            'total'     => $total,
+            'page'      => min($page, $lastPage),
+            'per_page'  => $perPage,
+            'last_page' => $lastPage,
+        ])->setEtag($etag)
+          ->setCache(['max_age' => 60, 's_maxage' => 60, 'public' => true])
+          ->setExpires(now()->addSeconds(60));
+
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
+
+        return $response;
     }
 
     #[ExcludeRouteFromDocs]

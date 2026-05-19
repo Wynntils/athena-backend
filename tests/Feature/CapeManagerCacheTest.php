@@ -51,3 +51,69 @@ it('does not cache results on special dates', function () {
 
     Cache::shouldNotHaveReceived('remember');
 });
+
+it('listCapes stores result in cache with 24h TTL', function () {
+    $png = imagecreatetruecolor(64, 32);
+    ob_start();
+    imagepng($png);
+    $data = ob_get_clean();
+    imagedestroy($png);
+
+    Storage::disk('approved')->put('deadbeef1234deadbeef1234deadbeef12345678', $data);
+
+    Cache::spy();
+
+    app(CapeManager::class)->listCapes();
+
+    Cache::shouldHaveReceived('remember')
+        ->withArgs(fn ($key, $ttl) => $key === 'capes.list' && $ttl === 86400)
+        ->once();
+});
+
+it('listCapes includes animated flag — false for 64x32', function () {
+    $png = imagecreatetruecolor(64, 32);
+    ob_start(); imagepng($png); $data = ob_get_clean(); imagedestroy($png);
+    Storage::disk('approved')->put('deadbeef1234deadbeef1234deadbeef12345678', $data);
+
+    $result = app(CapeManager::class)->listCapes();
+
+    expect($result[0])->toMatchArray([
+        'sha'      => 'deadbeef1234deadbeef1234deadbeef12345678',
+        'width'    => 64,
+        'height'   => 32,
+        'animated' => false,
+    ]);
+});
+
+it('listCapes includes animated flag — true for 64x64 sprite sheet', function () {
+    $png = imagecreatetruecolor(64, 64);
+    ob_start(); imagepng($png); $data = ob_get_clean(); imagedestroy($png);
+    Storage::disk('approved')->put('deadbeef1234deadbeef1234deadbeef12345678', $data);
+
+    $result = app(CapeManager::class)->listCapes();
+
+    expect($result[0]['animated'])->toBeTrue();
+});
+
+it('approveCape invalidates capes.list cache', function () {
+    Storage::fake('queue');
+    Storage::disk('queue')->put('sha123', 'data');
+
+    Cache::spy();
+
+    app(CapeManager::class)->approveCape('sha123');
+
+    Cache::shouldHaveReceived('forget')->with('capes.list')->once();
+});
+
+it('banCape invalidates capes.list cache', function () {
+    Storage::fake('queue');
+    Storage::fake('banned');
+    Storage::disk('queue')->put('sha123', 'data');
+
+    Cache::spy();
+
+    app(CapeManager::class)->banCape('sha123');
+
+    Cache::shouldHaveReceived('forget')->with('capes.list')->once();
+});

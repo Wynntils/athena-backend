@@ -7,6 +7,8 @@ Route::controller(UserController::class)->group(static function () {
         Route::get('getConfigs', 'getConfigs')->name('getConfigs');
         Route::post('uploadConfigs', 'uploadConfigs')->name('uploadConfigs');
         Route::post('updateDiscord', 'updateDiscord')->name('updateDiscord');
+        Route::post('cape/upload', 'uploadCapeWeb')->name('cape.upload');
+        Route::post('cape/select', 'selectCape')->name('cape.select');
     });
 //    Route::post('setUserPassword', 'setUserPassword');
 

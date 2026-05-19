@@ -33,4 +33,18 @@ class UserRequest extends BaseRequest
             'uuid' => 'required|uuid',
         ];
     }
+
+    public function uploadCapeWeb(): array
+    {
+        return [
+            'cape' => 'required|file|mimes:png|max:500',
+        ];
+    }
+
+    public function selectCape(): array
+    {
+        return [
+            'sha' => ['present', 'nullable', 'regex:/^([0-9a-f]{40})?$/'],
+        ];
+    }
 }
