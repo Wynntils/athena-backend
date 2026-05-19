@@ -108,6 +108,7 @@ it('revokes on update event when pledge status is Declined', function () {
     expect($result['outcome'])->toBe('revoked');
     $user->refresh();
     expect($user->account_type)->toBe(AccountType::NORMAL);
+    expect($user->donator_type)->toBe(DonatorType::NONE);
 });
 
 it('revokes on update event when pledge status is Fraud', function () {

@@ -63,12 +63,17 @@ class PatreonMemberService
 
         $wasAlreadyDonator = $user->account_type === AccountType::DONATOR;
 
-        $user->account_type = AccountType::DONATOR;
-
         if ($tierTitle !== null) {
-            $user->donator_type = DonatorType::fromPatreonLevel($tierTitle);
+            $donatorType = DonatorType::tryFrom('Patreon '.$tierTitle);
+
+            if ($donatorType === null) {
+                return ['outcome' => 'unhandled', 'user' => $user, 'reason' => 'Unrecognised tier: '.$tierTitle];
+            }
+
+            $user->donator_type = $donatorType;
         }
 
+        $user->account_type = AccountType::DONATOR;
         $user->save();
 
         return [
