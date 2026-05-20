@@ -32,9 +32,14 @@ class CosmeticAssetSeeder extends Seeder
             }
 
             // get image dimensions
-            $image = Image::make(Storage::disk('approved')->path($sha));
-            $width = $image->width();
-            $height = $image->height();
+            try {
+                $image = Image::make(Storage::disk('approved')->path($sha));
+                $width = $image->width();
+                $height = $image->height();
+            } catch (\Exception $e) {
+                $this->command?->warn("Skipping unreadable file: {$sha} ({$e->getMessage()})");
+                continue;
+            }
             $animated = $height > ($width / 2);
 
             // compute tags
