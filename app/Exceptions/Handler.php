@@ -170,6 +170,10 @@ class Handler extends ExceptionHandler
             //            }
         }
 
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
             return response()->json([
                 'message' => 'Could not connect to External API Provider.',
