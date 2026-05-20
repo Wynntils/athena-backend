@@ -34,20 +34,21 @@ class CosmeticsController extends Controller
         $sort = $request->query('sort', 'newest');
         match ($sort) {
             'votes' => $query->orderByRaw(
-                '(SELECT COUNT(*) FROM cosmetic_votes WHERE cosmetic_id = cosmetic_assets.id AND vote = 1) DESC'
+                '(SELECT COALESCE(SUM(vote), 0) FROM cosmetic_votes WHERE cosmetic_id = cosmetic_assets.id) DESC'
             ),
             'worn'  => $query->orderBy('equip_count', 'desc'),
             default => $query->orderBy('uploaded_at', 'desc'),
         };
 
-        $paginated = $query->paginate(15);
+        $perPage   = min((int) $request->query('per_page', 15), 100);
+        $paginated = $query->paginate($perPage);
 
         return response()->json([
-            'data'         => CosmAssetResource::collection($paginated->items()),
-            'current_page' => $paginated->currentPage(),
-            'per_page'     => $paginated->perPage(),
-            'total'        => $paginated->total(),
-            'last_page'    => $paginated->lastPage(),
+            'data'      => CosmAssetResource::collection($paginated->items()),
+            'page'      => $paginated->currentPage(),
+            'per_page'  => $paginated->perPage(),
+            'total'     => $paginated->total(),
+            'last_page' => $paginated->lastPage(),
         ]);
     }
 

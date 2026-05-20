@@ -29,7 +29,7 @@ it('returns paginated approved public assets', function () {
     $data = $response->json('data');
     expect($data)->toHaveCount(3);
     // Pagination keys present
-    $response->assertJsonStructure(['data', 'current_page', 'per_page', 'total', 'last_page']);
+    $response->assertJsonStructure(['data', 'page', 'per_page', 'total', 'last_page']);
 });
 
 it('filters by search query', function () {
@@ -79,17 +79,23 @@ it('sorts by worn (equip_count)', function () {
     expect($data[0]['sha'])->toBe($high->sha);
 });
 
-it('sorts by votes', function () {
+it('sorts by votes using net score', function () {
     $uploader = User::factory()->create();
-    $voter    = User::factory()->create();
+    $voters   = User::factory()->count(4)->create();
 
-    $popular = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'uploader_id' => $uploader->id]);
-    $plain   = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'uploader_id' => $uploader->id]);
+    // Asset A: 2 upvotes + 2 downvotes = net 0
+    $assetA = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'uploader_id' => $uploader->id]);
+    CosmeticVote::create(['cosmetic_id' => $assetA->id, 'user_id' => $voters[0]->id, 'vote' => 1]);
+    CosmeticVote::create(['cosmetic_id' => $assetA->id, 'user_id' => $voters[1]->id, 'vote' => 1]);
+    CosmeticVote::create(['cosmetic_id' => $assetA->id, 'user_id' => $voters[2]->id, 'vote' => -1]);
+    CosmeticVote::create(['cosmetic_id' => $assetA->id, 'user_id' => $voters[3]->id, 'vote' => -1]);
 
-    CosmeticVote::create(['cosmetic_id' => $popular->id, 'user_id' => $voter->id, 'vote' => 1]);
+    // Asset B: 1 upvote = net 1 — should rank first
+    $assetB = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'uploader_id' => $uploader->id]);
+    CosmeticVote::create(['cosmetic_id' => $assetB->id, 'user_id' => $voters[0]->id, 'vote' => 1]);
 
     $data = $this->getJson('/cosmetics?sort=votes')->json('data');
-    expect($data[0]['sha'])->toBe($popular->sha);
+    expect($data[0]['sha'])->toBe($assetB->sha);
 });
 
 it('paginates 15 per page', function () {
@@ -99,6 +105,15 @@ it('paginates 15 per page', function () {
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(15);
     expect($response->json('per_page'))->toBe(15);
+});
+
+it('respects per_page query parameter', function () {
+    CosmeticAsset::factory()->approved()->count(10)->create(['visibility' => CosmeticVisibility::PUBLIC]);
+
+    $response = $this->getJson('/cosmetics?per_page=5');
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(5);
+    expect($response->json('per_page'))->toBe(5);
 });
 
 // ---------------------------------------------------------------------------
