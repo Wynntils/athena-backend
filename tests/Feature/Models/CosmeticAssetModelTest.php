@@ -46,7 +46,7 @@ it('resolves votes relationship', function () {
     $asset = CosmeticAsset::factory()->create();
     CosmeticVote::create(['cosmetic_id' => $asset->id, 'user_id' => $user->id, 'vote' => 1]);
 
-    expect($asset->votes)->toHaveCount(1);
+    expect($asset->refresh()->votes)->toHaveCount(1);
 });
 
 it('enforces unique vote per user per asset', function () {

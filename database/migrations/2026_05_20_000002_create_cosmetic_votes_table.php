@@ -2,12 +2,15 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
+        $isPostgres = DB::getDriverName() === 'pgsql';
+
         Schema::create('cosmetic_votes', function (Blueprint $table) {
             $table->id();
             $table->uuid('cosmetic_id')->index();
@@ -19,6 +22,10 @@ return new class extends Migration
             $table->foreign('cosmetic_id')->references('id')->on('cosmetic_assets')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
+
+        if ($isPostgres) {
+            DB::statement('ALTER TABLE cosmetic_votes ADD CONSTRAINT chk_vote_value CHECK (vote IN (1, -1))');
+        }
     }
 
     public function down(): void
