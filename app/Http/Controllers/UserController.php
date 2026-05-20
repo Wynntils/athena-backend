@@ -186,7 +186,7 @@ class UserController extends Controller
                 'message'  => 'The provided cape is already approved.',
                 'sha-1'    => $sha,
                 'animated' => $animated,
-            ]);
+            ], 200);
         }
 
         if ($this->capeManager->isQueued($sha)) {
