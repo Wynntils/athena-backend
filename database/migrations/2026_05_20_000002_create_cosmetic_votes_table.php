@@ -9,8 +9,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $isPostgres = DB::getDriverName() === 'pgsql';
-
         Schema::create('cosmetic_votes', function (Blueprint $table) {
             $table->id();
             $table->uuid('cosmetic_id')->index();
@@ -23,9 +21,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
 
-        if ($isPostgres) {
-            DB::statement('ALTER TABLE cosmetic_votes ADD CONSTRAINT chk_vote_value CHECK (vote IN (1, -1))');
-        }
+        DB::statement('ALTER TABLE cosmetic_votes ADD CONSTRAINT chk_vote_value CHECK (vote IN (1, -1))');
     }
 
     public function down(): void

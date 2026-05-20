@@ -9,15 +9,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $isPostgres = DB::getDriverName() === 'pgsql';
-
-        Schema::create('cosmetic_assets', function (Blueprint $table) use ($isPostgres) {
-            if ($isPostgres) {
-                $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            } else {
-                $table->uuid('id')->primary();
-            }
-
+        Schema::create('cosmetic_assets', function (Blueprint $table) {
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->string('sha', 40)->unique();
             $table->string('type', 20)->default('texture');
             $table->string('slot', 20)->default('back');
@@ -25,15 +18,8 @@ return new class extends Migration
             $table->uuid('uploader_id')->nullable()->index();
             $table->string('name', 80)->nullable();
             $table->string('visibility', 20)->default('public');
-
-            if ($isPostgres) {
-                $table->jsonb('tags')->default('[]');
-                $table->jsonb('pending_tags')->nullable();
-            } else {
-                $table->json('tags')->nullable();
-                $table->json('pending_tags')->nullable();
-            }
-
+            $table->jsonb('tags')->default('[]');
+            $table->jsonb('pending_tags')->nullable();
             $table->unsignedSmallInteger('width')->nullable();
             $table->unsignedSmallInteger('height')->nullable();
             $table->unsignedInteger('equip_count')->default(0);
@@ -45,9 +31,7 @@ return new class extends Migration
             $table->foreign('uploader_id')->references('id')->on('users')->nullOnDelete();
         });
 
-        if ($isPostgres) {
-            DB::statement('CREATE INDEX idx_cosmetic_assets_tags ON cosmetic_assets USING gin(tags)');
-        }
+        DB::statement('CREATE INDEX idx_cosmetic_assets_tags ON cosmetic_assets USING gin(tags)');
     }
 
     public function down(): void
