@@ -64,13 +64,14 @@ class CapeManager
         $isApproved = $this->isApproved($capeId);
         $isQueued   = $this->isQueued($capeId);
 
+        $deleted = false;
+        if ($isApproved) $deleted = $this->approved->delete($capeId);
+        elseif ($isQueued) $deleted = $this->queue->delete($capeId);
+
         CosmeticAsset::bySha($capeId)->delete();
         Cache::forget('capes.list');
 
-        if ($isApproved) return $this->approved->delete($capeId);
-        if ($isQueued)   return $this->queue->delete($capeId);
-
-        return false;
+        return $deleted;
     }
 
     public function isApproved($capeId): bool
@@ -207,6 +208,8 @@ class CapeManager
                 'height' => $height,
                 'tags'   => array_values(array_unique(array_merge($systemTags, $userTags))),
             ]);
+        } else {
+            \Log::warning("approveCape: no cosmetic_assets row found for SHA {$capeId} — file approved but DB not updated");
         }
 
         Cache::forget("cape-texture-{$capeId}-1");
@@ -292,5 +295,6 @@ class CapeManager
     public function deleteQueuedCape(string $capeId): void
     {
         $this->queue->delete($capeId);
+        CosmeticAsset::bySha($capeId)->where('status', CosmeticStatus::QUEUED)->delete();
     }
 }
