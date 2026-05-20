@@ -8,16 +8,14 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 
 class ConnectionFailedListener
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function handle(ConnectionFailed $event)
     {
         Notifications::log(
             title: 'Outbound Connection Failed',
             description: sprintf(
-                "`%s %s` ```%s```",
+                '`%s %s` ```%s```',
                 $event->request->method(),
                 $event->request->url(),
                 $event->request->body()

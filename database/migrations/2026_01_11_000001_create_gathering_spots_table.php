@@ -32,4 +32,3 @@ return new class extends Migration
         Schema::dropIfExists('gathering_spots');
     }
 };
-

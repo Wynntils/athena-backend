@@ -1,9 +1,7 @@
 <?php
 
 use App\Enums\AccountType;
-use App\Enums\CosmeticSlot;
 use App\Enums\CosmeticStatus;
-use App\Enums\CosmeticType;
 use App\Enums\CosmeticVisibility;
 use App\Models\CosmeticAsset;
 use App\Models\CosmeticVote;
@@ -50,7 +48,7 @@ it('filters by tags', function () {
     CosmeticAsset::factory()->approved()->create(['tags' => [], 'visibility' => CosmeticVisibility::PUBLIC]);
 
     // Asset must contain ALL specified tags
-    $response = $this->getJson('/cosmetics?' . http_build_query(['tags' => ['pvp', 'wings']]));
+    $response = $this->getJson('/cosmetics?'.http_build_query(['tags' => ['pvp', 'wings']]));
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);
@@ -58,11 +56,11 @@ it('filters by tags', function () {
 
 it('sorts by newest by default', function () {
     $older = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploaded_at' => now()->subDays(2),
     ]);
     $newer = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploaded_at' => now(),
     ]);
 
@@ -72,7 +70,7 @@ it('sorts by newest by default', function () {
 });
 
 it('sorts by worn (equip_count)', function () {
-    $low  = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'equip_count' => 1]);
+    $low = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'equip_count' => 1]);
     $high = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'equip_count' => 99]);
 
     $data = $this->getJson('/cosmetics?sort=worn')->json('data');
@@ -81,7 +79,7 @@ it('sorts by worn (equip_count)', function () {
 
 it('sorts by votes using net score', function () {
     $uploader = User::factory()->create();
-    $voters   = User::factory()->count(4)->create();
+    $voters = User::factory()->count(4)->create();
 
     // Asset A: 2 upvotes + 2 downvotes = net 0
     $assetA = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC, 'uploader_id' => $uploader->id]);
@@ -123,7 +121,7 @@ it('respects per_page query parameter', function () {
 it('returns a single approved public asset', function () {
     $asset = CosmeticAsset::factory()->approved()->create([
         'visibility' => CosmeticVisibility::PUBLIC,
-        'name'       => 'Test Asset',
+        'name' => 'Test Asset',
     ]);
 
     $this->getJson("/cosmetics/{$asset->sha}")
@@ -133,12 +131,12 @@ it('returns a single approved public asset', function () {
 });
 
 it('returns 404 for unknown sha', function () {
-    $this->getJson('/cosmetics/' . str_repeat('0', 40))->assertNotFound();
+    $this->getJson('/cosmetics/'.str_repeat('0', 40))->assertNotFound();
 });
 
 it('returns 404 for non-approved asset', function () {
     $asset = CosmeticAsset::factory()->create([
-        'status'     => CosmeticStatus::QUEUED,
+        'status' => CosmeticStatus::QUEUED,
         'visibility' => CosmeticVisibility::PUBLIC,
     ]);
 
@@ -163,9 +161,9 @@ it('requires auth to vote', function () {
 
 it('casts an upvote', function () {
     $uploader = User::factory()->create();
-    $voter    = User::factory()->create();
-    $asset    = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+    $voter = User::factory()->create();
+    $asset = CosmeticAsset::factory()->approved()->create([
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $uploader->id,
     ]);
 
@@ -177,9 +175,9 @@ it('casts an upvote', function () {
 });
 
 it('returns 403 for self-vote', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $user->id,
     ]);
 
@@ -190,9 +188,9 @@ it('returns 403 for self-vote', function () {
 
 it('returns 403 for banned user voting', function () {
     $uploader = User::factory()->create();
-    $banned   = User::factory()->create(['account_type' => AccountType::BANNED]);
-    $asset    = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+    $banned = User::factory()->create(['account_type' => AccountType::BANNED]);
+    $asset = CosmeticAsset::factory()->approved()->create([
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $uploader->id,
     ]);
 
@@ -202,7 +200,7 @@ it('returns 403 for banned user voting', function () {
 });
 
 it('rejects invalid vote value', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create(['visibility' => CosmeticVisibility::PUBLIC]);
 
     $this->withHeaders(['authToken' => $user->auth_token])
@@ -222,9 +220,9 @@ it('requires auth to unvote', function () {
 
 it('removes a vote', function () {
     $uploader = User::factory()->create();
-    $voter    = User::factory()->create();
-    $asset    = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+    $voter = User::factory()->create();
+    $asset = CosmeticAsset::factory()->approved()->create([
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $uploader->id,
     ]);
 
@@ -239,9 +237,9 @@ it('removes a vote', function () {
 
 it('returns 403 for banned user unvoting', function () {
     $uploader = User::factory()->create();
-    $banned   = User::factory()->create(['account_type' => AccountType::BANNED]);
-    $asset    = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+    $banned = User::factory()->create(['account_type' => AccountType::BANNED]);
+    $asset = CosmeticAsset::factory()->approved()->create([
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $uploader->id,
     ]);
 
@@ -263,9 +261,9 @@ it('requires auth to patch', function () {
 });
 
 it('allows uploader to submit an edit', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $user->id,
     ]);
 
@@ -280,7 +278,7 @@ it('returns 403 for non-uploader trying to edit', function () {
     $owner = User::factory()->create();
     $other = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $owner->id,
     ]);
 
@@ -290,10 +288,10 @@ it('returns 403 for non-uploader trying to edit', function () {
 });
 
 it('returns 409 when a pending edit already exists', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create([
-        'visibility'   => CosmeticVisibility::PUBLIC,
-        'uploader_id'  => $user->id,
+        'visibility' => CosmeticVisibility::PUBLIC,
+        'uploader_id' => $user->id,
         'pending_name' => 'Already Pending',
     ]);
 
@@ -304,8 +302,8 @@ it('returns 409 when a pending edit already exists', function () {
 
 it('returns 403 for banned user patching', function () {
     $banned = User::factory()->create(['account_type' => AccountType::BANNED]);
-    $asset  = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+    $asset = CosmeticAsset::factory()->approved()->create([
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $banned->id,
     ]);
 
@@ -315,9 +313,9 @@ it('returns 403 for banned user patching', function () {
 });
 
 it('validates patch fields', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create([
-        'visibility'  => CosmeticVisibility::PUBLIC,
+        'visibility' => CosmeticVisibility::PUBLIC,
         'uploader_id' => $user->id,
     ]);
 

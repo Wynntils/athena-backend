@@ -12,8 +12,8 @@ beforeEach(function () {
     // Seed 120 approved BACK TEXTURE assets into the DB
     foreach (range(1, 120) as $i) {
         CosmeticAsset::factory()->approved()->create([
-            'sha'    => str_pad((string) $i, 40, '0', STR_PAD_LEFT),
-            'width'  => 64,
+            'sha' => str_pad((string) $i, 40, '0', STR_PAD_LEFT),
+            'width' => 64,
             'height' => 32,
         ]);
     }

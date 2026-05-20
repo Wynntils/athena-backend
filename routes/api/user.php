@@ -18,7 +18,7 @@ Route::controller(UserController::class)->group(static function () {
         Route::post('cape/elytra-mode', 'setElytraMode')->name('cape.elytraMode.set');
     });
 
-//    Route::post('setUserPassword', 'setUserPassword');
+    //    Route::post('setUserPassword', 'setUserPassword');
 
     Route::middleware(['block.user.agents'])->group(static function () {
         Route::get('getInfo/{user}', 'getInfo')->name('getInfo');

@@ -8,14 +8,14 @@ class CapeRequest extends BaseRequest
     {
         return [
             'cape' => 'required|file|mimes:png|max:500',
-            'username' => 'required|string'
+            'username' => 'required|string',
         ];
     }
 
-    public function delete(): array {
+    public function delete(): array
+    {
         return [
             'sha-1' => 'required|string|size:40',
         ];
     }
-
 }

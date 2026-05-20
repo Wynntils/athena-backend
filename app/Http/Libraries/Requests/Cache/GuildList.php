@@ -6,7 +6,6 @@ use App\Models\Guild;
 
 class GuildList
 {
-
     public function generate(): array
     {
         return Guild::query()
@@ -18,9 +17,9 @@ class GuildList
                 $arr['color'] = isset($arr['color']) ? (string) $arr['color'] : '';
 
                 unset($arr['id']);
+
                 return $arr;
             })
             ->all();
     }
-
 }

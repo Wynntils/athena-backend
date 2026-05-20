@@ -18,7 +18,9 @@ class GatheringSpot extends Model
     protected $table = 'gathering_spots';
 
     public $timestamps = false;
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -51,16 +53,16 @@ class GatheringSpot extends Model
     public function calculateReliability(): int
     {
         return (int) (100 * (
-                (1.0 - ((currentTimeMillis() - $this->lastSeen) / 1296000000.0)) // calculates scalable factor | 15 days = 0
-                * (min(25,
-                        count($this->users)) / 25.0) // multiply the scalable factor based on the amount players | max = 25
-            ));
+            (1.0 - ((currentTimeMillis() - $this->lastSeen) / 1296000000.0)) // calculates scalable factor | 15 days = 0
+            * (min(25,
+                count($this->users)) / 25.0) // multiply the scalable factor based on the amount players | max = 25
+        ));
     }
 
     public function shouldRemove(): bool
     {
         // 1296000000 is 15 days in milliseconds
-        return ((currentTimeMillis() - $this->lastSeen) >= 1296000000);
+        return (currentTimeMillis() - $this->lastSeen) >= 1296000000;
     }
 
     public function getLocation(): array

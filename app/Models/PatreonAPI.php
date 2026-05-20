@@ -7,7 +7,7 @@ use Patreon;
 
 /**
  * Class PatreonAPI
- * @package App\Models
+ *
  * @property int $id
  * @property string $access_token
  * @property string $refresh_token
@@ -41,11 +41,11 @@ class PatreonAPI extends Model
 
         // Check if we have an access token
         $api = self::first();
-        if (!$api) {
+        if (! $api) {
             // If not, get one
             $tokens = $oauth->refresh_token(config('services.patreon.refresh_token'), null);
             $api = self::create($tokens);
-        } else if ($api->updated_at->addSeconds($api->expires_in)->isPast()) {
+        } elseif ($api->updated_at->addSeconds($api->expires_in)->isPast()) {
             // If it is, refresh it
             $tokens = $oauth->refresh_token($api->refresh_token, null);
             $api->update($tokens);

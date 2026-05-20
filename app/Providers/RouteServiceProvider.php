@@ -42,18 +42,18 @@ class RouteServiceProvider extends ServiceProvider
                     $routePrefix = str_replace('.php', '', $relativePath);
                     // prefix based on file name
                     Route::prefix($routePrefix)
-                        ->name(basename($file, '.php') . '.')
+                        ->name(basename($file, '.php').'.')
                         ->group($file);
                 }
             });
-//            Route::prefix('api')->group(base_path('routes/api.php'));
-//            Route::prefix('auth')->group(base_path('routes/auth.php'));
-//            Route::prefix('version')->name('version.')->group(base_path('routes/version.php'));
-//            Route::prefix('user')->group(base_path('routes/user.php'));
-//            Route::prefix('cache')->group(base_path('routes/cache.php'));
-//            Route::prefix('capes')->group(base_path('routes/cape.php'));
-//            Route::prefix('telemetry')->group(base_path('routes/telemetry.php'));
-//            Route::prefix('patreon')->group(base_path('routes/patreon.php'));
+            //            Route::prefix('api')->group(base_path('routes/api.php'));
+            //            Route::prefix('auth')->group(base_path('routes/auth.php'));
+            //            Route::prefix('version')->name('version.')->group(base_path('routes/version.php'));
+            //            Route::prefix('user')->group(base_path('routes/user.php'));
+            //            Route::prefix('cache')->group(base_path('routes/cache.php'));
+            //            Route::prefix('capes')->group(base_path('routes/cape.php'));
+            //            Route::prefix('telemetry')->group(base_path('routes/telemetry.php'));
+            //            Route::prefix('patreon')->group(base_path('routes/patreon.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));

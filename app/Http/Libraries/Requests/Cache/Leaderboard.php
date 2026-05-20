@@ -25,7 +25,7 @@ class Leaderboard
                 $reqs[] = $pool
                     ->as($type)
                     ->withHeaders([
-                        'Authorization' => 'Bearer ' . config('athena.api.wynn.apiKey'),
+                        'Authorization' => 'Bearer '.config('athena.api.wynn.apiKey'),
                     ])
                     ->withUserAgent(config('athena.general.userAgent'))
                     ->connectTimeout(50)
@@ -38,27 +38,27 @@ class Leaderboard
 
         $result = [];
         foreach ($responses as $type => $resp) {
-            if (!$resp->successful()) {
-                throw new \Exception('Failed to fetch leaderboard type ' . $resp);
+            if (! $resp->successful()) {
+                throw new \Exception('Failed to fetch leaderboard type '.$resp);
             }
 
             $entries = $resp->json();
-            if (!is_array($entries)) {
+            if (! is_array($entries)) {
                 continue;
             }
 
             $ids = collect($entries)
-                ->map(fn(array $row) => $this->pickId($row, $type))
+                ->map(fn (array $row) => $this->pickId($row, $type))
                 ->filter();
 
-            if (!$this->isGuildType($type)) {
-                $ids = $ids->reject(fn(string $id) => $id === $exclude);
+            if (! $this->isGuildType($type)) {
+                $ids = $ids->reject(fn (string $id) => $id === $exclude);
             }
 
             $result[$type] = $ids
                 ->values()
                 ->take(9)
-                ->mapWithKeys(fn(string $id, int $i) => [(string)($i + 1) => $id])
+                ->mapWithKeys(fn (string $id, int $i) => [(string) ($i + 1) => $id])
                 ->toArray();
         }
 
@@ -74,7 +74,7 @@ class Leaderboard
                 ?? null;
         }
 
-        return $row['uuid'] ?? "redacted";
+        return $row['uuid'] ?? 'redacted';
     }
 
     private function isGuildType(string $type): bool
@@ -87,10 +87,11 @@ class Leaderboard
         return Cache::remember('wynn.lb.types', now()->addHour(), function () {
             $base = rtrim(config('athena.api.wynn.v3.leaderboards'), '/');
             $resp = Http::wynn()->get("{$base}/types");
-            if (!$resp->successful()) {
+            if (! $resp->successful()) {
                 throw new \Exception('Failed to fetch leaderboard types');
             }
             $types = $resp->json();
+
             return array_values(array_filter($types, 'is_string'));
         });
     }

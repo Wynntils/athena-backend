@@ -15,14 +15,14 @@ it('creates a cosmetic asset with all columns', function () {
     $user = User::factory()->create();
 
     $asset = CosmeticAsset::create([
-        'sha'         => str_repeat('a', 40),
-        'type'        => CosmeticType::TEXTURE,
-        'slot'        => CosmeticSlot::BACK,
-        'status'      => CosmeticStatus::QUEUED,
+        'sha' => str_repeat('a', 40),
+        'type' => CosmeticType::TEXTURE,
+        'slot' => CosmeticSlot::BACK,
+        'status' => CosmeticStatus::QUEUED,
         'uploader_id' => $user->id,
-        'name'        => 'My Cape',
-        'visibility'  => CosmeticVisibility::PUBLIC,
-        'tags'        => ['animated'],
+        'name' => 'My Cape',
+        'visibility' => CosmeticVisibility::PUBLIC,
+        'tags' => ['animated'],
         'uploaded_at' => now(),
     ]);
 
@@ -35,14 +35,14 @@ it('creates a cosmetic asset with all columns', function () {
 });
 
 it('resolves uploader relationship', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->create(['uploader_id' => $user->id]);
 
     expect($asset->uploader->id)->toBe($user->id);
 });
 
 it('resolves votes relationship', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->create();
     CosmeticVote::create(['cosmetic_id' => $asset->id, 'user_id' => $user->id, 'vote' => 1]);
 
@@ -50,7 +50,7 @@ it('resolves votes relationship', function () {
 });
 
 it('enforces unique vote per user per asset', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->create();
 
     CosmeticVote::create(['cosmetic_id' => $asset->id, 'user_id' => $user->id, 'vote' => 1]);

@@ -2,13 +2,11 @@
 
 namespace App\Http\Libraries\Requests\Cache;
 
-
 use App\Models\Server;
 use Http;
 
 class ServerList
 {
-
     public function generate(): array
     {
         $wynnOnlinePlayers = Http::wynn()->get(config('athena.api.wynn.v3.onlinePlayers'))

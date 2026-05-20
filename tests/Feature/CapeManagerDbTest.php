@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\CosmeticStatus;
 use App\Http\Libraries\CapeManager;
 use App\Models\CosmeticAsset;
 use App\Models\User;
@@ -12,7 +11,7 @@ uses(Tests\TestCase::class, RefreshDatabase::class);
 beforeEach(function () {
     // Force GD driver so tests run without the Imagick extension
     config(['image.driver' => 'gd']);
-    app()->singleton('image', fn() => new \Intervention\Image\ImageManager(['driver' => 'gd']));
+    app()->singleton('image', fn () => new \Intervention\Image\ImageManager(['driver' => 'gd']));
 
     Storage::fake('queue');
     Storage::fake('approved');
@@ -26,25 +25,30 @@ beforeEach(function () {
         // Call the real __construct to initialise the Storage disk references
         $mock->__construct();
         $mock->shouldReceive('getSha')->andReturnUsing(function ($image) {
-            return sha1($image->width() . 'x' . $image->height() . 'salt');
+            return sha1($image->width().'x'.$image->height().'salt');
         });
+
         return $mock;
     });
     $this->manager = app(CapeManager::class);
 
     $this->makeImage = function (int $w, int $h) {
         $img = imagecreatetruecolor($w, $h);
-        ob_start(); imagepng($img); $data = ob_get_clean(); imagedestroy($img);
-        $tmp = tempnam(sys_get_temp_dir(), 'cape') . '.png';
+        ob_start();
+        imagepng($img);
+        $data = ob_get_clean();
+        imagedestroy($img);
+        $tmp = tempnam(sys_get_temp_dir(), 'cape').'.png';
         file_put_contents($tmp, $data);
         $manager = new \Intervention\Image\ImageManager(['driver' => 'gd']);
+
         return $manager->make($tmp);
     };
 });
 
 it('isQueued returns true when cosmetic_assets row has status queued', function () {
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
 
     expect($this->manager->isQueued($sha))->toBeTrue()
         ->and($this->manager->isApproved($sha))->toBeFalse();
@@ -52,7 +56,7 @@ it('isQueued returns true when cosmetic_assets row has status queued', function 
 
 it('isApproved returns true after approveCape', function () {
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
     $this->manager->approveCape($sha);
 
     expect($this->manager->isApproved($sha))->toBeTrue()
@@ -61,7 +65,7 @@ it('isApproved returns true after approveCape', function () {
 
 it('approveCape writes width and height to cosmetic_assets', function () {
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
     $this->manager->approveCape($sha);
 
     $asset = CosmeticAsset::bySha($sha)->first();
@@ -70,7 +74,7 @@ it('approveCape writes width and height to cosmetic_assets', function () {
 
 it('approveCape writes system tags to cosmetic_assets', function () {
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
     $this->manager->approveCape($sha);
 
     $asset = CosmeticAsset::bySha($sha)->first();
@@ -80,7 +84,7 @@ it('approveCape writes system tags to cosmetic_assets', function () {
 
 it('approveCape adds animated system tag for tall images', function () {
     $image = ($this->makeImage)(64, 64);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
     $this->manager->approveCape($sha);
 
     $asset = CosmeticAsset::bySha($sha)->first();
@@ -89,7 +93,7 @@ it('approveCape adds animated system tag for tall images', function () {
 
 it('isBanned returns true after banCape', function () {
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
     $this->manager->banCape($sha);
 
     expect($this->manager->isBanned($sha))->toBeTrue()
@@ -98,7 +102,7 @@ it('isBanned returns true after banCape', function () {
 
 it('listCapes returns data from cosmetic_assets', function () {
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, 'TestUser', false);
+    $sha = $this->manager->queueCape($image, 'TestUser', false);
     $this->manager->approveCape($sha);
 
     $list = $this->manager->listCapes();
@@ -110,9 +114,9 @@ it('listCapes returns data from cosmetic_assets', function () {
 });
 
 it('queueCape stores uploader_id when User model is provided', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $image = ($this->makeImage)(64, 32);
-    $sha   = $this->manager->queueCape($image, $user->username, false, $user);
+    $sha = $this->manager->queueCape($image, $user->username, false, $user);
 
     $asset = CosmeticAsset::bySha($sha)->first();
     expect($asset->uploader_id)->toBe($user->id);

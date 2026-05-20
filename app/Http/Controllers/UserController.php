@@ -162,12 +162,12 @@ class UserController extends Controller
 
         // Check animated permission first
         $canAnimate = $isDonatorTier || $isUnlimited;
-        if ($animated && !$canAnimate) {
+        if ($animated && ! $canAnimate) {
             return response()->json(['message' => 'Animated capes require a Donator account or higher.'], 400);
         }
 
         // Check resolution limits
-        if (!$isUnlimited) {
+        if (! $isUnlimited) {
             if ($isNormalTier && ($width > 64 || $height > 32)) {
                 return response()->json(['message' => 'Resolution exceeds your account tier.'], 400);
             }
@@ -183,8 +183,8 @@ class UserController extends Controller
 
         if ($this->capeManager->isApproved($sha)) {
             return response()->json([
-                'message'  => 'The provided cape is already approved.',
-                'sha-1'    => $sha,
+                'message' => 'The provided cape is already approved.',
+                'sha-1' => $sha,
                 'animated' => $animated,
             ], 200);
         }
@@ -198,9 +198,9 @@ class UserController extends Controller
         }
 
         $metadata = [
-            'name'       => $request->validated('name'),
+            'name' => $request->validated('name'),
             'visibility' => $request->validated('visibility') ?? 'public',
-            'tags'       => $request->validated('tags') ?? [],
+            'tags' => $request->validated('tags') ?? [],
         ];
 
         $sha = $this->capeManager->queueCape($image, $user->username, true, $user, $metadata);
@@ -208,8 +208,8 @@ class UserController extends Controller
         Cache::forget('capes.list');
 
         return response()->json([
-            'message'  => 'The cape has been queued for approval.',
-            'sha-1'    => $sha,
+            'message' => 'The cape has been queued for approval.',
+            'sha-1' => $sha,
             'animated' => $animated,
         ]);
     }
@@ -226,15 +226,17 @@ class UserController extends Controller
             return response()->json(['message' => 'Your account has been banned.'], 403);
         }
 
-        $sha  = $request->validated('sha');
+        $sha = $request->validated('sha');
 
         if ($sha === '' || $sha === null) {
-            $oldSha                      = $user->cosmetic_info['capeTexture'] ?? null;
-            $cosmeticInfo                = $user->cosmetic_info ?? [];
+            $oldSha = $user->cosmetic_info['capeTexture'] ?? null;
+            $cosmeticInfo = $user->cosmetic_info ?? [];
             $cosmeticInfo['capeTexture'] = '';
-            $user->cosmetic_info         = $cosmeticInfo;
+            $user->cosmetic_info = $cosmeticInfo;
             $user->save();
-            if ($oldSha) $this->cosmeticService->decrementEquipCount($oldSha);
+            if ($oldSha) {
+                $this->cosmeticService->decrementEquipCount($oldSha);
+            }
 
             return response()->json(['message' => 'Cape cleared.']);
         }
@@ -251,8 +253,8 @@ class UserController extends Controller
             $animated = $capeMeta['animated'];
         } else {
             try {
-                $path     = Storage::disk('approved')->path($sha);
-                $image    = ImageFactory::make($path);
+                $path = Storage::disk('approved')->path($sha);
+                $image = ImageFactory::make($path);
                 $animated = $image->height() > ($image->width() / 2);
             } catch (\Throwable) {
                 $animated = false;
@@ -265,16 +267,18 @@ class UserController extends Controller
             AccountType::MODERATOR,
         ], true);
 
-        if ($animated && !$canAnimate) {
+        if ($animated && ! $canAnimate) {
             return response()->json(['message' => 'Animated capes require a Donator account or higher.'], 403);
         }
 
-        $oldSha                      = $user->cosmetic_info['capeTexture'] ?? null;
-        $cosmeticInfo                = $user->cosmetic_info ?? [];
+        $oldSha = $user->cosmetic_info['capeTexture'] ?? null;
+        $cosmeticInfo = $user->cosmetic_info ?? [];
         $cosmeticInfo['capeTexture'] = $sha;
-        $user->cosmetic_info         = $cosmeticInfo;
+        $user->cosmetic_info = $cosmeticInfo;
         $user->save();
-        if ($oldSha && $oldSha !== $sha) $this->cosmeticService->decrementEquipCount($oldSha);
+        if ($oldSha && $oldSha !== $sha) {
+            $this->cosmeticService->decrementEquipCount($oldSha);
+        }
         $this->cosmeticService->incrementEquipCount($sha);
 
         return response()->json(['message' => 'Cape updated.']);
@@ -304,14 +308,14 @@ class UserController extends Controller
             return response()->json(['message' => 'Your account has been banned.'], 403);
         }
 
-        $elytraEnabled               = $request->validated('elytraEnabled');
-        $cosmeticInfo                = $user->cosmetic_info ?? [];
+        $elytraEnabled = $request->validated('elytraEnabled');
+        $cosmeticInfo = $user->cosmetic_info ?? [];
         $cosmeticInfo['elytraEnabled'] = $elytraEnabled;
-        $user->cosmetic_info         = $cosmeticInfo;
+        $user->cosmetic_info = $cosmeticInfo;
         $user->save();
 
         return response()->json([
-            'message'       => $elytraEnabled ? 'Elytra mode enabled.' : 'Cape mode enabled.',
+            'message' => $elytraEnabled ? 'Elytra mode enabled.' : 'Cape mode enabled.',
             'elytraEnabled' => $elytraEnabled,
         ]);
     }

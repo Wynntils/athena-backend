@@ -24,7 +24,6 @@ class CapeController extends Controller
         protected CosmeticAssetService $cosmeticService,
     ) {}
 
-
     #[ExcludeRouteFromDocs]
     public function getCape($capeId): BinaryFileResponse
     {
@@ -46,26 +45,26 @@ class CapeController extends Controller
     #[ExcludeRouteFromDocs]
     public function list(Request $request): JsonResponse|Response
     {
-        $page    = max(1, (int) $request->query('page', 1));
+        $page = max(1, (int) $request->query('page', 1));
         $perPage = min(100, max(1, (int) $request->query('per_page', 50)));
 
-        $all   = $this->manager->listCapes();
+        $all = $this->manager->listCapes();
         $total = count($all);
 
-        $data     = array_slice($all, ($page - 1) * $perPage, $perPage);
+        $data = array_slice($all, ($page - 1) * $perPage, $perPage);
         $lastPage = max(1, (int) ceil($total / $perPage));
 
         $etag = md5("{$total}-{$page}-{$perPage}");
 
         $response = response()->json([
-            'data'      => array_values($data),
-            'total'     => $total,
-            'page'      => min($page, $lastPage),
-            'per_page'  => $perPage,
+            'data' => array_values($data),
+            'total' => $total,
+            'page' => min($page, $lastPage),
+            'per_page' => $perPage,
             'last_page' => $lastPage,
         ])->setEtag($etag)
-          ->setCache(['max_age' => 60, 's_maxage' => 60, 'public' => true])
-          ->setExpires(now()->addSeconds(60));
+            ->setCache(['max_age' => 60, 's_maxage' => 60, 'public' => true])
+            ->setExpires(now()->addSeconds(60));
 
         if ($response->isNotModified($request)) {
             return $response;
@@ -165,7 +164,7 @@ class CapeController extends Controller
     #[ExcludeRouteFromDocs]
     public function approveEdit(Request $request): JsonResponse
     {
-        $sha   = $request->route('sha');
+        $sha = $request->route('sha');
         $asset = \App\Models\CosmeticAsset::bySha($sha)->first();
 
         if (! $asset) {
@@ -184,7 +183,7 @@ class CapeController extends Controller
     #[ExcludeRouteFromDocs]
     public function rejectEdit(Request $request): JsonResponse
     {
-        $sha   = $request->route('sha');
+        $sha = $request->route('sha');
         $asset = \App\Models\CosmeticAsset::bySha($sha)->first();
 
         if (! $asset) {

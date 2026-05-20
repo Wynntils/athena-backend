@@ -11,6 +11,7 @@ use Tests\TestCase;
 class ResourceSchemaTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_get_info_returns_user_resource_shape(): void
     {
         $user = new User([
@@ -47,15 +48,15 @@ class ResourceSchemaTest extends TestCase
     public function test_cosmetic_asset_resource_includes_required_fields(): void
     {
         $uploader = User::factory()->create();
-        $asset    = \App\Models\CosmeticAsset::factory()->approved()->create([
+        $asset = \App\Models\CosmeticAsset::factory()->approved()->create([
             'uploader_id' => $uploader->id,
-            'name'        => 'Test Cape',
-            'tags'        => ['size:64'],
+            'name' => 'Test Cape',
+            'tags' => ['size:64'],
         ]);
         $asset->load('uploader', 'votes');
 
         $resource = new \App\Http\Resources\CosmAssetResource($asset);
-        $array    = $resource->toArray(request());
+        $array = $resource->toArray(request());
 
         $this->assertArrayHasKey('sha', $array);
         $this->assertArrayHasKey('type', $array);

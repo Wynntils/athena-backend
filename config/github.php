@@ -41,8 +41,8 @@ return [
     'connections' => [
 
         'main' => [
-            'method'     => 'token',
-            'token'      => env('GITHUB_TOKEN'),
+            'method' => 'token',
+            'token' => env('GITHUB_TOKEN'),
             // 'backoff'    => false,
             // 'cache'      => false,
             // 'version'    => 'v3',
@@ -65,14 +65,14 @@ return [
     'cache' => [
 
         'main' => [
-            'driver'    => 'illuminate',
+            'driver' => 'illuminate',
             'connector' => null, // null means use default driver
             // 'min'       => 43200,
             // 'max'       => 172800
         ],
 
         'bar' => [
-            'driver'    => 'illuminate',
+            'driver' => 'illuminate',
             'connector' => 'redis', // config/cache.php
             // 'min'       => 43200,
             // 'max'       => 172800

@@ -16,7 +16,7 @@ class UserRequest extends BaseRequest
     {
         return [
             'id' => 'required|int',
-            'username' => 'required|string'
+            'username' => 'required|string',
         ];
     }
 
@@ -37,11 +37,11 @@ class UserRequest extends BaseRequest
     public function uploadCapeWeb(): array
     {
         return [
-            'cape'       => 'required|file|mimes:png|max:500',
-            'name'       => 'nullable|string|max:80',
+            'cape' => 'required|file|mimes:png|max:500',
+            'name' => 'nullable|string|max:80',
             'visibility' => 'nullable|string|in:public,private',
-            'tags'       => 'nullable|array|max:10',
-            'tags.*'     => 'string|max:32',
+            'tags' => 'nullable|array|max:10',
+            'tags.*' => 'string|max:32',
         ];
     }
 

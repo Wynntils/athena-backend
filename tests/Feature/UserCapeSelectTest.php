@@ -13,23 +13,26 @@ beforeEach(function () {
     Storage::fake('special');
 
     $this->makeApprovedCape = function (string $sha, bool $animated = false): void {
-        $h   = $animated ? 64 : 32;
+        $h = $animated ? 64 : 32;
         $img = imagecreatetruecolor(64, $h);
-        ob_start(); imagepng($img); $data = ob_get_clean(); imagedestroy($img);
+        ob_start();
+        imagepng($img);
+        $data = ob_get_clean();
+        imagedestroy($img);
         Storage::disk('approved')->put($sha, $data);
 
         \App\Models\CosmeticAsset::firstOrCreate(['sha' => $sha], [
-            'type'        => \App\Enums\CosmeticType::TEXTURE,
-            'slot'        => \App\Enums\CosmeticSlot::BACK,
-            'status'      => \App\Enums\CosmeticStatus::APPROVED,
-            'width'       => 64,
-            'height'      => $h,
-            'visibility'  => \App\Enums\CosmeticVisibility::PUBLIC,
-            'tags'        => [],
+            'type' => \App\Enums\CosmeticType::TEXTURE,
+            'slot' => \App\Enums\CosmeticSlot::BACK,
+            'status' => \App\Enums\CosmeticStatus::APPROVED,
+            'width' => 64,
+            'height' => $h,
+            'visibility' => \App\Enums\CosmeticVisibility::PUBLIC,
+            'tags' => [],
             'uploaded_at' => now(),
         ]);
 
-        $existing   = Cache::get('capes.list', []);
+        $existing = Cache::get('capes.list', []);
         $existing[] = ['sha' => $sha, 'width' => 64, 'height' => $h, 'animated' => $animated];
         Cache::put('capes.list', $existing, 86400);
     };
@@ -37,7 +40,7 @@ beforeEach(function () {
 
 it('sets capeTexture for an approved SHA', function () {
     $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
-    $sha  = str_repeat('a', 40);
+    $sha = str_repeat('a', 40);
     ($this->makeApprovedCape)($sha);
 
     $this->withHeaders(['authToken' => $user->auth_token])
@@ -50,7 +53,7 @@ it('sets capeTexture for an approved SHA', function () {
 
 it('clears capeTexture when sha is empty', function () {
     $user = User::factory()->create([
-        'account_type'  => AccountType::NORMAL,
+        'account_type' => AccountType::NORMAL,
         'cosmetic_info' => ['capeTexture' => str_repeat('a', 40)],
     ]);
 
@@ -72,7 +75,7 @@ it('returns 404 for unknown SHA', function () {
 
 it('rejects animated cape for NORMAL user', function () {
     $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
-    $sha  = str_repeat('c', 40);
+    $sha = str_repeat('c', 40);
     ($this->makeApprovedCape)($sha, animated: true);
 
     $this->withHeaders(['authToken' => $user->auth_token])
@@ -83,7 +86,7 @@ it('rejects animated cape for NORMAL user', function () {
 
 it('allows animated cape for DONATOR user', function () {
     $user = User::factory()->create(['account_type' => AccountType::DONATOR]);
-    $sha  = str_repeat('d', 40);
+    $sha = str_repeat('d', 40);
     ($this->makeApprovedCape)($sha, animated: true);
 
     $this->withHeaders(['authToken' => $user->auth_token])
@@ -93,7 +96,7 @@ it('allows animated cape for DONATOR user', function () {
 
 it('invalidates user cache after update', function () {
     $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
-    $sha  = str_repeat('e', 40);
+    $sha = str_repeat('e', 40);
     ($this->makeApprovedCape)($sha);
 
     Cache::spy();
@@ -106,7 +109,7 @@ it('invalidates user cache after update', function () {
 
 it('returns 403 for BANNED user', function () {
     $user = User::factory()->create(['account_type' => AccountType::BANNED]);
-    $sha  = str_repeat('a', 40);
+    $sha = str_repeat('a', 40);
     ($this->makeApprovedCape)($sha);
 
     $this->withHeaders(['authToken' => $user->auth_token])
@@ -121,7 +124,7 @@ it('returns 401 without authToken', function () {
 
 it('increments equip_count on the new cape', function () {
     $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
-    $sha  = str_repeat('a', 40);
+    $sha = str_repeat('a', 40);
     ($this->makeApprovedCape)($sha);
     \App\Models\CosmeticAsset::bySha($sha)->update(['equip_count' => 0]);
 
@@ -135,8 +138,8 @@ it('increments equip_count on the new cape', function () {
 it('decrements old cape equip_count when switching', function () {
     $oldSha = str_repeat('a', 40);
     $newSha = str_repeat('b', 40);
-    $user   = User::factory()->create([
-        'account_type'  => AccountType::NORMAL,
+    $user = User::factory()->create([
+        'account_type' => AccountType::NORMAL,
         'cosmetic_info' => ['capeTexture' => $oldSha],
     ]);
     ($this->makeApprovedCape)($oldSha);
@@ -153,9 +156,9 @@ it('decrements old cape equip_count when switching', function () {
 });
 
 it('decrements equip_count when clearing cape', function () {
-    $sha  = str_repeat('a', 40);
+    $sha = str_repeat('a', 40);
     $user = User::factory()->create([
-        'account_type'  => AccountType::NORMAL,
+        'account_type' => AccountType::NORMAL,
         'cosmetic_info' => ['capeTexture' => $sha],
     ]);
     ($this->makeApprovedCape)($sha);

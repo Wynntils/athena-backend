@@ -73,9 +73,9 @@ class CosmeticAssetService
             $patch['tags'] = $asset->pending_tags;
         }
 
-        $patch['pending_name']       = null;
+        $patch['pending_name'] = null;
         $patch['pending_visibility'] = null;
-        $patch['pending_tags']       = null;
+        $patch['pending_tags'] = null;
 
         $asset->update($patch);
     }
@@ -83,9 +83,9 @@ class CosmeticAssetService
     public function rejectEdit(string $sha): void
     {
         CosmeticAsset::bySha($sha)->update([
-            'pending_name'       => null,
+            'pending_name' => null,
             'pending_visibility' => null,
-            'pending_tags'       => null,
+            'pending_tags' => null,
         ]);
     }
 

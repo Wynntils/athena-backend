@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 
 it('records an upvote', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create();
 
     $this->service->vote($user, $asset->sha, 1);
@@ -22,7 +22,7 @@ it('records an upvote', function () {
 });
 
 it('updates an existing vote', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create();
     CosmeticVote::create(['cosmetic_id' => $asset->id, 'user_id' => $user->id, 'vote' => 1]);
 
@@ -33,14 +33,14 @@ it('updates an existing vote', function () {
 
 it('blocks self-vote', function () {
     $uploader = User::factory()->create();
-    $asset    = CosmeticAsset::factory()->approved()->create(['uploader_id' => $uploader->id]);
+    $asset = CosmeticAsset::factory()->approved()->create(['uploader_id' => $uploader->id]);
 
     expect(fn () => $this->service->vote($uploader, $asset->sha, 1))
         ->toThrow(\InvalidArgumentException::class, 'Cannot vote on your own cosmetic');
 });
 
 it('removes a vote', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create();
     CosmeticVote::create(['cosmetic_id' => $asset->id, 'user_id' => $user->id, 'vote' => 1]);
 
@@ -50,7 +50,7 @@ it('removes a vote', function () {
 });
 
 it('submits an edit to pending fields', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create(['uploader_id' => $user->id]);
 
     $this->service->submitEdit($user, $asset->sha, ['name' => 'New Name', 'visibility' => 'private']);
@@ -62,9 +62,9 @@ it('submits an edit to pending fields', function () {
 });
 
 it('throws when a pending edit already exists', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create([
-        'uploader_id'  => $user->id,
+        'uploader_id' => $user->id,
         'pending_name' => 'Old pending',
     ]);
 
@@ -73,7 +73,7 @@ it('throws when a pending edit already exists', function () {
 });
 
 it('throws when non-uploader submits an edit', function () {
-    $user  = User::factory()->create();
+    $user = User::factory()->create();
     $other = User::factory()->create();
     $asset = CosmeticAsset::factory()->approved()->create(['uploader_id' => $other->id]);
 
@@ -83,10 +83,10 @@ it('throws when non-uploader submits an edit', function () {
 
 it('approveEdit flushes pending fields to live fields', function () {
     $asset = CosmeticAsset::factory()->approved()->create([
-        'name'               => 'Old Name',
-        'pending_name'       => 'New Name',
+        'name' => 'Old Name',
+        'pending_name' => 'New Name',
         'pending_visibility' => 'private',
-        'pending_tags'       => ['guild:artisans'],
+        'pending_tags' => ['guild:artisans'],
     ]);
 
     $this->service->approveEdit($asset->sha);

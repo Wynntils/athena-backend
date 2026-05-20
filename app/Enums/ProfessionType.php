@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum ProfessionType: string
 {
-
     case WOODCUTTING = 'WOODCUTTING';
     case MINING = 'MINING';
     case FISHING = 'FISHING';

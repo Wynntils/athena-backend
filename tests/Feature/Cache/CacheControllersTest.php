@@ -85,7 +85,7 @@ class CacheControllersTest extends TestCase
         $response->assertStatus(200)->assertJson($data);
 
         $expectedHash = hash('sha512', serialize($data));
-        $this->assertSame('"' . $expectedHash . '"', $response->headers->get('ETag'));
+        $this->assertSame('"'.$expectedHash.'"', $response->headers->get('ETag'));
     }
 
     public function test_guild_list_returns_503_when_cold_start_job_fails(): void
@@ -112,10 +112,10 @@ class CacheControllersTest extends TestCase
         $response = $this->getJson('/cache/getHashes');
 
         $response->assertStatus(200)->assertExactJson([
-            'guildList'     => 'gh',
-            'serverList'    => 'sh',
-            'itemWeights'   => 'iwh',
-            'leaderboard'   => 'lbh',
+            'guildList' => 'gh',
+            'serverList' => 'sh',
+            'itemWeights' => 'iwh',
+            'leaderboard' => 'lbh',
             'territoryList' => 'tlh',
         ]);
     }

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use DiscordWebhook\Embed;
 use DiscordWebhook\EmbedColor;
 use DiscordWebhook\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+
 class WebhookController extends Controller
 {
     #[ExcludeRouteFromDocs]
@@ -16,7 +17,7 @@ class WebhookController extends Controller
         $payload = $request->getContent();
         $signature = $request->header('X-Hub-Signature-256');
 
-        if (!$this->verifySignature($payload, $signature)) {
+        if (! $this->verifySignature($payload, $signature)) {
             return response('Invalid signature', 403);
         }
 
@@ -33,7 +34,7 @@ class WebhookController extends Controller
     {
         $secret = config('services.github.webhook_secret');
 
-        return hash_equals('sha256=' . hash_hmac('sha256', $payload, $secret), $signature);
+        return hash_equals('sha256='.hash_hmac('sha256', $payload, $secret), $signature);
     }
 
     private function processEvent($event, Collection $data): bool
@@ -59,7 +60,7 @@ class WebhookController extends Controller
 
         $webhooks = config('services.github.webhooks');
         $webhooks = $webhooks[$repo['full_name']] ?? null;
-        if (!$webhooks) {
+        if (! $webhooks) {
             return false;
         }
         $webhooks = explode(',', $webhooks);
@@ -68,17 +69,17 @@ class WebhookController extends Controller
             $webhook = new Webhook($url);
             $webhook->setUsername('GitHub');
             $webhook->setAvatar('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png');
-            $embed = (new Embed())
-                ->setTitle($repo['name'] . ' ' . $release['tag_name'])
+            $embed = (new Embed)
+                ->setTitle($repo['name'].' '.$release['tag_name'])
                 ->setDescription($release['body'])
                 ->setUrl($release['html_url'])
                 ->setColor(EmbedColor::GREEN)
                 ->setTimestamp(new \DateTime($release['published_at']));
 
-            if (!empty($assets)) {
-                $embed->addField((new Embed\Field())
+            if (! empty($assets)) {
+                $embed->addField((new Embed\Field)
                     ->setName('Artifacts')
-                    ->setValue(implode("\n", array_map(fn($asset) => "[{$asset['name']}]({$asset['browser_download_url']})", $assets))));
+                    ->setValue(implode("\n", array_map(fn ($asset) => "[{$asset['name']}]({$asset['browser_download_url']})", $assets))));
             }
 
             $webhook->addEmbed($embed);
@@ -92,5 +93,4 @@ class WebhookController extends Controller
     {
         return true;
     }
-
 }

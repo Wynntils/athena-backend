@@ -29,21 +29,21 @@ class CosmeticAsset extends Model
 
     protected $attributes = [
         'equip_count' => 0,
-        'tags'        => '[]',
+        'tags' => '[]',
     ];
 
     protected $casts = [
-        'type'               => CosmeticType::class,
-        'slot'               => CosmeticSlot::class,
-        'status'             => CosmeticStatus::class,
-        'visibility'         => CosmeticVisibility::class,
+        'type' => CosmeticType::class,
+        'slot' => CosmeticSlot::class,
+        'status' => CosmeticStatus::class,
+        'visibility' => CosmeticVisibility::class,
         'pending_visibility' => CosmeticVisibility::class,
-        'tags'               => 'array',
-        'pending_tags'       => 'array',
-        'uploaded_at'        => 'datetime',
-        'equip_count'        => 'integer',
-        'width'              => 'integer',
-        'height'             => 'integer',
+        'tags' => 'array',
+        'pending_tags' => 'array',
+        'uploaded_at' => 'datetime',
+        'equip_count' => 'integer',
+        'width' => 'integer',
+        'height' => 'integer',
     ];
 
     protected static function boot(): void

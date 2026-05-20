@@ -22,6 +22,7 @@ class CosmeticAssetSeeder extends Seeder
             // idempotent: skip if already exists
             if (CosmeticAsset::bySha($sha)->exists()) {
                 $this->command?->line("Skipping existing: {$sha}");
+
                 continue;
             }
 

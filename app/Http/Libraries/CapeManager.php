@@ -62,11 +62,14 @@ class CapeManager
     public function deleteCape(string $capeId): bool
     {
         $isApproved = $this->isApproved($capeId);
-        $isQueued   = $this->isQueued($capeId);
+        $isQueued = $this->isQueued($capeId);
 
         $deleted = false;
-        if ($isApproved) $deleted = $this->approved->delete($capeId);
-        elseif ($isQueued) $deleted = $this->queue->delete($capeId);
+        if ($isApproved) {
+            $deleted = $this->approved->delete($capeId);
+        } elseif ($isQueued) {
+            $deleted = $this->queue->delete($capeId);
+        }
 
         CosmeticAsset::bySha($capeId)->delete();
         Cache::forget('capes.list');
@@ -76,7 +79,10 @@ class CapeManager
 
     public function isApproved($capeId): bool
     {
-        if (empty($capeId)) return false;
+        if (empty($capeId)) {
+            return false;
+        }
+
         return CosmeticAsset::bySha($capeId)->where('status', CosmeticStatus::APPROVED)->exists();
     }
 
@@ -114,10 +120,10 @@ class CapeManager
                 ->where('slot', CosmeticSlot::BACK)
                 ->where('type', CosmeticType::TEXTURE)
                 ->get(['sha', 'width', 'height'])
-                ->map(fn($a) => [
-                    'sha'      => $a->sha,
-                    'width'    => $a->width,
-                    'height'   => $a->height,
+                ->map(fn ($a) => [
+                    'sha' => $a->sha,
+                    'width' => $a->width,
+                    'height' => $a->height,
                     'animated' => $a->isAnimated(),
                 ])
                 ->toArray();
@@ -153,13 +159,13 @@ class CapeManager
         $image->save($this->queue->path($capeId));
 
         CosmeticAsset::firstOrCreate(['sha' => $capeId], [
-            'type'        => CosmeticType::TEXTURE,
-            'slot'        => CosmeticSlot::BACK,
-            'status'      => CosmeticStatus::QUEUED,
+            'type' => CosmeticType::TEXTURE,
+            'slot' => CosmeticSlot::BACK,
+            'status' => CosmeticStatus::QUEUED,
             'uploader_id' => $uploader?->id,
-            'name'        => $metadata['name'] ?? null,
-            'visibility'  => CosmeticVisibility::tryFrom($metadata['visibility'] ?? '') ?? CosmeticVisibility::PUBLIC,
-            'tags'        => array_values(array_unique(array_slice(array_map('strtolower', array_filter($metadata['tags'] ?? [])), 0, 10))),
+            'name' => $metadata['name'] ?? null,
+            'visibility' => CosmeticVisibility::tryFrom($metadata['visibility'] ?? '') ?? CosmeticVisibility::PUBLIC,
+            'tags' => array_values(array_unique(array_slice(array_map('strtolower', array_filter($metadata['tags'] ?? [])), 0, 10))),
             'uploaded_at' => now(),
         ]);
 
@@ -186,27 +192,31 @@ class CapeManager
 
     public function approveCape(string $capeId): void
     {
-        if (!$this->isQueued($capeId)) return;
+        if (! $this->isQueued($capeId)) {
+            return;
+        }
 
         $this->approved->put($capeId, $this->queue->get($capeId));
         $this->queue->delete($capeId);
 
-        $image    = ImageFactory::make($this->approved->path($capeId));
-        $width    = $image->width();
-        $height   = $image->height();
+        $image = ImageFactory::make($this->approved->path($capeId));
+        $width = $image->width();
+        $height = $image->height();
         $animated = $height > ($width / 2);
 
         $systemTags = ["size:{$width}"];
-        if ($animated) $systemTags[] = 'animated';
+        if ($animated) {
+            $systemTags[] = 'animated';
+        }
 
         $asset = CosmeticAsset::bySha($capeId)->first();
         if ($asset) {
-            $userTags = array_filter($asset->tags ?? [], fn($t) => !str_starts_with($t, 'size:') && $t !== 'animated');
+            $userTags = array_filter($asset->tags ?? [], fn ($t) => ! str_starts_with($t, 'size:') && $t !== 'animated');
             $asset->update([
                 'status' => CosmeticStatus::APPROVED,
-                'width'  => $width,
+                'width' => $width,
                 'height' => $height,
-                'tags'   => array_values(array_unique(array_merge($systemTags, $userTags))),
+                'tags' => array_values(array_unique(array_merge($systemTags, $userTags))),
             ]);
         } else {
             \Log::warning("approveCape: no cosmetic_assets row found for SHA {$capeId} — file approved but DB not updated");
@@ -231,10 +241,12 @@ class CapeManager
 
     public function banCape(string $capeId): void
     {
-        if ($this->isBanned($capeId)) return;
+        if ($this->isBanned($capeId)) {
+            return;
+        }
 
         $isCurrentlyApproved = $this->isApproved($capeId);
-        $isCurrentlyQueued   = $this->isQueued($capeId);
+        $isCurrentlyQueued = $this->isQueued($capeId);
 
         if ($isCurrentlyApproved) {
             $this->banned->put($capeId, $this->approved->get($capeId));

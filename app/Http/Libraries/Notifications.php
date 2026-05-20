@@ -57,7 +57,9 @@ class Notifications
         $imageUrl = null,
         $footer = null,
     ) {
-        if (empty($url)) return;
+        if (empty($url)) {
+            return;
+        }
 
         $wh = new Webhook($url);
         $wh->setUsername(config('athena.webhook.discord.username'))->setAvatar(config('athena.webhook.discord.avatar'));

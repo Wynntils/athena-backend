@@ -22,22 +22,22 @@ class ItemWeights
         $this->ensureOk($responses['noriWeights'] ?? null, 'nori.itemWeights');
 
         $wynnpoolWeights = $this->ensureJsonArray($responses['wynnpoolWeights'], 'wynnpool.itemWeights');
-        $noriWeights     = $this->ensureJsonArray($responses['noriWeights'], 'nori.itemWeights');
+        $noriWeights = $this->ensureJsonArray($responses['noriWeights'], 'nori.itemWeights');
 
-        if (!isset($noriWeights['weights']) || !is_array($noriWeights['weights'])) {
+        if (! isset($noriWeights['weights']) || ! is_array($noriWeights['weights'])) {
             Log::warning('nori.itemWeights: missing or invalid "weights" key');
             throw new \RuntimeException('nori.itemWeights: invalid payload');
         }
 
         return [
             'wynnpool' => $this->transformWynnpoolWeights($wynnpoolWeights),
-            'nori'     => $this->scaledWeights($noriWeights),
+            'nori' => $this->scaledWeights($noriWeights),
         ];
     }
 
     private function ensureOk(?Response $res, string $name): void
     {
-        if (!$res || !$res->ok()) {
+        if (! $res || ! $res->ok()) {
             $status = $res?->status();
             Log::warning("$name HTTP failure", ['status' => $status]);
             throw new \RuntimeException("$name fetch failed (status: {$status})");
@@ -47,10 +47,11 @@ class ItemWeights
     private function ensureJsonArray(Response $res, string $name): array
     {
         $json = $res->json();
-        if (!is_array($json)) {
+        if (! is_array($json)) {
             Log::warning("$name: non-array JSON", ['body' => $res->body()]);
             throw new \RuntimeException("$name returned invalid JSON");
         }
+
         return $json;
     }
 
@@ -58,19 +59,22 @@ class ItemWeights
     {
         $out = [];
         foreach ($weights as $weight) {
-            if (!isset($weight['item_name'], $weight['weight_name'], $weight['identifications'])) continue;
+            if (! isset($weight['item_name'], $weight['weight_name'], $weight['identifications'])) {
+                continue;
+            }
 
             $item = $weight['item_name'];
             $weightName = $weight['weight_name'];
             $out[$item][$weightName] = $weight['identifications'];
         }
+
         return $out;
     }
 
     private function scaledWeights(array $data): array
     {
         $weights = $data['weights'] ?? null;
-        if (!is_array($weights)) {
+        if (! is_array($weights)) {
             return [];
         }
 

@@ -9,7 +9,5 @@ class LoginEvent
 {
     use Dispatchable;
 
-    public function __construct(public User $user, public string $userAgent, public string $method)
-    {
-    }
+    public function __construct(public User $user, public string $userAgent, public string $method) {}
 }

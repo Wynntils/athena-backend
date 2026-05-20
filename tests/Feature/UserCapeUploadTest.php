@@ -22,7 +22,7 @@ beforeEach(function () {
         $data = ob_get_clean();
         imagedestroy($img);
 
-        $tmp = tempnam(sys_get_temp_dir(), 'cape') . '.png';
+        $tmp = tempnam(sys_get_temp_dir(), 'cape').'.png';
         file_put_contents($tmp, $data);
 
         return new UploadedFile($tmp, 'cape.png', 'image/png', null, true);
@@ -169,13 +169,13 @@ it('stores name and visibility on upload', function () {
 
     $response = $this->withHeaders(['authToken' => $user->auth_token])
         ->postJson('/user/cape/upload', [
-            'cape'       => ($this->makePng)(64, 32),
-            'name'       => 'My Cool Cape',
+            'cape' => ($this->makePng)(64, 32),
+            'name' => 'My Cool Cape',
             'visibility' => 'private',
         ])
         ->assertOk();
 
-    $sha   = $response->json('sha-1');
+    $sha = $response->json('sha-1');
     $asset = \App\Models\CosmeticAsset::bySha($sha)->first();
 
     expect($asset->name)->toBe('My Cool Cape')

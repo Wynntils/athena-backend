@@ -27,6 +27,7 @@ abstract class BaseRequest extends FormRequest
         if (method_exists($this, $methodFunction)) {
             return $this->$methodFunction();
         }
+
         return [];
     }
 }

@@ -78,11 +78,11 @@ it('listCapes stores result in cache with 24h TTL', function () {
 
 it('listCapes includes animated flag — false for 64x32', function () {
     CosmeticAsset::create([
-        'sha'    => 'deadbeef1234deadbeef1234deadbeef12345678',
-        'type'   => CosmeticType::TEXTURE,
-        'slot'   => CosmeticSlot::BACK,
+        'sha' => 'deadbeef1234deadbeef1234deadbeef12345678',
+        'type' => CosmeticType::TEXTURE,
+        'slot' => CosmeticSlot::BACK,
         'status' => CosmeticStatus::APPROVED,
-        'width'  => 64,
+        'width' => 64,
         'height' => 32,
         'visibility' => CosmeticVisibility::PUBLIC,
     ]);
@@ -90,20 +90,20 @@ it('listCapes includes animated flag — false for 64x32', function () {
     $result = app(CapeManager::class)->listCapes();
 
     expect($result[0])->toMatchArray([
-        'sha'      => 'deadbeef1234deadbeef1234deadbeef12345678',
-        'width'    => 64,
-        'height'   => 32,
+        'sha' => 'deadbeef1234deadbeef1234deadbeef12345678',
+        'width' => 64,
+        'height' => 32,
         'animated' => false,
     ]);
 });
 
 it('listCapes includes animated flag — true for 64x64 sprite sheet', function () {
     CosmeticAsset::create([
-        'sha'    => 'deadbeef1234deadbeef1234deadbeef12345678',
-        'type'   => CosmeticType::TEXTURE,
-        'slot'   => CosmeticSlot::BACK,
+        'sha' => 'deadbeef1234deadbeef1234deadbeef12345678',
+        'type' => CosmeticType::TEXTURE,
+        'slot' => CosmeticSlot::BACK,
         'status' => CosmeticStatus::APPROVED,
-        'width'  => 64,
+        'width' => 64,
         'height' => 64,
         'visibility' => CosmeticVisibility::PUBLIC,
     ]);
@@ -115,18 +115,21 @@ it('listCapes includes animated flag — true for 64x64 sprite sheet', function 
 
 it('approveCape invalidates capes.list cache', function () {
     config(['image.driver' => 'gd']);
-    app()->singleton('image', fn() => new \Intervention\Image\ImageManager(['driver' => 'gd']));
+    app()->singleton('image', fn () => new \Intervention\Image\ImageManager(['driver' => 'gd']));
 
     Storage::fake('queue');
     $png = imagecreatetruecolor(64, 32);
-    ob_start(); imagepng($png); $data = ob_get_clean(); imagedestroy($png);
+    ob_start();
+    imagepng($png);
+    $data = ob_get_clean();
+    imagedestroy($png);
     Storage::disk('queue')->put('sha123', $data);
 
     CosmeticAsset::create([
-        'sha'        => 'sha123',
-        'type'       => CosmeticType::TEXTURE,
-        'slot'       => CosmeticSlot::BACK,
-        'status'     => CosmeticStatus::QUEUED,
+        'sha' => 'sha123',
+        'type' => CosmeticType::TEXTURE,
+        'slot' => CosmeticSlot::BACK,
+        'status' => CosmeticStatus::QUEUED,
         'visibility' => CosmeticVisibility::PUBLIC,
     ]);
 

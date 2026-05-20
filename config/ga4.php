@@ -1,4 +1,5 @@
 <?php
+
 // Google Analytics 4 Measurement ID
 return [
     'secret' => env('GA4_SECRET'),

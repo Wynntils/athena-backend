@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(Tests\TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->validToken = fn() => app(\App\Http\Libraries\CapeManager::class)->getToken();
+    $this->validToken = fn () => app(\App\Http\Libraries\CapeManager::class)->getToken();
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -55,10 +55,10 @@ it('approve-edit flushes pending fields to live fields', function () {
 
 it('flushes all three pending fields on approve-edit', function () {
     $asset = CosmeticAsset::factory()->approved()->create([
-        'name'               => 'Old Name',
-        'pending_name'       => 'New Name',
+        'name' => 'Old Name',
+        'pending_name' => 'New Name',
         'pending_visibility' => 'private',
-        'pending_tags'       => ['guild:artisans'],
+        'pending_tags' => ['guild:artisans'],
     ]);
     $token = ($this->validToken)();
 

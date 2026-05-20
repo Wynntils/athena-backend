@@ -11,7 +11,7 @@ class CrashReportFactory extends Factory
     {
         $occurrences = [];
 
-        for($i = 0; $i < $this->faker->randomNumber(); $i++) {
+        for ($i = 0; $i < $this->faker->randomNumber(); $i++) {
             $occurrences[] = [
                 'version' => 'v'.$this->faker->semver(false, true),
                 'time' => Carbon::now(),

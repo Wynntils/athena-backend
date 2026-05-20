@@ -19,7 +19,7 @@ class CosmeticsController extends Controller
 
         // Search
         if ($q = $request->query('q')) {
-            $query->where('name', 'like', '%' . $q . '%');
+            $query->where('name', 'like', '%'.$q.'%');
         }
 
         // Tag filter — whereJsonContains works for both SQLite and PostgreSQL
@@ -36,18 +36,18 @@ class CosmeticsController extends Controller
             'votes' => $query->orderByRaw(
                 '(SELECT COALESCE(SUM(vote), 0) FROM cosmetic_votes WHERE cosmetic_id = cosmetic_assets.id) DESC'
             ),
-            'worn'  => $query->orderBy('equip_count', 'desc'),
+            'worn' => $query->orderBy('equip_count', 'desc'),
             default => $query->orderBy('uploaded_at', 'desc'),
         };
 
-        $perPage   = min((int) $request->query('per_page', 15), 100);
+        $perPage = min((int) $request->query('per_page', 15), 100);
         $paginated = $query->paginate($perPage);
 
         return response()->json([
-            'data'      => CosmAssetResource::collection($paginated->items()),
-            'page'      => $paginated->currentPage(),
-            'per_page'  => $paginated->perPage(),
-            'total'     => $paginated->total(),
+            'data' => CosmAssetResource::collection($paginated->items()),
+            'page' => $paginated->currentPage(),
+            'per_page' => $paginated->perPage(),
+            'total' => $paginated->total(),
             'last_page' => $paginated->lastPage(),
         ]);
     }
@@ -109,9 +109,9 @@ class CosmeticsController extends Controller
         }
 
         $validated = $request->validate([
-            'name'   => 'nullable|string|max:80',
+            'name' => 'nullable|string|max:80',
             'visibility' => 'nullable|string|in:public,private',
-            'tags'   => 'nullable|array|max:10',
+            'tags' => 'nullable|array|max:10',
             'tags.*' => 'string|max:32',
         ]);
 

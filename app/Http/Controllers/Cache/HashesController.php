@@ -16,10 +16,10 @@ class HashesController extends Controller
     public function __invoke(): HashesResource
     {
         return new HashesResource([
-            'guildList'     => Cache::get('cache.guildList.hash'),
-            'serverList'    => Cache::get('cache.serverList.hash'),
-            'itemWeights'   => Cache::get('cache.itemWeights.hash'),
-            'leaderboard'   => Cache::get('cache.leaderboard.hash'),
+            'guildList' => Cache::get('cache.guildList.hash'),
+            'serverList' => Cache::get('cache.serverList.hash'),
+            'itemWeights' => Cache::get('cache.itemWeights.hash'),
+            'leaderboard' => Cache::get('cache.leaderboard.hash'),
             'territoryList' => Cache::get('cache.territoryList.hash'),
         ]);
     }

@@ -16,16 +16,16 @@ class CosmeticAssetFactory extends Factory
     public function definition(): array
     {
         return [
-            'sha'         => sha1($this->faker->unique()->uuid()),
-            'type'        => CosmeticType::TEXTURE,
-            'slot'        => CosmeticSlot::BACK,
-            'status'      => CosmeticStatus::QUEUED,
+            'sha' => sha1($this->faker->unique()->uuid()),
+            'type' => CosmeticType::TEXTURE,
+            'slot' => CosmeticSlot::BACK,
+            'status' => CosmeticStatus::QUEUED,
             'uploader_id' => null,
-            'name'        => null,
-            'visibility'  => CosmeticVisibility::PUBLIC,
-            'tags'        => [],
-            'width'       => null,
-            'height'      => null,
+            'name' => null,
+            'visibility' => CosmeticVisibility::PUBLIC,
+            'tags' => [],
+            'width' => null,
+            'height' => null,
             'equip_count' => 0,
             'uploaded_at' => now(),
         ];

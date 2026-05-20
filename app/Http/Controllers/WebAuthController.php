@@ -51,20 +51,20 @@ class WebAuthController extends Controller
 
     private function formatUser(User $user): array
     {
-        $discordInfo  = $user->discord_info ?? [];
+        $discordInfo = $user->discord_info ?? [];
         $cosmeticInfo = $user->cosmetic_info ?? [];
 
         return [
-            'uuid'        => $user->id,
-            'username'    => $user->username,
+            'uuid' => $user->id,
+            'username' => $user->username,
             'accountType' => $user->account_type->value,
-            'discord'     => [
-                'id'       => $discordInfo['id'] ?? null,
+            'discord' => [
+                'id' => $discordInfo['id'] ?? null,
                 'username' => $discordInfo['username'] ?? null,
             ],
-            'cosmetics'   => [
-                'capeTexture'    => $cosmeticInfo['capeTexture'] ?? null,
-                'elytraEnabled'  => ($cosmeticInfo['elytraEnabled'] ?? false) === true,
+            'cosmetics' => [
+                'capeTexture' => $cosmeticInfo['capeTexture'] ?? null,
+                'elytraEnabled' => ($cosmeticInfo['elytraEnabled'] ?? false) === true,
             ],
         ];
     }

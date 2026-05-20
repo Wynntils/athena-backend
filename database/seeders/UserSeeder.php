@@ -8,9 +8,7 @@ use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-    public function __construct(public Generator $faker)
-    {
-    }
+    public function __construct(public Generator $faker) {}
 
     /**
      * Run the database seeds.
@@ -25,7 +23,8 @@ class UserSeeder extends Seeder
         $this->createUser('KrissaNXD', '254c3e64-30cc-497d-8ceb-f46e4478ca53', AccountType::NORMAL);
     }
 
-    private function createUser($username, $uuid, $accountType) {
+    private function createUser($username, $uuid, $accountType)
+    {
         \App\Models\User::create([
             '_id' => $uuid,
             'username' => $username,
@@ -34,7 +33,7 @@ class UserSeeder extends Seeder
             'accountType' => $accountType,
             'discordInfo' => [
                 'username' => $username,
-                'id' => 1234567890
+                'id' => 1234567890,
             ],
             'cosmeticInfo' => [
                 'capeTexture' => \Hash::make($this->faker->randomAscii()),
@@ -42,9 +41,9 @@ class UserSeeder extends Seeder
                 'maxResolution' => $this->faker->randomElement(['64x32', '128x64', '256x128', '512x256']),
                 'allowAnimated' => $this->faker->boolean(),
                 'parts' => [
-                    'ears' => $this->faker->boolean()
-                ]
-            ]
+                    'ears' => $this->faker->boolean(),
+                ],
+            ],
         ]);
     }
 }

@@ -8,7 +8,7 @@ use Laravel\Socialite\Two\User as SocialiteUser;
 uses(Tests\TestCase::class, RefreshDatabase::class);
 
 it('returns callback view with token on successful discord login', function () {
-    $discordUser = new SocialiteUser();
+    $discordUser = new SocialiteUser;
     $discordUser->id = '123456789';
     $discordUser->token = 'fake-token';
     $discordUser->refreshToken = null;
@@ -30,7 +30,7 @@ it('returns callback view with token on successful discord login', function () {
 });
 
 it('returns callback view with message when no discord account linked', function () {
-    $discordUser = new SocialiteUser();
+    $discordUser = new SocialiteUser;
     $discordUser->id = '999999999';
     $discordUser->token = 'fake-token';
     $discordUser->refreshToken = null;
@@ -57,7 +57,7 @@ it('view contains success postMessage JS when token is present', function () {
     $response = $this->view('auth.oauth-callback', ['token' => 'test-token-uuid']);
 
     $response->assertSee("type: 'wynntils_oauth_callback'", false)
-        ->assertSee("success: true", false)
+        ->assertSee('success: true', false)
         ->assertSee('"test-token-uuid"', false);
 });
 
@@ -65,12 +65,12 @@ it('view contains error postMessage JS when message is present', function () {
     $response = $this->view('auth.oauth-callback', ['message' => 'No account linked.']);
 
     $response->assertSee("type: 'wynntils_oauth_callback'", false)
-        ->assertSee("success: false", false)
-        ->assertSee("No account linked.", false);
+        ->assertSee('success: false', false)
+        ->assertSee('No account linked.', false);
 });
 
 it('returns callback view with message when no minecraft account linked', function () {
-    $minecraftUser = new SocialiteUser();
+    $minecraftUser = new SocialiteUser;
     $minecraftUser->uuid = '00000000-0000-0000-0000-000000000000';
     $minecraftUser->token = 'fake-token';
     $minecraftUser->refreshToken = null;
