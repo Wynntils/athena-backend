@@ -27,8 +27,7 @@ class CosmeticAssetSeeder extends Seeder
             }
 
             // get image dimensions
-            $imageData = Storage::disk('approved')->get($sha);
-            $image = Image::make($imageData);
+            $image = Image::make(Storage::disk('approved')->path($sha));
             $width = $image->width();
             $height = $image->height();
             $animated = $height > ($width / 2);
