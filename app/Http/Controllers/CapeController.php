@@ -105,7 +105,7 @@ class CapeController extends Controller
         $hash = $this->manager->getSha($image);
 
         if ($this->manager->isApproved($hash)) {
-            return response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $hash], 400);
+            return response()->json(['message' => 'The cape has been queued for approval.', 'sha-1' => $hash]);
         }
 
         if ($this->manager->isQueued($hash)) {
