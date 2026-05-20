@@ -127,3 +127,57 @@ it('returns 401 without authToken', function () {
     $this->postJson('/user/cape/upload', ['cape' => ($this->makePng)(64, 32)])
         ->assertStatus(401);
 });
+
+it('creates a cosmetic_assets row with uploader_id on new upload', function () {
+    $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
+
+    $this->withHeaders(['authToken' => $user->auth_token])
+        ->postJson('/user/cape/upload', ['cape' => ($this->makePng)(64, 32)])
+        ->assertOk();
+
+    expect(\App\Models\CosmeticAsset::where('uploader_id', $user->id)->exists())->toBeTrue();
+});
+
+it('returns 200 without creating duplicate row when SHA already approved', function () {
+    $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
+
+    // First upload
+    $response1 = $this->withHeaders(['authToken' => $user->auth_token])
+        ->postJson('/user/cape/upload', ['cape' => ($this->makePng)(64, 32), 'name' => 'Original'])
+        ->assertOk();
+
+    $sha = $response1->json('sha-1');
+
+    // Manually approve the cape in DB and move file
+    \App\Models\CosmeticAsset::bySha($sha)->update(['status' => \App\Enums\CosmeticStatus::APPROVED]);
+    Storage::disk('approved')->put($sha, Storage::disk('queue')->get($sha));
+    Storage::disk('queue')->delete($sha);
+
+    // Second upload of same image by different user
+    $user2 = User::factory()->create(['account_type' => AccountType::NORMAL]);
+    $this->withHeaders(['authToken' => $user2->auth_token])
+        ->postJson('/user/cape/upload', ['cape' => ($this->makePng)(64, 32), 'name' => 'Override Attempt'])
+        ->assertOk()
+        ->assertJsonPath('message', 'The provided cape is already approved.');
+
+    // Name should still be null (original upload didn't set it either) and count stays at 1
+    expect(\App\Models\CosmeticAsset::where('sha', $sha)->count())->toBe(1);
+});
+
+it('stores name and visibility on upload', function () {
+    $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
+
+    $response = $this->withHeaders(['authToken' => $user->auth_token])
+        ->postJson('/user/cape/upload', [
+            'cape'       => ($this->makePng)(64, 32),
+            'name'       => 'My Cool Cape',
+            'visibility' => 'private',
+        ])
+        ->assertOk();
+
+    $sha   = $response->json('sha-1');
+    $asset = \App\Models\CosmeticAsset::bySha($sha)->first();
+
+    expect($asset->name)->toBe('My Cool Cape')
+        ->and($asset->visibility->value)->toBe('private');
+});

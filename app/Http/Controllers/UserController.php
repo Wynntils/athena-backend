@@ -8,6 +8,7 @@ use App\Http\Libraries\CapeManager;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\CosmeticAssetService;
 use Auth;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Dedoc\Scramble\Attributes\Group;
@@ -20,7 +21,10 @@ use Intervention\Image\Facades\Image as ImageFactory;
 #[Group('User')]
 class UserController extends Controller
 {
-    public function __construct(private CapeManager $capeManager) {}
+    public function __construct(
+        private CapeManager $capeManager,
+        private CosmeticAssetService $cosmeticService,
+    ) {}
 
     /**
      * Link a Discord account to the authenticated user
@@ -178,7 +182,11 @@ class UserController extends Controller
         $sha = $this->capeManager->getSha($image);
 
         if ($this->capeManager->isApproved($sha)) {
-            return response()->json(['message' => 'The provided cape is already approved.', 'sha-1' => $sha], 400);
+            return response()->json([
+                'message'  => 'The provided cape is already approved.',
+                'sha-1'    => $sha,
+                'animated' => $animated,
+            ]);
         }
 
         if ($this->capeManager->isQueued($sha)) {
@@ -189,16 +197,21 @@ class UserController extends Controller
             return response()->json(['message' => 'The provided cape is banned.', 'sha-1' => $sha], 400);
         }
 
-        $sha = $this->capeManager->queueCape($image, $user->username);
-        CapeSubmittedEvent::dispatch($user->username);
+        $metadata = [
+            'name'       => $request->validated('name'),
+            'visibility' => $request->validated('visibility') ?? 'public',
+            'tags'       => $request->validated('tags') ?? [],
+        ];
 
+        $sha = $this->capeManager->queueCape($image, $user->username, true, $user, $metadata);
+        CapeSubmittedEvent::dispatch($user->username);
         Cache::forget('capes.list');
 
         return response()->json([
-            'message' => 'The cape has been queued for approval.',
-            'sha-1' => $sha,
+            'message'  => 'The cape has been queued for approval.',
+            'sha-1'    => $sha,
             'animated' => $animated,
-        ], 200);
+        ]);
     }
 
     /**
@@ -216,10 +229,12 @@ class UserController extends Controller
         $sha  = $request->validated('sha');
 
         if ($sha === '' || $sha === null) {
+            $oldSha                      = $user->cosmetic_info['capeTexture'] ?? null;
             $cosmeticInfo                = $user->cosmetic_info ?? [];
             $cosmeticInfo['capeTexture'] = '';
             $user->cosmetic_info         = $cosmeticInfo;
             $user->save();
+            if ($oldSha) $this->cosmeticService->decrementEquipCount($oldSha);
 
             return response()->json(['message' => 'Cape cleared.']);
         }
@@ -254,10 +269,13 @@ class UserController extends Controller
             return response()->json(['message' => 'Animated capes require a Donator account or higher.'], 403);
         }
 
+        $oldSha                      = $user->cosmetic_info['capeTexture'] ?? null;
         $cosmeticInfo                = $user->cosmetic_info ?? [];
         $cosmeticInfo['capeTexture'] = $sha;
         $user->cosmetic_info         = $cosmeticInfo;
         $user->save();
+        if ($oldSha && $oldSha !== $sha) $this->cosmeticService->decrementEquipCount($oldSha);
+        $this->cosmeticService->incrementEquipCount($sha);
 
         return response()->json(['message' => 'Cape updated.']);
     }

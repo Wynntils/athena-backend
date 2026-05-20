@@ -10,8 +10,8 @@ Route::controller(UserController::class)->group(static function () {
         Route::post('updateDiscord', 'updateDiscord')->name('updateDiscord');
     });
 
-    // Web routes — authenticated via session cookie (Sanctum SPA)
-    Route::middleware(['auth:sanctum'])->group(static function () {
+    // Web routes — authenticated via authToken header or session cookie (Sanctum SPA)
+    Route::middleware(['auth:token,sanctum'])->group(static function () {
         Route::post('cape/upload', 'uploadCapeWeb')->name('cape.upload');
         Route::post('cape/select', 'selectCape')->name('cape.select');
         Route::get('cape/elytra-mode', 'getElytraMode')->name('cape.elytraMode.get');
