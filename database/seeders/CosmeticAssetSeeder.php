@@ -19,6 +19,11 @@ class CosmeticAssetSeeder extends Seeder
         $files = Storage::disk('approved')->files();
 
         foreach ($files as $sha) {
+            // skip non-cape files
+            if (!preg_match('/^[0-9a-f]{40}$/i', $sha)) {
+                continue;
+            }
+
             // idempotent: skip if already exists
             if (CosmeticAsset::bySha($sha)->exists()) {
                 $this->command?->line("Skipping existing: {$sha}");
