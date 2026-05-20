@@ -50,7 +50,7 @@ class ResourceSchemaTest extends TestCase
         $asset    = \App\Models\CosmeticAsset::factory()->approved()->create([
             'uploader_id' => $uploader->id,
             'name'        => 'Test Cape',
-            'tags'        => ['size:64x32'],
+            'tags'        => ['size:64'],
         ]);
         $asset->load('uploader', 'votes');
 

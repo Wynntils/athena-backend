@@ -196,7 +196,7 @@ class CapeManager
         $height   = $image->height();
         $animated = $height > ($width / 2);
 
-        $systemTags = ["size:{$width}x{$height}"];
+        $systemTags = ["size:{$width}"];
         if ($animated) $systemTags[] = 'animated';
 
         $asset = CosmeticAsset::bySha($capeId)->first();

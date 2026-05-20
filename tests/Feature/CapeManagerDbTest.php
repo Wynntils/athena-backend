@@ -74,7 +74,7 @@ it('approveCape writes system tags to cosmetic_assets', function () {
     $this->manager->approveCape($sha);
 
     $asset = CosmeticAsset::bySha($sha)->first();
-    expect($asset->tags)->toContain('size:64x32')
+    expect($asset->tags)->toContain('size:64')
         ->and($asset->tags)->not->toContain('animated');
 });
 

@@ -33,7 +33,7 @@ class CosmeticAssetSeeder extends Seeder
             $animated = $height > ($width / 2);
 
             // compute tags
-            $tags = ["size:{$width}x{$height}"];
+            $tags = ["size:{$width}"];
             if ($animated) {
                 $tags[] = 'animated';
             }
