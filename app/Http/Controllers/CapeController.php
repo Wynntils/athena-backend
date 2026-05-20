@@ -163,6 +163,40 @@ class CapeController extends Controller
     }
 
     #[ExcludeRouteFromDocs]
+    public function approveEdit(Request $request): JsonResponse
+    {
+        $sha   = $request->route('sha');
+        $asset = \App\Models\CosmeticAsset::bySha($sha)->first();
+
+        if (! $asset) {
+            return response()->json(['message' => 'Asset not found.'], 404);
+        }
+
+        if (! $asset->hasPendingEdit()) {
+            return response()->json(['message' => 'No pending edit exists.'], 404);
+        }
+
+        app(\App\Services\CosmeticAssetService::class)->approveEdit($sha);
+
+        return response()->json(['message' => 'Edit approved.']);
+    }
+
+    #[ExcludeRouteFromDocs]
+    public function rejectEdit(Request $request): JsonResponse
+    {
+        $sha   = $request->route('sha');
+        $asset = \App\Models\CosmeticAsset::bySha($sha)->first();
+
+        if (! $asset) {
+            return response()->json(['message' => 'Asset not found.'], 404);
+        }
+
+        app(\App\Services\CosmeticAssetService::class)->rejectEdit($sha);
+
+        return response()->json(['message' => 'Edit rejected.']);
+    }
+
+    #[ExcludeRouteFromDocs]
     public function banCape(Request $request): JsonResponse
     {
         $sha1 = $request->route('sha');

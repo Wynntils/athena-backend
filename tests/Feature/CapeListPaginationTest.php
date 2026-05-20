@@ -1,19 +1,22 @@
 <?php
 
+use App\Models\CosmeticAsset;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 
-uses(Tests\TestCase::class);
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
-    // Seed a fake cached list of 120 capes
-    $capes = collect(range(1, 120))->map(fn ($i) => [
-        'sha'      => str_pad((string) $i, 40, '0', STR_PAD_LEFT),
-        'width'    => 64,
-        'height'   => 32,
-        'animated' => false,
-    ])->values()->all();
+    Cache::forget('capes.list');
 
-    Cache::put('capes.list', $capes, 86400);
+    // Seed 120 approved BACK TEXTURE assets into the DB
+    foreach (range(1, 120) as $i) {
+        CosmeticAsset::factory()->approved()->create([
+            'sha'    => str_pad((string) $i, 40, '0', STR_PAD_LEFT),
+            'width'  => 64,
+            'height' => 32,
+        ]);
+    }
 });
 
 it('returns paginated data with defaults', function () {
