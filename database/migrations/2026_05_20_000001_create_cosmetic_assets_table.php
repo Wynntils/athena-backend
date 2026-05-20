@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cosmetic_assets', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->uuid('id')->primary();
             $table->string('sha', 40)->unique();
             $table->string('type', 20)->default('texture');
             $table->string('slot', 20)->default('back');
