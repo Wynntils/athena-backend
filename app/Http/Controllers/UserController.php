@@ -182,6 +182,18 @@ class UserController extends Controller
         $sha = $this->capeManager->getSha($image);
 
         if ($this->capeManager->isApproved($sha)) {
+            $oldSha = $user->cosmetic_info['capeTexture'] ?? null;
+            if ($oldSha !== $sha) {
+                $cosmeticInfo = $user->cosmetic_info ?? [];
+                $cosmeticInfo['capeTexture'] = $sha;
+                $user->cosmetic_info = $cosmeticInfo;
+                $user->save();
+                if ($oldSha) {
+                    $this->cosmeticService->decrementEquipCount($oldSha);
+                }
+                $this->cosmeticService->incrementEquipCount($sha);
+            }
+
             return response()->json([
                 'message' => 'The provided cape is already approved.',
                 'sha-1' => $sha,

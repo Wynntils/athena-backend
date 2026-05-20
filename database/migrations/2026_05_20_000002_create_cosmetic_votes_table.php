@@ -21,7 +21,9 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
 
-        DB::statement('ALTER TABLE cosmetic_votes ADD CONSTRAINT chk_vote_value CHECK (vote IN (1, -1))');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE cosmetic_votes ADD CONSTRAINT chk_vote_value CHECK (vote IN (1, -1))');
+        }
     }
 
     public function down(): void

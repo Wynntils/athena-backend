@@ -31,7 +31,9 @@ return new class extends Migration
             $table->foreign('uploader_id')->references('id')->on('users')->nullOnDelete();
         });
 
-        DB::statement('CREATE INDEX idx_cosmetic_assets_tags ON cosmetic_assets USING gin(tags)');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('CREATE INDEX idx_cosmetic_assets_tags ON cosmetic_assets USING gin(tags)');
+        }
     }
 
     public function down(): void

@@ -181,3 +181,26 @@ it('stores name and visibility on upload', function () {
     expect($asset->name)->toBe('My Cool Cape')
         ->and($asset->visibility->value)->toBe('private');
 });
+
+it('sets active cape and updates equip_count when uploading an already-approved cape', function () {
+    $user = User::factory()->create(['account_type' => AccountType::NORMAL]);
+
+    // First upload — queues the cape and gives us the real SHA
+    $sha = $this->withHeaders(['authToken' => $user->auth_token])
+        ->postJson('/user/cape/upload', ['cape' => ($this->makePng)(64, 32)])
+        ->assertOk()->json('sha-1');
+
+    // Approve it manually
+    \App\Models\CosmeticAsset::bySha($sha)->update(['status' => \App\Enums\CosmeticStatus::APPROVED, 'equip_count' => 0]);
+    Storage::disk('approved')->put($sha, Storage::disk('queue')->get($sha));
+    Storage::disk('queue')->delete($sha);
+
+    // Same user uploads the same image again — should hit the already-approved branch
+    $this->withHeaders(['authToken' => $user->auth_token])
+        ->postJson('/user/cape/upload', ['cape' => ($this->makePng)(64, 32)])
+        ->assertOk()
+        ->assertJsonPath('message', 'The provided cape is already approved.');
+
+    expect($user->fresh()->cosmetic_info['capeTexture'])->toBe($sha)
+        ->and(\App\Models\CosmeticAsset::bySha($sha)->value('equip_count'))->toBe(1);
+});
