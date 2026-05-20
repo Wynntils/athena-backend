@@ -7,6 +7,7 @@ use App\Events\CapeSubmittedEvent;
 use App\Http\Libraries\CapeManager;
 use App\Http\Requests\CapeRequest;
 use App\Models\User;
+use App\Services\CosmeticAssetService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
@@ -18,12 +19,11 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 #[Group('Cape')]
 class CapeController extends Controller
 {
-    protected CapeManager $manager;
+    public function __construct(
+        protected CapeManager $manager,
+        protected CosmeticAssetService $cosmeticService,
+    ) {}
 
-    public function __construct(CapeManager $capeManager)
-    {
-        $this->manager = $capeManager;
-    }
 
     #[ExcludeRouteFromDocs]
     public function getCape($capeId): BinaryFileResponse
@@ -176,7 +176,7 @@ class CapeController extends Controller
             return response()->json(['message' => 'No pending edit exists.'], 404);
         }
 
-        app(\App\Services\CosmeticAssetService::class)->approveEdit($sha);
+        $this->cosmeticService->approveEdit($sha);
 
         return response()->json(['message' => 'Edit approved.']);
     }
@@ -191,7 +191,7 @@ class CapeController extends Controller
             return response()->json(['message' => 'Asset not found.'], 404);
         }
 
-        app(\App\Services\CosmeticAssetService::class)->rejectEdit($sha);
+        $this->cosmeticService->rejectEdit($sha);
 
         return response()->json(['message' => 'Edit rejected.']);
     }
