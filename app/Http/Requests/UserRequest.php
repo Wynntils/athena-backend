@@ -47,4 +47,11 @@ class UserRequest extends BaseRequest
             'sha' => ['present', 'nullable', 'regex:/^([0-9a-f]{40})?$/'],
         ];
     }
+
+    public function setElytraMode(): array
+    {
+        return [
+            'elytraEnabled' => 'required|boolean',
+        ];
+    }
 }

@@ -262,6 +262,42 @@ class UserController extends Controller
         return response()->json(['message' => 'Cape updated.']);
     }
 
+    /**
+     * Get elytra mode for the authenticated user
+     */
+    public function getElytraMode(): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $elytraEnabled = ($user->cosmetic_info['elytraEnabled'] ?? false) === true;
+
+        return response()->json(['elytraEnabled' => $elytraEnabled]);
+    }
+
+    /**
+     * Set elytra mode for the authenticated user
+     */
+    public function setElytraMode(UserRequest $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->account_type === AccountType::BANNED) {
+            return response()->json(['message' => 'Your account has been banned.'], 403);
+        }
+
+        $elytraEnabled               = $request->validated('elytraEnabled');
+        $cosmeticInfo                = $user->cosmetic_info ?? [];
+        $cosmeticInfo['elytraEnabled'] = $elytraEnabled;
+        $user->cosmetic_info         = $cosmeticInfo;
+        $user->save();
+
+        return response()->json([
+            'message'       => $elytraEnabled ? 'Elytra mode enabled.' : 'Cape mode enabled.',
+            'elytraEnabled' => $elytraEnabled,
+        ]);
+    }
+
     private function getUser($user): User
     {
         $user = Cache::remember("user-{$user}", 3600, function () use ($user) {

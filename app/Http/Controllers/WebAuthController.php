@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WebLoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class WebAuthController extends Controller
@@ -17,19 +18,54 @@ class WebAuthController extends Controller
             return response()->json(['message' => 'Invalid username or password.'], 401);
         }
 
-        $discordInfo = $user->discord_info ?? [];
+        Auth::login($user, $request->boolean('remember'));
+        $request->session()->regenerate();
 
         return response()->json([
-            'token' => $user->auth_token,
-            'user' => [
-                'uuid' => $user->id,
-                'username' => $user->username,
-                'accountType' => $user->account_type->value,
-                'discord' => [
-                    'id' => $discordInfo['id'] ?? null,
-                    'username' => $discordInfo['username'] ?? null,
-                ],
-            ],
+            'user' => $this->formatUser($user),
         ]);
+    }
+
+    public function me(): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        return response()->json([
+            'user' => $this->formatUser($user),
+        ]);
+    }
+
+    public function logout(): JsonResponse
+    {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return response()->json(['message' => 'Logged out.']);
+    }
+
+    private function formatUser(User $user): array
+    {
+        $discordInfo  = $user->discord_info ?? [];
+        $cosmeticInfo = $user->cosmetic_info ?? [];
+
+        return [
+            'uuid'        => $user->id,
+            'username'    => $user->username,
+            'accountType' => $user->account_type->value,
+            'discord'     => [
+                'id'       => $discordInfo['id'] ?? null,
+                'username' => $discordInfo['username'] ?? null,
+            ],
+            'cosmetics'   => [
+                'capeTexture'    => $cosmeticInfo['capeTexture'] ?? null,
+                'elytraEnabled'  => ($cosmeticInfo['elytraEnabled'] ?? false) === true,
+            ],
+        ];
     }
 }

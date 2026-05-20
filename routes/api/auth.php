@@ -11,3 +11,7 @@ Route::controller(AuthController::class)
     });
 
 Route::post('login', [WebAuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(static function () {
+    Route::get('me', [WebAuthController::class, 'me']);
+    Route::post('logout', [WebAuthController::class, 'logout']);
+});
