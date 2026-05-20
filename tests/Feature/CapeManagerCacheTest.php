@@ -1,10 +1,16 @@
 <?php
 
+use App\Enums\CosmeticSlot;
+use App\Enums\CosmeticStatus;
+use App\Enums\CosmeticType;
+use App\Enums\CosmeticVisibility;
 use App\Http\Libraries\CapeManager;
+use App\Models\CosmeticAsset;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
-uses(Tests\TestCase::class);
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     Storage::fake('approved');
@@ -71,9 +77,15 @@ it('listCapes stores result in cache with 24h TTL', function () {
 });
 
 it('listCapes includes animated flag — false for 64x32', function () {
-    $png = imagecreatetruecolor(64, 32);
-    ob_start(); imagepng($png); $data = ob_get_clean(); imagedestroy($png);
-    Storage::disk('approved')->put('deadbeef1234deadbeef1234deadbeef12345678', $data);
+    CosmeticAsset::create([
+        'sha'    => 'deadbeef1234deadbeef1234deadbeef12345678',
+        'type'   => CosmeticType::TEXTURE,
+        'slot'   => CosmeticSlot::BACK,
+        'status' => CosmeticStatus::APPROVED,
+        'width'  => 64,
+        'height' => 32,
+        'visibility' => CosmeticVisibility::PUBLIC,
+    ]);
 
     $result = app(CapeManager::class)->listCapes();
 
@@ -86,9 +98,15 @@ it('listCapes includes animated flag — false for 64x32', function () {
 });
 
 it('listCapes includes animated flag — true for 64x64 sprite sheet', function () {
-    $png = imagecreatetruecolor(64, 64);
-    ob_start(); imagepng($png); $data = ob_get_clean(); imagedestroy($png);
-    Storage::disk('approved')->put('deadbeef1234deadbeef1234deadbeef12345678', $data);
+    CosmeticAsset::create([
+        'sha'    => 'deadbeef1234deadbeef1234deadbeef12345678',
+        'type'   => CosmeticType::TEXTURE,
+        'slot'   => CosmeticSlot::BACK,
+        'status' => CosmeticStatus::APPROVED,
+        'width'  => 64,
+        'height' => 64,
+        'visibility' => CosmeticVisibility::PUBLIC,
+    ]);
 
     $result = app(CapeManager::class)->listCapes();
 
@@ -96,8 +114,21 @@ it('listCapes includes animated flag — true for 64x64 sprite sheet', function 
 });
 
 it('approveCape invalidates capes.list cache', function () {
+    config(['image.driver' => 'gd']);
+    app()->singleton('image', fn() => new \Intervention\Image\ImageManager(['driver' => 'gd']));
+
     Storage::fake('queue');
-    Storage::disk('queue')->put('sha123', 'data');
+    $png = imagecreatetruecolor(64, 32);
+    ob_start(); imagepng($png); $data = ob_get_clean(); imagedestroy($png);
+    Storage::disk('queue')->put('sha123', $data);
+
+    CosmeticAsset::create([
+        'sha'        => 'sha123',
+        'type'       => CosmeticType::TEXTURE,
+        'slot'       => CosmeticSlot::BACK,
+        'status'     => CosmeticStatus::QUEUED,
+        'visibility' => CosmeticVisibility::PUBLIC,
+    ]);
 
     Cache::spy();
 

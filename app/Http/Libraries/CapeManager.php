@@ -2,7 +2,13 @@
 
 namespace App\Http\Libraries;
 
+use App\Enums\CosmeticSlot;
+use App\Enums\CosmeticStatus;
+use App\Enums\CosmeticType;
+use App\Enums\CosmeticVisibility;
 use App\Enums\MaskType;
+use App\Models\CosmeticAsset;
+use App\Models\User;
 use Carbon\Carbon;
 use DiscordWebhook\EmbedColor;
 use Illuminate\Support\Facades\Cache;
@@ -55,27 +61,22 @@ class CapeManager
 
     public function deleteCape(string $capeId): bool
     {
-        if ($this->isApproved($capeId)) {
-            $result = $this->approved->delete($capeId);
-            Cache::forget('capes.list');
+        $isApproved = $this->isApproved($capeId);
+        $isQueued   = $this->isQueued($capeId);
 
-            return $result;
-        }
+        CosmeticAsset::bySha($capeId)->delete();
+        Cache::forget('capes.list');
 
-        if ($this->isQueued($capeId)) {
-            return $this->queue->delete($capeId);
-        }
+        if ($isApproved) return $this->approved->delete($capeId);
+        if ($isQueued)   return $this->queue->delete($capeId);
 
         return false;
     }
 
     public function isApproved($capeId): bool
     {
-        if (empty($capeId)) {
-            return false;
-        }
-
-        return $this->approved->exists($capeId);
+        if (empty($capeId)) return false;
+        return CosmeticAsset::bySha($capeId)->where('status', CosmeticStatus::APPROVED)->exists();
     }
 
     public function isSpecialDate(): bool
@@ -108,22 +109,17 @@ class CapeManager
     public function listCapes(): array
     {
         return Cache::remember('capes.list', 86400, function () {
-            return collect($this->approved->files())->map(function ($item) {
-                if ($item === '.gitignore') return null;
-                try {
-                    $image = ImageFactory::make($this->approved->path($item));
-                    $width  = $image->getWidth();
-                    $height = $image->getHeight();
-                    return [
-                        'sha'      => $item,
-                        'width'    => $width,
-                        'height'   => $height,
-                        'animated' => $height > ($width / 2),
-                    ];
-                } catch (\Throwable) {
-                    return null;
-                }
-            })->filter()->values()->toArray();
+            return CosmeticAsset::where('status', CosmeticStatus::APPROVED)
+                ->where('slot', CosmeticSlot::BACK)
+                ->where('type', CosmeticType::TEXTURE)
+                ->get(['sha', 'width', 'height'])
+                ->map(fn($a) => [
+                    'sha'      => $a->sha,
+                    'width'    => $a->width,
+                    'height'   => $a->height,
+                    'animated' => $a->isAnimated(),
+                ])
+                ->toArray();
         });
     }
 
@@ -150,22 +146,35 @@ class CapeManager
         return sha1($imagick->getImageSignature());
     }
 
-    public function queueCape(Image $image, string $username, $notify = true): string|bool
+    public function queueCape(Image $image, string $username, bool $notify = true, ?User $uploader = null, array $metadata = []): string
     {
         $capeId = $this->getSha($image);
-
         $image->save($this->queue->path($capeId));
+
+        CosmeticAsset::firstOrCreate(['sha' => $capeId], [
+            'type'        => CosmeticType::TEXTURE,
+            'slot'        => CosmeticSlot::BACK,
+            'status'      => CosmeticStatus::QUEUED,
+            'uploader_id' => $uploader?->id,
+            'name'        => $metadata['name'] ?? null,
+            'visibility'  => CosmeticVisibility::tryFrom($metadata['visibility'] ?? '') ?? CosmeticVisibility::PUBLIC,
+            'tags'        => array_values(array_unique(array_slice(array_map('strtolower', array_filter($metadata['tags'] ?? [])), 0, 10))),
+            'uploaded_at' => now(),
+        ]);
 
         if ($notify) {
             Notifications::cape(
                 title: 'A new cape needs approval!',
-                description: sprintf("**Uploaded by:** %s\n➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
+                description: sprintf(
+                    "**Uploaded by:** %s\n**Name:** %s\n➡️ **Choose:** [Approve Full](%s) / [Approve Cape](%s) / [Approve Elytra](%s) or [Ban](%s)\n**SHA-1:** %s",
                     $username,
+                    $metadata['name'] ?? '(none)',
                     route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'full']),
                     route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'cape']),
                     route('capes.queue.approve', ['token' => $this->token, 'sha' => $capeId, 'type' => 'elytra']),
                     route('capes.ban', ['token' => $this->token, 'sha' => $capeId]),
-                    $capeId),
+                    $capeId
+                ),
                 color: EmbedColor::GOLD,
                 imageUrl: route('capes.queue.get', ['sha' => $capeId])
             );
@@ -176,12 +185,29 @@ class CapeManager
 
     public function approveCape(string $capeId): void
     {
-        if (! $this->isQueued($capeId)) {
-            return;
-        }
+        if (!$this->isQueued($capeId)) return;
 
         $this->approved->put($capeId, $this->queue->get($capeId));
         $this->queue->delete($capeId);
+
+        $image    = ImageFactory::make($this->approved->path($capeId));
+        $width    = $image->width();
+        $height   = $image->height();
+        $animated = $height > ($width / 2);
+
+        $systemTags = ["size:{$width}x{$height}"];
+        if ($animated) $systemTags[] = 'animated';
+
+        $asset = CosmeticAsset::bySha($capeId)->first();
+        if ($asset) {
+            $userTags = array_filter($asset->tags ?? [], fn($t) => !str_starts_with($t, 'size:') && $t !== 'animated');
+            $asset->update([
+                'status' => CosmeticStatus::APPROVED,
+                'width'  => $width,
+                'height' => $height,
+                'tags'   => array_values(array_unique(array_merge($systemTags, $userTags))),
+            ]);
+        }
 
         Cache::forget("cape-texture-{$capeId}-1");
         Cache::forget("cape-texture-{$capeId}-0");
@@ -195,19 +221,27 @@ class CapeManager
         );
     }
 
-    public function isQueued(string $capeId)
+    public function isQueued(string $capeId): bool
     {
-        return $this->queue->exists($capeId);
+        return CosmeticAsset::bySha($capeId)->where('status', CosmeticStatus::QUEUED)->exists();
     }
 
     public function banCape(string $capeId): void
     {
-        if ($this->isBanned($capeId)) {
-            return;
+        if ($this->isBanned($capeId)) return;
+
+        $isCurrentlyApproved = $this->isApproved($capeId);
+        $isCurrentlyQueued   = $this->isQueued($capeId);
+
+        if ($isCurrentlyApproved) {
+            $this->banned->put($capeId, $this->approved->get($capeId));
+            $this->approved->delete($capeId);
+        } elseif ($isCurrentlyQueued) {
+            $this->banned->put($capeId, $this->queue->get($capeId));
+            $this->queue->delete($capeId);
         }
 
-        $this->banned->put($capeId, $this->getCape($capeId));
-        $this->deleteCape($capeId);
+        CosmeticAsset::bySha($capeId)->update(['status' => CosmeticStatus::BANNED]);
 
         Cache::forget("cape-texture-{$capeId}-1");
         Cache::forget("cape-texture-{$capeId}-0");
@@ -221,9 +255,9 @@ class CapeManager
         );
     }
 
-    public function isBanned(string $capeId)
+    public function isBanned(string $capeId): bool
     {
-        return (bool) $this->banned->get($capeId);
+        return CosmeticAsset::bySha($capeId)->where('status', CosmeticStatus::BANNED)->exists();
     }
 
     public function getToken(): string

@@ -141,7 +141,7 @@ class CapeController extends Controller
             $this->manager->maskCapeImage($newImage, $type);
             // Check if the image content is the same
             if ($this->manager->getSha($newImage) !== $originalSha) {
-                $sha = $this->manager->queueCape($newImage, false);
+                $sha = $this->manager->queueCape($newImage, '');
 
                 // Delete the old image
                 $this->manager->deleteQueuedCape($originalSha);
