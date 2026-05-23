@@ -12,6 +12,7 @@
             type: 'wynntils_oauth_callback',
             success: true,
             token: {!! json_encode($token, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
+            sanctumToken: {!! json_encode($sanctum_token, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
             accountLinked: true
         };
         if (window.opener) {

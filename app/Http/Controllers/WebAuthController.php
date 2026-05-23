@@ -21,7 +21,10 @@ class WebAuthController extends Controller
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
+        $token = $user->createToken($request->header('User-Agent') ?? 'web')->plainTextToken;
+
         return response()->json([
+            'token' => $token,
             'user' => $this->formatUser($user),
         ]);
     }
@@ -42,6 +45,13 @@ class WebAuthController extends Controller
 
     public function logout(): JsonResponse
     {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if ($user?->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
+
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();

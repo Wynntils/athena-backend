@@ -74,6 +74,11 @@ class WynntilsOAuthController
 
         auth()->login($user, true);
 
-        return view('auth.oauth-callback', ['token' => $user->auth_token]);
+        $sanctumToken = $user->createToken($request->header('User-Agent') ?? 'web')->plainTextToken;
+
+        return view('auth.oauth-callback', [
+            'token' => $user->auth_token,
+            'sanctum_token' => $sanctumToken,
+        ]);
     }
 }
