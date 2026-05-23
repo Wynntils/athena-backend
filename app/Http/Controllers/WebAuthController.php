@@ -18,9 +18,6 @@ class WebAuthController extends Controller
             return response()->json(['message' => 'Invalid username or password.'], 401);
         }
 
-        Auth::login($user, $request->boolean('remember'));
-        $request->session()->regenerate();
-
         $token = $user->createToken($request->header('User-Agent') ?? 'web')->plainTextToken;
 
         return response()->json([
@@ -48,13 +45,7 @@ class WebAuthController extends Controller
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        if ($user?->currentAccessToken()) {
-            $user->currentAccessToken()->delete();
-        }
-
-        Auth::logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
+        $user?->currentAccessToken()?->delete();
 
         return response()->json(['message' => 'Logged out.']);
     }
