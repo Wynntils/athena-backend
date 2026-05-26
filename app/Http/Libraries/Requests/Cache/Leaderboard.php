@@ -57,7 +57,7 @@ class Leaderboard
 
             $result[$type] = $ids
                 ->values()
-                ->take(9)
+                ->take(10)
                 ->mapWithKeys(fn (string $id, int $i) => [(string) ($i + 1) => $id])
                 ->toArray();
         }
