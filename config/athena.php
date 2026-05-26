@@ -54,6 +54,8 @@ return [
                 'items' => 'https://api.wynncraft.com/v3/item/database?fullResult=True',
                 'guildInfo' => 'https://api.wynncraft.com/v3/guild/',
                 'onlinePlayers' => 'https://api.wynncraft.com/v3/player',
+                'worldEvents' => 'https://api.wynncraft.com/v3/map/world-events',
+                'lootPools' => 'https://api.wynncraft.com/v3/map/loot-pools',
             ],
         ],
 
