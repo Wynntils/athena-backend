@@ -20,7 +20,7 @@ class CosmeticAssetSeeder extends Seeder
 
         foreach ($files as $sha) {
             // skip non-cape files
-            if (!preg_match('/^[0-9a-f]{40}$/i', $sha)) {
+            if (! preg_match('/^[0-9a-f]{40}$/i', $sha)) {
                 continue;
             }
 
@@ -38,6 +38,7 @@ class CosmeticAssetSeeder extends Seeder
                 $height = $image->height();
             } catch (\Exception $e) {
                 $this->command?->warn("Skipping unreadable file: {$sha} ({$e->getMessage()})");
+
                 continue;
             }
             $animated = $height > ($width / 2);
