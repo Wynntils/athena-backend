@@ -60,14 +60,85 @@ class CacheControllersTest extends TestCase
 
     public function test_territory_list_returns_cached_data_with_headers(): void
     {
-        $data = ['Detlas' => ['guild' => ['name' => 'Wynntils', 'prefix' => 'WYN', 'color' => '#fff'], 'acquired' => '2024-01-01T00:00:00Z', 'location' => ['start' => [0, 0], 'end' => [100, 100]]]];
+        $data = [
+            'Detlas' => [
+                'guild' => ['name' => 'Wynntils', 'prefix' => 'WYN', 'color' => '#fff'],
+                'acquired' => '2024-01-01T00:00:00Z',
+                'location' => ['start' => [0, 0], 'end' => [100, 100]],
+                'links' => ['Ragni', 'Nivla Woods'],
+                'treasury' => 'LOW',
+                'defences' => 'HIGH',
+                'resources' => [
+                    ['type' => 'EMERALD', 'stored' => 20],
+                ],
+            ],
+        ];
         Cache::put('cache.territoryList', $data);
         Cache::put('cache.territoryList.hash', 'terrihash');
 
         $response = $this->getJson('/cache/get/territoryList');
 
-        $response->assertStatus(200)->assertJson($data);
+        $response->assertStatus(200)
+            ->assertJsonPath('Detlas.guild.name', 'Wynntils')
+            ->assertJsonPath('Detlas.location.start.0', 0)
+            ->assertJsonMissingPath('Detlas.links')
+            ->assertJsonMissingPath('Detlas.treasury')
+            ->assertJsonMissingPath('Detlas.defences')
+            ->assertJsonMissingPath('Detlas.resources');
         $this->assertStringContainsString('max-age=15', $response->headers->get('Cache-Control'));
+    }
+
+    public function test_territory_list_includes_requested_show_fields(): void
+    {
+        $data = [
+            'Detlas' => [
+                'guild' => ['name' => 'Wynntils', 'prefix' => 'WYN', 'color' => '#fff'],
+                'acquired' => '2024-01-01T00:00:00Z',
+                'location' => ['start' => [0, 0], 'end' => [100, 100]],
+                'links' => ['Ragni', 'Nivla Woods'],
+                'treasury' => 'LOW',
+                'defences' => 'HIGH',
+                'resources' => [
+                    ['type' => 'EMERALD', 'stored' => 20],
+                ],
+            ],
+        ];
+        Cache::put('cache.territoryList', $data);
+        Cache::put('cache.territoryList.hash', 'terrihash');
+
+        $response = $this->getJson('/cache/get/territoryList?show=links,resources');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('Detlas.links.0', 'Ragni')
+            ->assertJsonPath('Detlas.resources.0.type', 'EMERALD')
+            ->assertJsonMissingPath('Detlas.treasury')
+            ->assertJsonMissingPath('Detlas.defences');
+    }
+
+    public function test_world_events_returns_cached_data_with_headers(): void
+    {
+        $data = ['events' => [['name' => 'Aledar Rift', 'state' => 'ACTIVE']]];
+        Cache::put('cache.worldEvents', $data);
+        Cache::put('cache.worldEvents.hash', 'weh');
+
+        $response = $this->getJson('/cache/get/worldEvents');
+
+        $response->assertStatus(200)->assertJson($data);
+        $this->assertStringContainsString('max-age=120', $response->headers->get('Cache-Control'));
+        $this->assertSame('"weh"', $response->headers->get('ETag'));
+    }
+
+    public function test_loot_pools_returns_cached_data_with_headers(): void
+    {
+        $data = ['pools' => [['name' => 'Canyon Loot Pool']]];
+        Cache::put('cache.lootPools', $data);
+        Cache::put('cache.lootPools.hash', 'lph');
+
+        $response = $this->getJson('/cache/get/lootPools');
+
+        $response->assertStatus(200)->assertJson($data);
+        $this->assertStringContainsString('max-age=1800', $response->headers->get('Cache-Control'));
+        $this->assertSame('"lph"', $response->headers->get('ETag'));
     }
 
     public function test_guild_list_cold_start_dispatches_sync_and_returns_data(): void
@@ -108,6 +179,8 @@ class CacheControllersTest extends TestCase
         Cache::put('cache.itemWeights.hash', 'iwh');
         Cache::put('cache.leaderboard.hash', 'lbh');
         Cache::put('cache.territoryList.hash', 'tlh');
+        Cache::put('cache.worldEvents.hash', 'weh');
+        Cache::put('cache.lootPools.hash', 'lph');
 
         $response = $this->getJson('/cache/getHashes');
 
@@ -117,6 +190,8 @@ class CacheControllersTest extends TestCase
             'itemWeights' => 'iwh',
             'leaderboard' => 'lbh',
             'territoryList' => 'tlh',
+            'worldEvents' => 'weh',
+            'lootPools' => 'lph',
         ]);
     }
 }

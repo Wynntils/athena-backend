@@ -92,6 +92,8 @@ class AuthController extends Controller
             'itemWeights' => Cache::get('cache.itemWeights.hash'),
             'leaderboard' => Cache::get('cache.leaderboard.hash'),
             'territoryList' => Cache::get('cache.territoryList.hash'),
+            'worldEvents' => Cache::get('cache.worldEvents.hash'),
+            'lootPools' => Cache::get('cache.lootPools.hash'),
         ];
 
         return new AuthResponseResource($response);

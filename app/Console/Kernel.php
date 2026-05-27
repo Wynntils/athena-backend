@@ -19,6 +19,8 @@ class Kernel extends ConsoleKernel
         $schedule->job(new \App\Jobs\Cache\RefreshLeaderboardCache)->everyTenMinutes()->onOneServer();
         $schedule->job(new \App\Jobs\Cache\RefreshGuildListCache)->hourly()->onOneServer();
         $schedule->job(new \App\Jobs\Cache\RefreshItemWeightsCache)->hourly()->onOneServer();
+        $schedule->job(new \App\Jobs\Cache\RefreshWorldEventsCache)->everyTwoMinutes()->onOneServer();
+        $schedule->job(new \App\Jobs\Cache\RefreshLootPoolsCache)->everyThirtyMinutes()->onOneServer();
     }
 
     /**
