@@ -2,18 +2,27 @@
 
 namespace App\Http\Resources\Cache;
 
+use App\Http\Resources\Cache\Items\ServerResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ServerListCacheResource extends JsonResource
 {
-    public static $wrap = null;
-
-    /**
-     * @return array{servers: array<string, array{firstSeen: int, players: string[]}>}
-     */
     public function toArray(Request $request): array
     {
-        return $this->resource;
+        $servers = [];
+
+        foreach ($this->resource['servers'] ?? [] as $id => $server) {
+            $servers[$id] = (new ServerResource($server))->resolve($request);
+        }
+
+        return [
+            /**
+             * Active Wynncraft worlds, keyed by world ID (e.g. `WC1`, `NA22`, `EU9`).
+             *
+             * @var array<string, ServerResource>
+             */
+            'servers' => $servers,
+        ];
     }
 }

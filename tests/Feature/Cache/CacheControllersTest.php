@@ -117,7 +117,20 @@ class CacheControllersTest extends TestCase
 
     public function test_world_events_returns_cached_data_with_headers(): void
     {
-        $data = ['events' => [['name' => 'Aledar Rift', 'state' => 'ACTIVE']]];
+        $data = [
+            [
+                'name' => 'Aledar Rift',
+                'internalName' => 'aledar_rift',
+                'lore' => 'A tear in reality.',
+                'difficulty' => 'MEDIUM',
+                'level' => 50,
+                'length' => 'SHORT',
+                'rewardPerLevel' => [['Various Items']],
+                'requirements' => [],
+                'location' => [],
+                'schedule' => null,
+            ],
+        ];
         Cache::put('cache.worldEvents', $data);
         Cache::put('cache.worldEvents.hash', 'weh');
 
@@ -130,7 +143,16 @@ class CacheControllersTest extends TestCase
 
     public function test_loot_pools_returns_cached_data_with_headers(): void
     {
-        $data = ['pools' => [['name' => 'Canyon Loot Pool']]];
+        $data = [
+            [
+                'name' => 'Canyon Loot Pool',
+                'internalName' => 'CanyonCamp1',
+                'type' => 'CAMP',
+                'rewards' => [
+                    ['name' => 'Stardew', 'type' => 'ITEM', 'amount' => 1, 'always' => false, 'tier' => 'MYTHIC'],
+                ],
+            ],
+        ];
         Cache::put('cache.lootPools', $data);
         Cache::put('cache.lootPools.hash', 'lph');
 

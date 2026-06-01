@@ -2,51 +2,31 @@
 
 namespace App\Http\Resources\Cache;
 
+use App\Http\Resources\Cache\Items\TerritoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TerritoryListCacheResource extends JsonResource
 {
-    public static $wrap = null;
-
     /**
-     * @return array<string, array<string, mixed>>
+     * Territories keyed by territory name. Use the `show` query parameter
+     * (comma-separated `links`, `treasury`, `defences`, `resources`) to opt
+     * into the heavier per-territory fields.
+     *
+     * @return array<string, TerritoryResource>
      */
     public function toArray(Request $request): array
     {
-        $show = collect(explode(',', (string) $request->query('show', '')))
-            ->map(fn (string $field) => strtolower(trim($field)))
-            ->filter();
+        $out = [];
 
-        $includeLinks = $show->contains('links');
-        $includeTreasury = $show->contains('treasury');
-        $includeDefences = $show->contains('defences');
-        $includeResources = $show->contains('resources');
+        foreach ($this->resource as $name => $territory) {
+            if (! is_array($territory)) {
+                continue;
+            }
 
-        return collect($this->resource)
-            ->map(function ($territory) use ($includeLinks, $includeTreasury, $includeDefences, $includeResources) {
-                if (! is_array($territory)) {
-                    return $territory;
-                }
+            $out[$name] = (new TerritoryResource($territory))->resolve($request);
+        }
 
-                if (! $includeLinks) {
-                    unset($territory['links']);
-                }
-
-                if (! $includeTreasury) {
-                    unset($territory['treasury']);
-                }
-
-                if (! $includeDefences) {
-                    unset($territory['defences']);
-                }
-
-                if (! $includeResources) {
-                    unset($territory['resources']);
-                }
-
-                return $territory;
-            })
-            ->toArray();
+        return $out;
     }
 }

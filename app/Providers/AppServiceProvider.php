@@ -11,6 +11,7 @@ use App\Observers\UserObserver;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Http;
@@ -64,6 +65,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         User::observe(UserObserver::class);
+
+        JsonResource::withoutWrapping();
 
         Paginator::useBootstrapFive();
 
