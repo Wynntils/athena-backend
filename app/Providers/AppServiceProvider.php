@@ -125,6 +125,22 @@ class AppServiceProvider extends ServiceProvider
                 'AuthToken',
                 SecurityScheme::apiKey('header', 'authToken')->as('AuthToken')
             );
+
+            // Resources that use `[...$this->resource, 'known' => ...]` to merge
+            // a typed literal with a dynamically-keyed cached payload produce a
+            // phantom empty-string property in the schema. Strip those keys.
+            foreach ($openApi->components->schemas ?? [] as $schema) {
+                $type = $schema->type ?? null;
+                if ($type && property_exists($type, 'properties') && isset($type->properties[''])) {
+                    unset($type->properties['']);
+                }
+                if ($type && property_exists($type, 'required') && is_array($type->required)) {
+                    $type->required = array_values(array_filter(
+                        $type->required,
+                        fn ($n) => is_string($n) && $n !== '',
+                    ));
+                }
+            }
         });
     }
 }
