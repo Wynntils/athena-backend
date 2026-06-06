@@ -91,10 +91,10 @@ class ItemWeights
     private function removeEmptyArrays(array $data): array
     {
         foreach ($data as $key => $value) {
-            if(is_array($value)) {
+            if (is_array($value)) {
                 $value = $this->removeEmptyArrays($value);
 
-                if($value === []) {
+                if ($value === []) {
                     unset($data[$key]);
                 }
             }
