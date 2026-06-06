@@ -68,7 +68,7 @@ class ItemWeights
             $out[$item][$weightName] = $weight['identifications'];
         }
 
-        return $out;
+        return $this->removeEmptyArrays($out);
     }
 
     private function scaledWeights(array $data): array
@@ -85,6 +85,21 @@ class ItemWeights
             }
         });
 
-        return $out;
+        return $this->removeEmptyArrays($out);
+    }
+
+    private function removeEmptyArrays(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if(is_array($value)) {
+                $value = $this->removeEmptyArrays($value);
+
+                if($value === []) {
+                    unset($data[$key]);
+                }
+            }
+        }
+
+        return $data;
     }
 }
