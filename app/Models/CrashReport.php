@@ -58,6 +58,6 @@ class CrashReport extends Model
 
     public function scopeUnhandled(Builder $query): void
     {
-        $query->where('handled', false);
+        $query->where('handled', 'false');
     }
 }
