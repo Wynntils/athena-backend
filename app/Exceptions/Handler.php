@@ -170,7 +170,7 @@ class Handler extends ExceptionHandler
             //            }
         }
 
-        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException && $request->expectsJson()) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
