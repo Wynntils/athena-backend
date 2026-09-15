@@ -39,7 +39,7 @@
                                         <td>
                                             <form method="post" action="{{ route('voice.beta.destroy', $row['user_id']) }}">
                                                 @csrf @method('DELETE')
-                                                <button class="btn btn-sm btn-outline-light">Remove</button>
+                                                <button class="btn btn-sm btn-outline-secondary">Remove</button>
                                             </form>
                                         </td>
                                     </tr>

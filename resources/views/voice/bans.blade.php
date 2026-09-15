@@ -46,7 +46,7 @@
                                             @if($status === 'active')
                                                 <form method="post" action="{{ route('voice.bans.lift', $ban) }}">
                                                     @csrf @method('PUT')
-                                                    <button class="btn btn-sm btn-outline-light">Lift</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">Lift</button>
                                                 </form>
                                             @endif
                                         </td>
