@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CrashReportController;
 use App\Http\Controllers\VoiceBanController;
+use App\Http\Controllers\VoiceBetaController;
 use App\Http\Controllers\VoiceReportController;
 use App\Http\Controllers\WynntilsOAuthController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,12 @@ Route::prefix('voice-bans')->middleware(['auth', 'staff'])->group(static functio
     Route::get('/create', [VoiceBanController::class, 'create'])->name('voice.bans.create');
     Route::post('/', [VoiceBanController::class, 'store'])->name('voice.bans.store');
     Route::put('/{voiceBan}/lift', [VoiceBanController::class, 'lift'])->name('voice.bans.lift');
+});
+
+Route::prefix('voice-beta')->middleware(['auth', 'staff'])->group(static function () {
+    Route::get('/', [VoiceBetaController::class, 'index'])->name('voice.beta.index');
+    Route::post('/', [VoiceBetaController::class, 'store'])->name('voice.beta.store');
+    Route::delete('/{userId}', [VoiceBetaController::class, 'destroy'])->name('voice.beta.destroy');
 });
 
 Route::prefix('auth')->name('auth.')->group(static function () {

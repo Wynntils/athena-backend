@@ -27,6 +27,8 @@
                     Reports</a>
                 <a class="nav-link {{ Route::is('voice.bans.*') ? 'active' : '' }}" href="{{ route('voice.bans.index') }}">Voice
                     Bans</a>
+                <a class="nav-link {{ Route::is('voice.beta.*') ? 'active' : '' }}" href="{{ route('voice.beta.index') }}">Voice
+                    Beta</a>
             </div>
             <div class="navbar-nav">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
