@@ -23,6 +23,8 @@
             <div class="navbar-nav">
                 <a class="nav-link {{ Route::is('crash.index') ? 'active' : '' }}" href="{{ route('crash.index') }}">Crash
                     Reports</a>
+                <a class="nav-link {{ Route::is('voice.index', 'voice.show') ? 'active' : '' }}" href="{{ route('voice.index') }}">Voice
+                    Reports</a>
             </div>
             <div class="navbar-nav">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
