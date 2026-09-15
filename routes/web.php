@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\CrashReportController;
+use App\Http\Controllers\VoiceBanController;
+use App\Http\Controllers\VoiceBetaController;
+use App\Http\Controllers\VoiceReportController;
 use App\Http\Controllers\WynntilsOAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +37,28 @@ Route::prefix('crash')->middleware(['auth', 'staff'])->group(static function () 
     Route::put('/{crashReport}/handled', [CrashReportController::class, 'setHandled'])->name('crash.handled');
     Route::put('/{crashReport}/comment', [CrashReportController::class, 'addComment'])->name('crash.comment');
     Route::delete('/{crashReport}/comment', [CrashReportController::class, 'deleteComment'])->name('crash.comment.delete');
+});
+
+Route::prefix('voice-reports')->middleware(['auth', 'staff'])->group(static function () {
+    Route::get('/', [VoiceReportController::class, 'index'])->name('voice.index');
+    Route::get('/{voiceReport}', [VoiceReportController::class, 'show'])->name('voice.show');
+    Route::get('/{voiceReport}/audio/{side}', [VoiceReportController::class, 'audio'])->name('voice.audio');
+    Route::put('/{voiceReport}/handled', [VoiceReportController::class, 'setHandled'])->name('voice.handled');
+    Route::put('/{voiceReport}/comment', [VoiceReportController::class, 'addComment'])->name('voice.comment');
+    Route::delete('/{voiceReport}/comment', [VoiceReportController::class, 'deleteComment'])->name('voice.comment.delete');
+});
+
+Route::prefix('voice-bans')->middleware(['auth', 'staff'])->group(static function () {
+    Route::get('/', [VoiceBanController::class, 'index'])->name('voice.bans.index');
+    Route::get('/create', [VoiceBanController::class, 'create'])->name('voice.bans.create');
+    Route::post('/', [VoiceBanController::class, 'store'])->name('voice.bans.store');
+    Route::put('/{voiceBan}/lift', [VoiceBanController::class, 'lift'])->name('voice.bans.lift');
+});
+
+Route::prefix('voice-beta')->middleware(['auth', 'staff'])->group(static function () {
+    Route::get('/', [VoiceBetaController::class, 'index'])->name('voice.beta.index');
+    Route::post('/', [VoiceBetaController::class, 'store'])->name('voice.beta.store');
+    Route::delete('/{userId}', [VoiceBetaController::class, 'destroy'])->name('voice.beta.destroy');
 });
 
 Route::prefix('auth')->name('auth.')->group(static function () {

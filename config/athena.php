@@ -17,12 +17,18 @@ return [
         'token' => env('CAPE_TOKEN'),
     ],
 
+    'voice' => [
+        'report_dir' => env('VOICE_REPORT_DIR', base_path('voice-reports')),
+        'audio_retention_days' => 30,
+    ],
+
     'webhook' => [
         'discord' => [
             'webhook' => [
                 'log' => env('DISCORD_LOG_WEBHOOK'),
                 'capes' => env('DISCORD_CAPE_WEBHOOK'),
                 'crash' => env('DISCORD_CRASH_WEBHOOK'),
+                'voice' => env('DISCORD_VOICE_WEBHOOK'),
             ],
             'username' => env('DISCORD_USERNAME', 'Athena'),
             'avatar' => env('DISCORD_AVATAR', 'https://cdn.wynntils.com/athena_logo_1600x1600.png'),
