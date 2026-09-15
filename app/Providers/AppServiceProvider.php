@@ -8,9 +8,11 @@ use App\Http\Libraries\ItemManager;
 use App\Http\Libraries\MinecraftFakeAuth;
 use App\Models\User;
 use App\Observers\UserObserver;
+use App\Services\PgsqlBooleanConnection;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Database\Connection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Route;
@@ -50,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CapeManager::class);
         $this->app->singleton(ItemManager::class);
         $this->app->singleton(MinecraftFakeAuth::class);
+
+        Connection::resolverFor('pgsql', fn ($pdo, $database, $prefix, $config) => new PgsqlBooleanConnection($pdo, $database, $prefix, $config));
 
         //        Sanctum::ignoreMigrations();
 
