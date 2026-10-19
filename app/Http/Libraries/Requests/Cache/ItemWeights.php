@@ -63,7 +63,7 @@ class ItemWeights
                 continue;
             }
 
-            $item = $weight['item_name'];
+            $item = str_replace('Masterwork', 'Ascended', $weight['item_name']);
             $weightName = $weight['weight_name'];
             $out[$item][$weightName] = $weight['identifications'];
         }
@@ -77,14 +77,21 @@ class ItemWeights
         if (! is_array($weights)) {
             return [];
         }
-
-        $out = $weights;
+    
+        $out = array_combine(
+            array_map(
+                static fn ($item) => str_replace('Masterwork', 'Ascended', $item),
+                array_keys($weights)
+            ),
+            array_values($weights)
+        );
+    
         array_walk_recursive($out, static function (&$v) {
             if (is_numeric($v)) {
-                $v = $v / 100;
+                $v /= 100;
             }
         });
-
+    
         return $this->removeEmptyArrays($out);
     }
 
