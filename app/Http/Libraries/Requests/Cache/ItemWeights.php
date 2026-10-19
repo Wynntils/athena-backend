@@ -77,7 +77,7 @@ class ItemWeights
         if (! is_array($weights)) {
             return [];
         }
-    
+
         $out = array_combine(
             array_map(
                 static fn ($item) => str_replace('Masterwork', 'Ascended', $item),
@@ -85,13 +85,13 @@ class ItemWeights
             ),
             array_values($weights)
         );
-    
+
         array_walk_recursive($out, static function (&$v) {
             if (is_numeric($v)) {
                 $v /= 100;
             }
         });
-    
+
         return $this->removeEmptyArrays($out);
     }
 
