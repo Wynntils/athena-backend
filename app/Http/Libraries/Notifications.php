@@ -48,6 +48,23 @@ class Notifications
         );
     }
 
+    public static function voice(
+        $content = null,
+        $title = null,
+        $description = null,
+        ?EmbedColor $color = null,
+        $footer = null
+    ): void {
+        self::sendNotification(
+            url: config('athena.webhook.discord.webhook.voice'),
+            content: $content,
+            title: $title,
+            description: $description,
+            color: $color,
+            footer: $footer
+        );
+    }
+
     private static function sendNotification(
         $url,
         $content = null,
